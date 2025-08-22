@@ -5,12 +5,13 @@ use mechanical_workshop_usm;
 
 create table client_info(
 	id int AUTO_INCREMENT primary key,
-    first_name varchar(64) not null check(first_name != ""),
+    first_name varchar(64) not null check (first_name!=""),
     last_name varchar(64),
-    email_address varchar(255) not null check(email_address != ""),
-    address varchar(128) not null check(address != ""),
-    cellphone_number varchar(12) not null check(cellphone != "")
+    email_address varchar(255) not null check (email_address != ""),
+    address varchar(128) not null check (address != ""),
+    cellphone_number varchar(12) not null check (cellphone_number != "")
 );
+
 create table mechanic_info(
 	id int AUTO_INCREMENT primary key,
     first_name varchar(64) not null check(first_name != ""),
@@ -24,19 +25,19 @@ create table car_brand(
 
 create table car_model(
 	id int AUTO_INCREMENT primary key,
-    brand_car_id int not null,
+    brand_id int not null,
 	model_name varchar(78) not null check (model_name != ""),
 	model_type varchar(64),
     model_year int,
-    foreign key (brand_car_id) references car_brand(id)
+    foreign key (brand_id) references car_brand(id)
 );
 
 create table car(
 	id int AUTO_INCREMENT primary key,
-    model_car_id int not null,
+    model_id int not null,
     license_plate varchar(6) unique not null,
-    VIN varchar(17) unique not null,
-    foreign key(model_car_id) references model_car(id)
+    VIN varchar(17) unique not null check (VIN != ""),
+    foreign key(model_id) references car_model(id)
 );
 
 create table record(
@@ -47,7 +48,7 @@ create table record(
     mechanic_info_id int not null,
     check (reason != ""),
     foreign key (car_id) references car(id),
-    foreign key (client_info_id) references car(id),
+    foreign key (client_info_id) references client_info(id),
     foreign key (mechanic_info_id) references mechanic_info(id)
 );
 
@@ -90,7 +91,7 @@ create table entry_state_has_tool(
 
 create table mechanic_condition(
 	id int AUTO_INCREMENT primary key,
-    part_name varchar(64) not null check (name!=""),
+    part_name varchar(64) not null check (part_name != ""),
     part_condition_state varchar(128)
 );
 
@@ -121,8 +122,9 @@ create table electrical_system_condition(
 create table work_order(
 	id int auto_increment primary key,
     estimated_date date not null,
-    estimated_time time not null,
+    estimated_time time not null
 );
+
 create table work_service(
 	id int auto_increment primary key,
     service_name varchar(32) not null check(service_name != "")
