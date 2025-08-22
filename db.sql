@@ -7,7 +7,7 @@ create table client_info(
 	id int AUTO_INCREMENT primary key,
     first_name varchar(64) not null check (first_name!=""),
     last_name varchar(64),
-    email_address varchar(255) not null check (email_address != ""),
+    email_address varchar(255) not null check ( "" != email_address),
     address varchar(128) not null check (address != ""),
     cellphone_number varchar(12) not null check (cellphone_number != "")
 );
@@ -89,7 +89,7 @@ create table entry_state_has_tool(
     foreign key (entry_state_id) references entry_state(id)
 );
 
-create table mechanic_condition(
+create table mechanical_condition(
 	id int AUTO_INCREMENT primary key,
     part_name varchar(64) not null check (part_name != ""),
     part_condition_state varchar(128)
@@ -97,26 +97,26 @@ create table mechanic_condition(
 
 create table entry_state_consider_condition(
 	id int AUTO_INCREMENT primary key,
-    mechanic_condition_id int not null,
+    mechanical_condition_id int not null,
     entry_state_id int not null,
-    foreign key (mechanic_condition_id) references mechanic_condition(id),
+    foreign key (mechanical_condition_id) references mechanical_condition(id),
     foreign key (entry_state_id) references entry_state(id)
 );
 
 create table exterior_condition(
 	id int auto_increment primary key,
-    mechanic_condiction_id int not null,
-    foreign key (mechanic_condiction_id) references mechanic_condition(id)
+    mechanical_condition_id int not null,
+    foreign key (mechanical_condition_id) references mechanical_condition(id)
 );
 create table interior_condition(
 	id int auto_increment primary key,
-    mechanic_condiction_id int not null,
-    foreign key (mechanic_condiction_id) references mechanic_condition(id)
+    mechanical_condition_id int not null,
+    foreign key (mechanical_condition_id) references mechanical_condition(id)
 );
 create table electrical_system_condition(
 	id int auto_increment primary key,
-    mechanic_condiction_id int not null,
-    foreign key (mechanic_condiction_id) references mechanic_condition(id)
+    mechanical_condition_id int not null,
+    foreign key (mechanical_condition_id) references mechanical_condition(id)
 );
 
 create table work_order(
