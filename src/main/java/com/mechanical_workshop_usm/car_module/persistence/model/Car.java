@@ -25,7 +25,7 @@ public class Car {
     private String licensePlate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn("car_mode_id")
+    @JoinColumn(name = "model_id")
     private CarModel carModel;
 
     public Car() {}
