@@ -57,6 +57,7 @@ create table record_state(
     record_id int not null,
     entry_date date,
     entry_time time,
+    mileage int not null,
     foreign key (record_id) references record(id)
 );
 
@@ -92,7 +93,8 @@ create table entry_state_has_tool(
 create table mechanical_condition(
 	id int AUTO_INCREMENT primary key,
     part_name varchar(64) not null check (part_name != ""),
-    part_condition_state varchar(128)
+    part_condition_state varchar(128),
+	unique uk_part_name_condition (part_name, part_condition_state)
 );
 
 create table entry_state_consider_condition(
