@@ -129,7 +129,7 @@ create table work_order(
 
 create table work_service(
 	id int auto_increment primary key,
-    service_name varchar(32) not null check(service_name != "")
+    service_name varchar(32) unique not null check(service_name != "")
 );
 
 create table work_order_realized_service(
