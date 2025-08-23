@@ -1,6 +1,6 @@
-package com.mechanical_workshop_usm.mechanical_condition.persistence.repository;
+package com.mechanical_workshop_usm.mechanical_condition_module.persistence.repository;
 
-import com.mechanical_workshop_usm.mechanical_condition.persistence.model.MechanicalCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.persistence.model.MechanicalCondition;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

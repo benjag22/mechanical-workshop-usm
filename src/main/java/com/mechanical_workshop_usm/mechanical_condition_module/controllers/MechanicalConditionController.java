@@ -1,8 +1,8 @@
-package com.mechanical_workshop_usm.mechanical_condition.controllers;
+package com.mechanical_workshop_usm.mechanical_condition_module.controllers;
 
-import com.mechanical_workshop_usm.mechanical_condition.persistence.model.InteriorCondition;
-import com.mechanical_workshop_usm.mechanical_condition.persistence.model.MechanicalCondition;
-import com.mechanical_workshop_usm.mechanical_condition.persistence.repository.MechanicalConditionRepository;
+import com.mechanical_workshop_usm.mechanical_condition_module.persistence.model.InteriorCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.persistence.model.MechanicalCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repository.MechanicalConditionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

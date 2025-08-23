@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.mechanical_condition.persistence.model;
+package com.mechanical_workshop_usm.mechanical_condition_module.persistence.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
