@@ -22,7 +22,7 @@ public class CarBrand {
     @Setter
     private String brandName;
 
-    @OneToMany(mappedBy = "car_model", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<CarModel> carModels = new LinkedHashSet<>();
 
     public CarBrand() {}

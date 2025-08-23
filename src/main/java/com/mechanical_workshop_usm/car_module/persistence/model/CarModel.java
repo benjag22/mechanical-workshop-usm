@@ -32,7 +32,7 @@ public class CarModel {
     @Setter
     private int modelYear;
 
-    @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "carModel", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<Car> cars = new LinkedHashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
