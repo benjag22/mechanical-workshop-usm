@@ -11,7 +11,7 @@ public class WorkService {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private int id;
 
     @Column(name = "service_name", unique = true, nullable = false)
     @Getter
