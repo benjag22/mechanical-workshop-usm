@@ -45,7 +45,7 @@ public class Record {
     private MechanicInfoModel mechanicInfo;
 
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Record> records = new LinkedHashSet<>();
+    private Set<RecordState> recordStates = new LinkedHashSet<>();
 
     public Record() {}
 
