@@ -1,7 +1,11 @@
 package com.mechanical_workshop_usm.mechanical_condition_module.persistence.model;
 
+import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "mechanical_condition")
@@ -18,6 +22,9 @@ public class MechanicalCondition {
 
     @Column(name = "part_condition_state", length = 128)
     private String partConditionState;
+
+    @OneToMany(mappedBy = "mechanicalCondition", cascade = CascadeType.ALL)
+    private final Set<CheckInConsiderConditions> checkInRecords = new LinkedHashSet<>();
 
     public MechanicalCondition() {}
 
