@@ -1,7 +1,7 @@
 package com.mechanical_workshop_usm.record_module.persistence.model;
 
 import com.mechanical_workshop_usm.car_module.persistence.model.Car;
-import com.mechanical_workshop_usm.client_info_module.ClientInfoModel;
+import com.mechanical_workshop_usm.client_info_module.ClientInfo;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoModel;
 import jakarta.persistence.*;
 import lombok.Builder;
@@ -36,7 +36,7 @@ public class Record {
     @Getter
     @Setter
     @JoinColumn(name = "client_info_id")
-    private ClientInfoModel clientInfo;
+    private ClientInfo clientInfo;
 
     @OneToOne(fetch = FetchType.LAZY)
     @Getter
