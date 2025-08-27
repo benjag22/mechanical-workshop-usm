@@ -4,9 +4,21 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
+logging:
+  level:
+    com.mechanical_workshop_usm: debug
+app:
+  cdn:
+    base-url: http://localhost
+    images-path: \\\\wsl.localhost\\Ubuntu\\var\\www\\cdn\\images
+    access-prefix: /images
