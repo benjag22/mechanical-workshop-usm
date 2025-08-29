@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.mechanical_condition_module.persistence.model;
+package com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity;
 
 import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
 import jakarta.persistence.*;

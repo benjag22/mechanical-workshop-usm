@@ -1,6 +1,6 @@
 package com.mechanical_workshop_usm.check_in_consider_conditions_module;
 
-import com.mechanical_workshop_usm.mechanical_condition_module.persistence.model.MechanicalCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.MechanicalCondition;
 import com.mechanical_workshop_usm.record_module.persistence.model.CheckIn;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
