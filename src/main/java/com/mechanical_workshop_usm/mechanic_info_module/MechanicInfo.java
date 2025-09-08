@@ -30,4 +30,9 @@ public class MechanicInfo {
     @Column(name = "registration_number", nullable = false)
     private String registrationNumber;
 
+    public MechanicInfo(String firstName, String lastName, String registrationNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.registrationNumber = registrationNumber;
+    }
 }
