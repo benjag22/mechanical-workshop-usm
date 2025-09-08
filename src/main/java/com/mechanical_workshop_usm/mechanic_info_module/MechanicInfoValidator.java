@@ -16,9 +16,7 @@ public class MechanicInfoValidator {
         if (request.firstName() == null || request.firstName().isEmpty()) {
             errors.add(new FieldErrorResponse("first_name", "The first name cannot be empty"));
         }
-        if (request.lastName() == null || request.lastName().isEmpty()) {
-            errors.add(new FieldErrorResponse("last_name", "The last name cannot be empty"));
-        }
+
         if (request.registrationNumber() == null || request.registrationNumber().isEmpty()) {
             errors.add(new FieldErrorResponse("registration_number", "The registration number cannot be empty"));
         }
