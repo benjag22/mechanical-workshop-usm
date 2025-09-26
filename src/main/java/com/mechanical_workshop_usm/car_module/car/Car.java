@@ -1,5 +1,7 @@
-package com.mechanical_workshop_usm.car_module.persistence.entity;
+package com.mechanical_workshop_usm.car_module.car;
 
+import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
+import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,4 +33,10 @@ public class Car {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "model_id")
     private CarModel carModel;
+
+    public Car(String VIN, String licensePlate, CarModel carModel) {
+        this.VIN = VIN;
+        this.licensePlate = licensePlate;
+        this.carModel = carModel;
+    }
 }

@@ -1,5 +1,6 @@
-package com.mechanical_workshop_usm.car_module.persistence.entity;
+package com.mechanical_workshop_usm.car_module.car_brand;
 
+import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,9 +25,13 @@ public class CarBrand {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "brand_name", nullable = false, unique = true)
+    @Column(name = "brand_name", unique = true, nullable = false)
     private String brandName;
 
     @OneToMany(mappedBy = "brand", cascade = CascadeType.ALL, orphanRemoval = true)
     private final Set<CarModel> carModels = new LinkedHashSet<>();
+
+    public CarBrand(String brandName) {
+        this.brandName = brandName;
+    }
 }

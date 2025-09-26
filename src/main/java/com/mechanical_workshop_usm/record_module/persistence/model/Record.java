@@ -1,6 +1,6 @@
 package com.mechanical_workshop_usm.record_module.persistence.model;
 
-import com.mechanical_workshop_usm.car_module.persistence.entity.Car;
+import com.mechanical_workshop_usm.car_module.car.Car;
 import com.mechanical_workshop_usm.client_info_module.ClientInfo;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfo;
 

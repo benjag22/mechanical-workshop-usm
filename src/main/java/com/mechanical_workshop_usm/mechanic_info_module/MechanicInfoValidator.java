@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.mechanic_info_module;
 
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
-import com.mechanical_workshop_usm.mechanic_info_module.dtos.CreateMechanicRequest;
+import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

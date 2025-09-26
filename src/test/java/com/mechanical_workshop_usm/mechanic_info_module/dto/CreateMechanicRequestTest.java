@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.mechanic_info_module.dtos;
+package com.mechanical_workshop_usm.mechanic_info_module.dto;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
