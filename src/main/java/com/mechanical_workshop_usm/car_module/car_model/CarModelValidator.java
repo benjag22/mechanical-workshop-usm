@@ -11,6 +11,12 @@ import java.util.List;
 
 @Service
 public class CarModelValidator {
+    private final CarModelRepository carModelRepository;
+
+    public CarModelValidator(CarModelRepository carModelRepository) {
+        this.carModelRepository = carModelRepository;
+    }
+
     public void validateOnCreate(CreateCarModelRequest request) {
 
         List<FieldErrorResponse> errors = new ArrayList<>();
@@ -18,6 +24,11 @@ public class CarModelValidator {
         String modelName = request.modelName();
         int modelYear = request.modelYear();
         long brandId = request.brandId();
+
+        boolean exists = carModelRepository.findByModelNameAndBrand_Id(modelName, brandId).isPresent();
+        if (exists) {
+            errors.add(new FieldErrorResponse("model_name", "A car model with this name already exists for the selected brand"));
+        }
 
         if (modelName == null || modelName.isBlank()) {
             errors.add(new FieldErrorResponse("model_name", "The model name cannot be empty or blank"));

@@ -13,30 +13,26 @@ import java.util.List;
 public class CarModelController {
 
     private final CarModelService carModelService;
-    private final CarModelRepository carModelRepository;
 
-    public CarModelController(CarModelService carModelService, CarModelRepository carModelRepository) {
+    public CarModelController(CarModelService carModelService) {
         this.carModelService = carModelService;
-        this.carModelRepository = carModelRepository;
     }
 
     @GetMapping
     public List<GetCarModelResponse> getAllCarModels() {
-        return carModelRepository.findAll().stream()
-                .map(carModel -> new GetCarModelResponse(
-                        carModel.getId(),
-                        carModel.getModelName(),
-                        carModel.getModelType(),
-                        carModel.getModelYear(),
-                        carModel.getBrand().getId(),
-                        carModel.getBrand().getBrandName()
-                ))
-                .toList();
+        return carModelService.getAllCarsModels();
     }
 
     @PostMapping
     public ResponseEntity<CreateCarModelResponse> createCarModel(@RequestBody CreateCarModelRequest request) {
         CreateCarModelResponse response = carModelService.createCarModel(request);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetCarModelResponse> getCarModel(@PathVariable int id) {
+        GetCarModelResponse response = carModelService.getCarModel(id);
         return ResponseEntity.ok(response);
     }
 }

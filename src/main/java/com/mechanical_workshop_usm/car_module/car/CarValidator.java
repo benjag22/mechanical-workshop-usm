@@ -17,6 +17,7 @@ public class CarValidator {
     }
 
     public void validateOnCreate(CreateCarRequest request) {
+
         List<FieldErrorResponse> errors = new ArrayList<>();
 
         if (request.VIN() == null || request.VIN().isBlank()) {

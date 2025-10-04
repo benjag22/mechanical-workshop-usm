@@ -33,16 +33,15 @@ public class CarService {
                 List.of(new FieldErrorResponse("model_id", "Car model not found"))
         ));
 
-        Car car = new Car();
-        car.setVIN(request.VIN());
-        car.setLicensePlate(request.licensePlate());
-        car.setCarModel(model);
+        Car car = new Car(
+                request.VIN(),
+                request.licensePlate(),
+                model
+        );
 
         Car savedCar = carRepository.save(car);
-
         return new CreateCarResponse(
                 savedCar.getId(),
-                savedCar.getVIN(),
                 savedCar.getLicensePlate()
         );
     }

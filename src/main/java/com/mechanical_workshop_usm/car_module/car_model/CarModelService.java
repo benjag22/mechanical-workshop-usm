@@ -6,6 +6,7 @@ import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelReques
 import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelResponse;
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrandRepository;
+import com.mechanical_workshop_usm.car_module.car_model.dto.GetCarModelResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,16 +27,6 @@ public class CarModelService {
     public CreateCarModelResponse createCarModel(CreateCarModelRequest createCarModelRequest) {
         carModelValidator.validateOnCreate(createCarModelRequest);
 
-        carModelRepository.findAll().stream()
-                .filter(cm -> cm.getModelName().equalsIgnoreCase(createCarModelRequest.modelName()) && cm.getBrand().getId() == createCarModelRequest.brandId())
-                .findAny()
-                .ifPresent(existingModel -> {
-                    throw new MultiFieldException(
-                            "Some error in fields",
-                            List.of(new FieldErrorResponse("model_name", "A car model with this name already exists for the selected brand"))
-                    );
-                });
-
         Optional<CarBrand> brandOpt = carBrandRepository.findById(createCarModelRequest.brandId());
         CarBrand brand = brandOpt.orElseThrow(() -> new MultiFieldException(
                 "Some error in fields",
@@ -48,6 +39,7 @@ public class CarModelService {
                 createCarModelRequest.modelYear(),
                 brand
         );
+
         CarModel savedCarModel = carModelRepository.save(carModel);
         return new CreateCarModelResponse(
                 savedCarModel.getId(),
@@ -55,5 +47,34 @@ public class CarModelService {
                 savedCarModel.getModelType(),
                 savedCarModel.getModelYear()
         );
+    }
+
+    public List<GetCarModelResponse> getAllCarsModels() {
+        return carModelRepository.findAll().stream()
+                .map(carModel -> new GetCarModelResponse(
+                        carModel.getId(),
+                        carModel.getModelName(),
+                        carModel.getModelType(),
+                        carModel.getModelYear(),
+                        carModel.getBrand().getId(),
+                        carModel.getBrand().getBrandName()
+                ))
+                .toList();
+    }
+
+    public GetCarModelResponse getCarModel(int carModelId) {
+        return carModelRepository.findById(carModelId)
+                .map(carModel -> new GetCarModelResponse(
+                        carModel.getId(),
+                        carModel.getModelName(),
+                        carModel.getModelType(),
+                        carModel.getModelYear(),
+                        carModel.getBrand().getId(),
+                        carModel.getBrand().getBrandName()
+                ))
+                .orElseThrow(() -> new MultiFieldException(
+                        "Car model not found",
+                        List.of(new FieldErrorResponse("car_model_id", "No car model found for the provided ID"))
+                ));
     }
 }

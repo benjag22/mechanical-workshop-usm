@@ -2,8 +2,7 @@ package com.mechanical_workshop_usm.car_module.car_brand;
 
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandRequest;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandResponse;
-import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
-import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
+import com.mechanical_workshop_usm.car_module.car_brand.dto.GetCarBrandRepsonse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,18 +20,19 @@ public class CarBrandService {
     public CreateCarBrandResponse createBrand(CreateCarBrandRequest createCarBrandRequest) {
         carBrandValidator.validateOnCreate(createCarBrandRequest);
 
-        carBrandRepository.findByBrandName(createCarBrandRequest.brandName())
-                .ifPresent(existingBrand -> {
-                    throw new MultiFieldException(
-                            "Some error in fields",
-                            List.of(new FieldErrorResponse("brandName", "Brand name already exists"))
-                    );
-                });
-
         CarBrand carBrand = new CarBrand(
                 createCarBrandRequest.brandName()
         );
         CarBrand savedCarBrand = carBrandRepository.save(carBrand);
         return new CreateCarBrandResponse(savedCarBrand.getId(), savedCarBrand.getBrandName());
+    }
+
+    public List<GetCarBrandRepsonse> getAllCarsBrands() {
+        return carBrandRepository.findAll().stream()
+                .map(carBrand -> new GetCarBrandRepsonse(
+                        carBrand.getId(),
+                        carBrand.getBrandName()
+                ))
+                .toList();
     }
 }
