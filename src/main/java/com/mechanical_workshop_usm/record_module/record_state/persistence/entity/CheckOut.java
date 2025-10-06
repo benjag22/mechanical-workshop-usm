@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.record_module.persistence.model;
+package com.mechanical_workshop_usm.record_module.record_state.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

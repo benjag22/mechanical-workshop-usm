@@ -1,7 +1,7 @@
 package com.mechanical_workshop_usm.check_in_consider_conditions_module;
 
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.MechanicalCondition;
-import com.mechanical_workshop_usm.record_module.persistence.model.CheckIn;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

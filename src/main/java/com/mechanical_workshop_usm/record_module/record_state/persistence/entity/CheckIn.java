@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.record_module.persistence.model;
+package com.mechanical_workshop_usm.record_module.record_state.persistence.entity;
 
 import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
 import com.mechanical_workshop_usm.check_in_has_tools_module.persistence.model.CheckInHaveTool;

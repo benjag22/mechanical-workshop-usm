@@ -1,6 +1,6 @@
 package com.mechanical_workshop_usm.check_in_has_tools_module.persistence.model;
 
-import com.mechanical_workshop_usm.record_module.persistence.model.CheckIn;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

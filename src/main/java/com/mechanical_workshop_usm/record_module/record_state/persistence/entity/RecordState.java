@@ -1,5 +1,6 @@
-package com.mechanical_workshop_usm.record_module.persistence.model;
+package com.mechanical_workshop_usm.record_module.record_state.persistence.entity;
 
+import com.mechanical_workshop_usm.record_module.record.Record;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

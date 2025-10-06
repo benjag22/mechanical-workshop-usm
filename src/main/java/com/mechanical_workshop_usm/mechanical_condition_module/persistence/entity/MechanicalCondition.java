@@ -2,19 +2,26 @@ package com.mechanical_workshop_usm.mechanical_condition_module.persistence.enti
 
 import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "mechanical_condition")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Getter
-@Setter
 public class MechanicalCondition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Integer id;
 
     @Column(name = "part_name", nullable = false, length = 64)
@@ -25,8 +32,6 @@ public class MechanicalCondition {
 
     @OneToMany(mappedBy = "mechanicalCondition", cascade = CascadeType.ALL)
     private final Set<CheckInConsiderConditions> checkInRecords = new LinkedHashSet<>();
-
-    public MechanicalCondition() {}
 
     public MechanicalCondition(String partName, String partConditionState) {
         this.partName = partName;

@@ -4,7 +4,9 @@ import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarResponse;
+import com.mechanical_workshop_usm.car_module.car.dto.GetCarFullResponse;
 import com.mechanical_workshop_usm.car_module.car.dto.GetCarResponse;
+import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import com.mechanical_workshop_usm.car_module.car_model.CarModelRepository;
 import org.springframework.stereotype.Service;
@@ -56,5 +58,28 @@ public class CarService {
                         car.getCarModel().getModelName()
                 ))
                 .toList();
+    }
+
+    public GetCarFullResponse getCar(int carId) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new MultiFieldException(
+                        "Car not found",
+                        List.of(new FieldErrorResponse("car_id", "No car found for the provided ID"))
+                ));
+
+        CarModel carModel = car.getCarModel();
+        CarBrand brand = carModel.getBrand();
+
+        return new GetCarFullResponse(
+                car.getId(),
+                car.getVIN(),
+                car.getLicensePlate(),
+                carModel.getId(),
+                carModel.getModelName(),
+                carModel.getModelType(),
+                carModel.getModelYear(),
+                brand.getId(),
+                brand.getBrandName()
+        );
     }
 }

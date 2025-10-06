@@ -8,9 +8,11 @@ import jakarta.persistence.Table;
 @Table(name = "electrical_system_condition")
 @PrimaryKeyJoinColumn(name = "mechanical_condition_id")
 public class ElectricalSystemCondition extends MechanicalCondition {
+
     public ElectricalSystemCondition() {
         super();
     }
+
     public ElectricalSystemCondition(String partName, String partConditionState) {
         super(partName, partConditionState);
     }

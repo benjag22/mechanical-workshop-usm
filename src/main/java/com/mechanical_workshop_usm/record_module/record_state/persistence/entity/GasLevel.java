@@ -1,6 +1,9 @@
-package com.mechanical_workshop_usm.record_module.persistence.model;
+package com.mechanical_workshop_usm.record_module.record_state.persistence.entity;
 
 
+import lombok.Getter;
+
+@Getter
 public enum GasLevel {
     FULL("full"),
     THREE_QUARTERS("3/4"),
@@ -12,10 +15,6 @@ public enum GasLevel {
 
     GasLevel(String label) {
         this.label = label;
-    }
-
-    public String getLabel() {
-        return label;
     }
 
     @Override

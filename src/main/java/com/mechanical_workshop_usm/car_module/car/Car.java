@@ -1,6 +1,5 @@
 package com.mechanical_workshop_usm.car_module.car;
 
-import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
