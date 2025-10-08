@@ -1,7 +1,7 @@
-package com.mechanical_workshop_usm.mechanical_condition_module.service;
+package com.mechanical_workshop_usm.mechanical_condition_module;
 
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionRequest;
-import com.mechanical_workshop_usm.mechanical_condition_module.dto.MechanicalConditionResponse;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionResponse;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.MechanicalCondition;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.InteriorCondition;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.ExteriorCondition;
@@ -19,7 +19,7 @@ public class MechanicalConditionService {
         this.validator = validator;
     }
 
-    public MechanicalConditionResponse createMechanicalCondition(CreateMechanicalConditionRequest request) {
+    public CreateMechanicalConditionResponse createMechanicalCondition(CreateMechanicalConditionRequest request) {
         validator.validateOnCreate(request);
 
         MechanicalCondition condition;
@@ -32,7 +32,7 @@ public class MechanicalConditionService {
 
         MechanicalCondition saved = repository.save(condition);
 
-        return new MechanicalConditionResponse(
+        return new CreateMechanicalConditionResponse(
                 saved.getId(),
                 saved.getPartName(),
                 saved.getPartConditionState(),

@@ -5,8 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "out_state")
@@ -23,7 +23,7 @@ public class CheckOut extends RecordState {
         super();
     }
 
-    public CheckOut(String vehicleDiagnosis, byte rating, Date entryDate, LocalTime entryTime, int mileage) {
+    public CheckOut(String vehicleDiagnosis, byte rating, LocalDate entryDate, LocalTime entryTime, int mileage) {
         super(entryDate, entryTime, mileage);
     }
 }

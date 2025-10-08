@@ -27,8 +27,8 @@ public class CarModelService {
     public CreateCarModelResponse createCarModel(CreateCarModelRequest createCarModelRequest) {
         carModelValidator.validateOnCreate(createCarModelRequest);
 
-        Optional<CarBrand> brandOpt = carBrandRepository.findById(createCarModelRequest.brandId());
-        CarBrand brand = brandOpt.orElseThrow(() -> new MultiFieldException(
+        CarBrand brand = carBrandRepository.findById(createCarModelRequest.brandId())
+                .orElseThrow(() -> new MultiFieldException(
                 "Some error in fields",
                 List.of(new FieldErrorResponse("brand_id", "Brand not found"))
         ));

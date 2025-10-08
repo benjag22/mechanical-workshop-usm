@@ -1,11 +1,11 @@
 package com.mechanical_workshop_usm.record_module.record_state.persistence.entity;
 
 import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
-import com.mechanical_workshop_usm.check_in_has_tools_module.persistence.model.CheckInHaveTool;
+import com.mechanical_workshop_usm.check_in_has_tools_module.CheckInHaveTool;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -31,7 +31,7 @@ public class CheckIn extends RecordState {
         super();
     }
 
-    public CheckIn(GasLevel gasLevel, String valuables, Date entryDate, LocalTime entryTime, int mileage) {
+    public CheckIn(GasLevel gasLevel, String valuables, LocalDate entryDate, LocalTime entryTime, int mileage) {
         super(entryDate, entryTime, mileage);
     }
 }

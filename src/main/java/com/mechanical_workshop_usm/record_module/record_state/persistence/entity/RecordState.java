@@ -9,8 +9,8 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Builder
 @Getter
@@ -29,7 +29,7 @@ public class RecordState {
     private int id;
 
     @Column(name = "entry_date")
-    private Date entryDate;
+    private LocalDate entryDate;
 
     @Column(name = "entry_time")
     private LocalTime entryTime;
@@ -41,7 +41,7 @@ public class RecordState {
     @JoinColumn(name = "record_id")
     private Record record;
 
-    public RecordState(Date entryDate, LocalTime entryTime, int mileage) {
+    public RecordState(LocalDate entryDate, LocalTime entryTime, int mileage) {
         this.entryDate = entryDate;
         this.entryTime = entryTime;
         this.mileage = mileage;

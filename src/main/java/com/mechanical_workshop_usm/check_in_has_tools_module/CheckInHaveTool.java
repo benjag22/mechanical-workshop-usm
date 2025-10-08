@@ -1,6 +1,7 @@
-package com.mechanical_workshop_usm.check_in_has_tools_module.persistence.model;
+package com.mechanical_workshop_usm.check_in_has_tools_module;
 
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
+import com.mechanical_workshop_usm.tool_module.Tool;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

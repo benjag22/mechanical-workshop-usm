@@ -1,5 +1,6 @@
-package com.mechanical_workshop_usm.check_in_has_tools_module.persistence.model;
+package com.mechanical_workshop_usm.tool_module;
 
+import com.mechanical_workshop_usm.check_in_has_tools_module.CheckInHaveTool;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,4 +27,7 @@ public class Tool {
     @OneToMany(mappedBy = "tool", cascade = CascadeType.ALL)
     private final Set<CheckInHaveTool> tools = new LinkedHashSet<>();
 
+    public Tool(String toolName){
+        this.toolName = toolName;
+    }
 }
