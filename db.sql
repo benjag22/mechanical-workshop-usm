@@ -1,7 +1,28 @@
-drop schema if exists mechanical_workshop_usm;
-create schema mechanical_workshop_usm;
+use usm_mechanical_workshop;
 
-use mechanical_workshop_usm;
+drop table if exists work_order_realized_service;
+drop table if exists entry_state_consider_condition;
+drop table if exists entry_state_has_tool;
+
+drop table if exists electrical_system_condition;
+drop table if exists interior_condition;
+drop table if exists exterior_condition;
+
+drop table if exists out_state;
+drop table if exists entry_state;
+drop table if exists record_state;
+
+drop table if exists record;
+drop table if exists car;
+drop table if exists car_model;
+drop table if exists car_brand;
+
+drop table if exists mechanical_condition;
+drop table if exists tool;
+drop table if exists work_service;
+drop table if exists work_order;
+drop table if exists mechanic_info;
+drop table if exists client_info;
 
 create table client_info(
 	id int AUTO_INCREMENT primary key,
@@ -14,10 +35,11 @@ create table client_info(
 
 create table mechanic_info(
 	id int AUTO_INCREMENT primary key,
-    first_name varchar(64) not null check(first_name != ""),
+    first_name varchar(64) not null check( "" != first_name),
     last_name varchar(64),
     registration_number varchar(16)
 );
+
 create table car_brand(
 	id int AUTO_INCREMENT primary key,
     brand_name varchar(32) unique not null check(brand_name != "")
