@@ -2,8 +2,11 @@ package com.mechanical_workshop_usm.mechanical_condition_module;
 
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionRequest;
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionResponse;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.SingleMechanicalCondition;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/mechanical-condition")
@@ -12,6 +15,24 @@ public class MechanicalConditionController {
 
     public MechanicalConditionController(MechanicalConditionService service) {
         this.service = service;
+    }
+
+    @GetMapping("/exterior")
+    public ResponseEntity<List<SingleMechanicalCondition>> getExteriorConditions(){
+        List<SingleMechanicalCondition> conditions = service.getAllConditionsByType(MechanicalConditionType.EXTERIOR);
+        return ResponseEntity.ok(conditions);
+    }
+
+    @GetMapping("/interior")
+    public ResponseEntity<List<SingleMechanicalCondition>> getInteriorConditions(){
+        List<SingleMechanicalCondition> conditions = service.getAllConditionsByType(MechanicalConditionType.INTERIOR);
+        return ResponseEntity.ok(conditions);
+    }
+
+    @GetMapping("/electrical")
+    public ResponseEntity<List<SingleMechanicalCondition>> getElectricalConditions(){
+        List<SingleMechanicalCondition> conditions = service.getAllConditionsByType(MechanicalConditionType.ELECTRICAL_SYSTEM);
+        return ResponseEntity.ok(conditions);
     }
 
     @PostMapping
