@@ -173,7 +173,7 @@ public class CheckInService {
         }
         if (request. newTools() != null) {
             for (CreateToolRequest toolReq : request.newTools()) {
-                Tool newTool = new Tool(toolReq.toolName());
+                Tool newTool = new Tool(toolReq.name());
                 Tool savedTool = toolRepository.save(newTool);
                 combinedToolIds.add(savedTool.getId());
             }

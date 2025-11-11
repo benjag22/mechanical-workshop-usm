@@ -28,7 +28,7 @@ public class ToolService {
         toolValidator.validateOnCreate(createToolRequest);
 
         Tool tool = new Tool(
-                createToolRequest.toolName()
+                createToolRequest.name()
         );
 
         try {

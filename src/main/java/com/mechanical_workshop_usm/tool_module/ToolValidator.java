@@ -19,9 +19,9 @@ public class ToolValidator {
     public void validateOnCreate(CreateToolRequest request) {
         List<FieldErrorResponse> errors = new ArrayList<>();
 
-        String toolName = request.toolName();
+        String toolName = request.name();
 
-        if (request.toolName() == null || request.toolName().isBlank()) {
+        if (request.name() == null || request.name().isBlank()) {
             errors.add(new FieldErrorResponse("tool_name", "Tool name cannot be empty"));
         }
 

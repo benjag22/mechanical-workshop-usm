@@ -4,5 +4,5 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateToolRequest(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        String toolName
+        String name
 ) {}
