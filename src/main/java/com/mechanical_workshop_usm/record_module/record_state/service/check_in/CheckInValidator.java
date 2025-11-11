@@ -26,8 +26,8 @@ public class CheckInValidator {
 
         boolean hasCarId = request.carId() != null;
         boolean hasCarObject = request.car() != null;
-        boolean hasCarModel = request.car_model() != null;
-        boolean hasCarBrand = request.car_brand() != null;
+        boolean hasCarModel = request.carModel() != null;
+        boolean hasCarBrand = request.carBrand() != null;
 
         if (hasCarId && (hasCarObject || hasCarModel || hasCarBrand)) {
             errors.add(new FieldErrorResponse("car", "Provide either car_id or the car/car_model/car_brand package, not both"));

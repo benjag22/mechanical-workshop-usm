@@ -91,11 +91,11 @@ public class CheckInService {
         }
         if (request.carId() == null) {
             carService.validate(request.car());
-            carModelService.validate(request.car_model());
-            carBrandService.validate(request.car_brand());
+            carModelService.validate(request.carModel());
+            carBrandService.validate(request.carBrand());
         }
-        if (request.tools() != null) {
-            for (CreateToolRequest tool : request.tools() ) {
+        if (request.newTools() != null) {
+            for (CreateToolRequest tool : request.newTools() ) {
                 toolService.validateOnCreate(tool);
             }
         }
@@ -120,10 +120,10 @@ public class CheckInService {
             car = entityFinder.findByIdOrThrow(carRepository, request.carId(), "car_id", "Car not found");
         }
         else {
-            CreateCarBrandRequest brandRequest = request.car_brand();
+            CreateCarBrandRequest brandRequest = request.carBrand();
             CreateCarBrandResponse createdBrand = carBrandService.createBrand(brandRequest);
 
-            CreateCarModelRequest incomingModel = request.car_model();
+            CreateCarModelRequest incomingModel = request.carModel();
             CreateCarModelRequest modelRequest = new CreateCarModelRequest(
                     incomingModel.modelName(),
                     incomingModel.modelType(),
@@ -151,8 +151,8 @@ public class CheckInService {
                 // Crear asosiasion despues
             }
         }
-        if (request.tools() != null) {
-            for (CreateToolRequest toolReq : request.tools()) {
+        if (request. newTools() != null) {
+            for (CreateToolRequest toolReq : request.newTools()) {
                 Tool newTool = new Tool(toolReq.toolName());
                 Tool savedTool = toolRepository.save(newTool);
                 combinedToolIds.add(savedTool.getId());

@@ -1,33 +1,52 @@
 package com.mechanical_workshop_usm.record_module.record_state.dto.check_in;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandRequest;
 import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelRequest;
 import com.mechanical_workshop_usm.client_info_module.dtos.CreateClientRequest;
 import com.mechanical_workshop_usm.record_module.record_state.dto.record_state.CreateRecordStateRequest;
 import com.mechanical_workshop_usm.tool_module.dto.CreateToolRequest;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 
 public record CreateCheckInRequest(
-        @JsonProperty("client_id") Integer clientId,
-        @JsonProperty("client") CreateClientRequest client,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        Integer clientId,
 
-        @JsonProperty("car_id") Integer carId,
-        @JsonProperty("car") CreateCarRequest car,
-        @JsonProperty("car_model") CreateCarModelRequest car_model,
-        @JsonProperty("car_brand") CreateCarBrandRequest car_brand,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        CreateClientRequest client,
 
-        @JsonProperty("mechanical_conditions_ids") List<Integer> mechanicalConditionsIds,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        Integer carId,
 
-        @JsonProperty("tools_ids") List<Integer> toolsIds,
-        @JsonProperty("tools") List<CreateToolRequest> tools,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        CreateCarRequest car,
 
-        @JsonProperty("reason") String reason,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        CreateCarModelRequest carModel,
 
-        @JsonProperty("record_state") CreateRecordStateRequest recordState,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        CreateCarBrandRequest carBrand,
 
-        @JsonProperty("gas_level") String gasLevel,
-        @JsonProperty("valuables") String valuables
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        List<Integer> mechanicalConditionsIds,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        List<Integer> toolsIds,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        List<CreateToolRequest> newTools,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String reason,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        CreateRecordStateRequest recordState,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String gasLevel,
+
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String valuables
 ) {}

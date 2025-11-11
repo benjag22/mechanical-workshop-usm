@@ -1,9 +1,14 @@
 package com.mechanical_workshop_usm.record_module.record_state.dto.record_state;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateRecordStateRequest(
-        @JsonProperty("entry_date") String entryDate,
-        @JsonProperty("entry_time") String entryTime,
-        @JsonProperty("mileage") int mileage
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String entryDate,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String entryTime,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        int mileage
 ) {}
