@@ -7,9 +7,9 @@ class CreateMechanicResponseTest {
 
     @Test
     void testRecordFields() {
-        CreateMechanicResponse dto = new CreateMechanicResponse(42L, "MECH2025");
+        CreateMechanicResponse dto = new CreateMechanicResponse(1, "MECH2025");
 
-        assertEquals(42L, dto.id());
+        assertEquals(1, dto.id());
         assertEquals("MECH2025", dto.registrationNumber());
     }
 }
