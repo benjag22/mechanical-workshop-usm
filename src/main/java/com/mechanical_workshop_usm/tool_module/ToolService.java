@@ -3,8 +3,7 @@ package com.mechanical_workshop_usm.tool_module;
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
 import com.mechanical_workshop_usm.tool_module.dto.CreateToolRequest;
-import com.mechanical_workshop_usm.tool_module.dto.CreateToolResponse;
-import com.mechanical_workshop_usm.tool_module.dto.GetToolResponse;
+import com.mechanical_workshop_usm.tool_module.dto.SingleToolResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -24,7 +23,7 @@ public class ToolService {
         toolValidator.validateOnCreate(createToolRequest);
     }
 
-    public CreateToolResponse createTool(CreateToolRequest createToolRequest) throws MultiFieldException {
+    public SingleToolResponse createTool(CreateToolRequest createToolRequest) throws MultiFieldException {
         toolValidator.validateOnCreate(createToolRequest);
 
         Tool tool = new Tool(
@@ -33,7 +32,7 @@ public class ToolService {
 
         try {
             Tool savedTool = toolRepository.save(tool);
-            return new CreateToolResponse(savedTool.getId(), savedTool.getToolName());
+            return new SingleToolResponse(savedTool.getId(), savedTool.getToolName());
         } catch (DataIntegrityViolationException e) {
             throw new MultiFieldException(
                     "Invalid tool fields",
@@ -42,9 +41,9 @@ public class ToolService {
         }
     }
 
-    public List<GetToolResponse> getAllTools() {
+    public List<SingleToolResponse> getAllTools() {
         return toolRepository.findAll().stream()
-                .map(tool -> new GetToolResponse(tool.getId(), tool.getToolName()))
+                .map(tool -> new SingleToolResponse(tool.getId(), tool.getToolName()))
                 .toList();
     }
 }

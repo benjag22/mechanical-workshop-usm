@@ -1,8 +1,7 @@
 package com.mechanical_workshop_usm.tool_module;
 
 import com.mechanical_workshop_usm.tool_module.dto.CreateToolRequest;
-import com.mechanical_workshop_usm.tool_module.dto.CreateToolResponse;
-import com.mechanical_workshop_usm.tool_module.dto.GetToolResponse;
+import com.mechanical_workshop_usm.tool_module.dto.SingleToolResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +17,14 @@ public class ToolController {
     }
 
     @PostMapping
-    public ResponseEntity<CreateToolResponse> createTool(@RequestBody CreateToolRequest request) {
-        CreateToolResponse response = toolService.createTool(request);
+    public ResponseEntity<SingleToolResponse> createTool(@RequestBody CreateToolRequest request) {
+        SingleToolResponse response = toolService.createTool(request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public List<GetToolResponse> getAllTools() {
-        return toolService.getAllTools();
+    public ResponseEntity<List<SingleToolResponse>> getAllTools() {
+        List<SingleToolResponse> response = toolService.getAllTools();
+        return ResponseEntity.ok(response);
     }
 }
