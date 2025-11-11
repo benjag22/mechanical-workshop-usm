@@ -382,4 +382,26 @@ insert into electrical_system_condition (part_name, part_condition_state) values
 ('Luces Indicadoras de Falla', 'Roto'),
 ('Luces Indicadoras de Falla', 'Ausente');
 
+INSERT IGNORE INTO tool (tool_name) VALUES
+  ('Botiquín'),
+  ('Extintor'),
+  ('Equipo de Levante'),
+  ('Herramientas'),
+  ('Triángulos'),
+  ('Chaqueta Reflectante'),
+  ('Rueda de Repuesto');
 
+INSERT INTO car_brand (brand_name) VALUES ('Toyota');
+SET @brand_id = LAST_INSERT_ID();
+
+INSERT INTO car_model (brand_id, model_name, model_type, model_year)
+VALUES (@brand_id, 'Corolla', 'Sedan', 2020);
+SET @model_id = LAST_INSERT_ID();
+
+INSERT INTO car (model_id, license_plate, VIN)
+VALUES (@model_id, 'ABC123', '1HGCM82633A004352');
+SET @car_id = LAST_INSERT_ID();
+
+INSERT INTO client_info (first_name, last_name, email_address, address, cellphone_number)
+VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
+SET @client_id = LAST_INSERT_ID();

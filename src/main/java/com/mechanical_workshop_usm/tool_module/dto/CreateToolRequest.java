@@ -1,7 +1,8 @@
 package com.mechanical_workshop_usm.tool_module.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateToolRequest(
-        @JsonProperty("tool_name") String toolName
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String toolName
 ) {}

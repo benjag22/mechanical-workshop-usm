@@ -22,7 +22,9 @@ import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.CreateCheckInRequest;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.CreateCheckInResponse;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckOut;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.GasLevel;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.RecordState;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckInRepository;
 import com.mechanical_workshop_usm.record_module.record_state.service.RecordStateValidator;
 import com.mechanical_workshop_usm.tool_module.Tool;
@@ -93,6 +95,24 @@ public class CheckInService {
             carService.validate(request.car());
             carModelService.validate(request.carModel());
             carBrandService.validate(request.carBrand());
+        }
+        else {
+            Optional<Record> lastRecordOpt = recordRepository.findFirstByCar_IdOrderByIdDesc(request.carId());
+            if (lastRecordOpt.isPresent()) {
+                Record lastRecord = lastRecordOpt.get();
+                boolean hasCheckIn = false;
+                boolean hasCheckOut = false;
+                for (RecordState rs : lastRecord.getRecordStates()) {
+                    if (rs instanceof CheckIn) hasCheckIn = true;
+                    if (rs instanceof CheckOut) hasCheckOut = true;
+                }
+                if (hasCheckIn && !hasCheckOut) {
+                    List<FieldErrorResponse> errors = List.of(
+                            new FieldErrorResponse("car_id", "Car has an unfinished check-in (missing check-out)")
+                    );
+                    throw new MultiFieldException("Cannot create new check-in", errors);
+                }
+            }
         }
         if (request.newTools() != null) {
             for (CreateToolRequest tool : request.newTools() ) {
@@ -165,7 +185,6 @@ public class CheckInService {
                 clientInfo,
                 null
         );
-
         Record savedRecord = recordRepository.save(newRecord);
 
         LocalDate entryDate = LocalDate.parse(request.recordState().entryDate());
