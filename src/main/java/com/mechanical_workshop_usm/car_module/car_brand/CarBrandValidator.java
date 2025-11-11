@@ -37,4 +37,27 @@ public class CarBrandValidator {
             throw new MultiFieldException("Some error in fields", errors);
         }
     }
+
+    public void validate(CreateCarBrandRequest request) {
+
+        List<FieldErrorResponse> errors = new ArrayList<>();
+
+        String brandName = request.brandName();
+
+        if (carBrandRepository.findByBrandName(brandName).isPresent()) {
+            throw new MultiFieldException(
+                    "Some error in fields",
+                    List.of(new FieldErrorResponse("brandName", "Brand name already exists"))
+            );
+        }
+
+        if (brandName == null || brandName.isEmpty()) {
+            errors.add(new FieldErrorResponse("brandName", "The brand name cannot be empty or blank"));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MultiFieldException("Some error in fields", errors);
+        }
+    }
+
 }

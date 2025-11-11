@@ -17,13 +17,19 @@ public class CarBrandService {
         this.carBrandValidator = carBrandValidator;
     }
 
+    public void validate(CreateCarBrandRequest createCarBrandRequest) {
+        carBrandValidator.validate(createCarBrandRequest);
+    }
+
     public CreateCarBrandResponse createBrand(CreateCarBrandRequest createCarBrandRequest) {
         carBrandValidator.validateOnCreate(createCarBrandRequest);
 
         CarBrand carBrand = new CarBrand(
                 createCarBrandRequest.brandName()
         );
+
         CarBrand savedCarBrand = carBrandRepository.save(carBrand);
+
         return new CreateCarBrandResponse(savedCarBrand.getId(), savedCarBrand.getBrandName());
     }
 

@@ -1,14 +1,13 @@
 package com.mechanical_workshop_usm.record_module.record;
 
-import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
-import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
-import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.record_module.record.dto.CreateRecordRequest;
 import com.mechanical_workshop_usm.record_module.record.dto.CreateRecordResponse;
 import com.mechanical_workshop_usm.car_module.car.CarRepository;
 import com.mechanical_workshop_usm.client_info_module.ClientInfoRepository;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoRepository;
 import com.mechanical_workshop_usm.record_module.record.dto.GetRecordResponse;
+import com.mechanical_workshop_usm.tool_module.dto.CreateToolRequest;
+import com.mechanical_workshop_usm.util.EntityFinder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,46 +19,39 @@ public class RecordService {
     private final ClientInfoRepository clientInfoRepository;
     private final MechanicInfoRepository mechanicInfoRepository;
     private final RecordValidator recordValidator;
+    private final EntityFinder entityFinder;
 
     public RecordService(
             RecordRepository recordRepository,
             CarRepository carRepository,
             ClientInfoRepository clientInfoRepository,
             MechanicInfoRepository mechanicInfoRepository,
-            RecordValidator recordValidator
+            RecordValidator recordValidator,
+            EntityFinder entityFinder
     ) {
         this.recordRepository = recordRepository;
         this.carRepository = carRepository;
         this.clientInfoRepository = clientInfoRepository;
         this.mechanicInfoRepository = mechanicInfoRepository;
         this.recordValidator = recordValidator;
+        this.entityFinder = entityFinder;
     }
 
-    public CreateRecordResponse createRecord(CreateRecordRequest request) {
-        recordValidator.validateOnCreate(request);
+    public void validateOnCreate(CreateRecordRequest createRecordRequest) {
+        recordValidator.validateOnCreate(createRecordRequest);
+    }
 
-        var car = carRepository.findById(request.carId())
-                .orElseThrow(() -> new MultiFieldException(
-                        "Some error in fields",
-                        List.of(new FieldErrorResponse("car_id", "Car not found"))
+    public CreateRecordResponse createRecord(CreateRecordRequest createRecordRequest) {
+        recordValidator.validateOnCreate(createRecordRequest);
 
-                ));
+        var car = entityFinder.findByIdOrThrow(carRepository, createRecordRequest.carId(), "car_id", "Car not found");
 
-        var client = clientInfoRepository.findById(request.clientInfoId())
-                .orElseThrow(() -> new MultiFieldException(
-                        "Some error in fields",
-                        List.of(new FieldErrorResponse("client_id", "Client not found"))
+        var client = entityFinder.findByIdOrThrow(clientInfoRepository, createRecordRequest.clientInfoId(), "client_id", "Client not found");
 
-                ));
-        var mechanic = mechanicInfoRepository.findById(request.mechanicInfoId())
-                .orElseThrow(() -> new MultiFieldException(
-                        "Some error in fields",
-                        List.of(new FieldErrorResponse("mechanic_id", "Mechanic not found"))
-
-                ));
+        var mechanic = entityFinder.findByIdOrThrow(mechanicInfoRepository, createRecordRequest.mechanicInfoId(), "mechanic_id", "Mechanic not found");
 
         Record record = new Record(
-                request.reason(),
+                createRecordRequest.reason(),
                 car,
                 client,
                 mechanic

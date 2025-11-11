@@ -23,7 +23,7 @@ public class CarModelValidator {
 
         String modelName = request.modelName();
         int modelYear = request.modelYear();
-        long brandId = request.brandId();
+        int brandId = request.brandId();
 
         boolean exists = carModelRepository.findByModelNameAndBrand_Id(modelName, brandId).isPresent();
         if (exists) {
@@ -50,4 +50,35 @@ public class CarModelValidator {
             throw new MultiFieldException("Some error in fields", errors);
         }
     }
+
+    public void validate(CreateCarModelRequest request) {
+
+        List<FieldErrorResponse> errors = new ArrayList<>();
+
+        String modelName = request.modelName();
+        int modelYear = request.modelYear();
+        int brandId = request.brandId();
+
+        boolean exists = carModelRepository.findByModelNameAndBrand_Id(modelName, brandId).isPresent();
+        if (exists) {
+            errors.add(new FieldErrorResponse("model_name", "A car model with this name already exists for the selected brand"));
+        }
+
+        if (modelName == null || modelName.isBlank()) {
+            errors.add(new FieldErrorResponse("model_name", "The model name cannot be empty or blank"));
+        }
+
+        int currentYear = Year.now().getValue();
+        if (modelYear < 1886 || modelYear > currentYear) {
+            errors.add(new FieldErrorResponse(
+                    "model_year",
+                    "The model year must be between 1886 and " + currentYear
+            ));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MultiFieldException("Some error in fields", errors);
+        }
+    }
+
 }

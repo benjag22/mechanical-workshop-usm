@@ -24,6 +24,5 @@ public class CheckOut extends RecordState {
     }
 
     public CheckOut(String vehicleDiagnosis, byte rating, LocalDate entryDate, LocalTime entryTime, int mileage) {
-        super(entryDate, entryTime, mileage);
     }
 }

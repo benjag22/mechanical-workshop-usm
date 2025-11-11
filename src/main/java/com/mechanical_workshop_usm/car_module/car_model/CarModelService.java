@@ -24,6 +24,10 @@ public class CarModelService {
         this.carBrandRepository = carBrandRepository;
     }
 
+    public void validate(CreateCarModelRequest createCarModelRequest) {
+        carModelValidator.validate(createCarModelRequest);
+    }
+
     public CreateCarModelResponse createCarModel(CreateCarModelRequest createCarModelRequest) {
         carModelValidator.validateOnCreate(createCarModelRequest);
 

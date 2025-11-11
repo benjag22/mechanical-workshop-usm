@@ -22,7 +22,7 @@ public class MechanicalCondition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
-    private Integer id;
+    private int id;
 
     @Column(name = "part_name", nullable = false, length = 64)
     private String partName;

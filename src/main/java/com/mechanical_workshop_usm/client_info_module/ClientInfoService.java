@@ -15,8 +15,13 @@ public class ClientInfoService {
         this.clientInfoValidator = clientInfoValidator;
     }
 
+    public void validateOnCreate(CreateClientRequest createClientRequest) {
+        clientInfoValidator.validateOnCreate(createClientRequest);
+    }
+
     public CreateClientResponse createClient(CreateClientRequest createClientRequest) {
         clientInfoValidator.validateOnCreate(createClientRequest);
+
         ClientInfo clientInfo = new ClientInfo(
                 createClientRequest.firstName(),
                 createClientRequest.lastName(),
@@ -24,8 +29,11 @@ public class ClientInfoService {
                 createClientRequest.address(),
                 createClientRequest.cellphoneNumber()
         );
+
         ClientInfo savedClientInfo = clientInfoRepository.save(clientInfo);
+
         return new CreateClientResponse(savedClientInfo.getId(), savedClientInfo.getCellphoneNumber());
     }
+
 
 }

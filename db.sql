@@ -67,7 +67,7 @@ create table record(
     reason varchar(255) not null,
     car_id int not null,
     client_info_id int not null,
-    mechanic_info_id int not null,
+    mechanic_info_id int,
     check (reason != ""),
     foreign key (car_id) references car(id),
     foreign key (client_info_id) references client_info(id),

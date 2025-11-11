@@ -8,7 +8,6 @@ class MechanicInfoTest {
 
     @Test
     void testNoArgsConstructorAndSetters() {
-        // Usando el constructor vacío y los setters (sin considerar id)
         MechanicInfo mechanic = new MechanicInfo();
         mechanic.setFirstName("Juan");
         mechanic.setLastName("Pérez");
@@ -22,7 +21,6 @@ class MechanicInfoTest {
 
     @Test
     void testNoArgsConstructorAndSetters_NullLastName() {
-        // Caso con lastName = null
         MechanicInfo mechanic = new MechanicInfo();
         mechanic.setFirstName("Ana");
         mechanic.setLastName(null);
@@ -36,7 +34,6 @@ class MechanicInfoTest {
 
     @Test
     void testNoArgsConstructorAndSetters_EmptyLastName() {
-        // Caso con lastName = ""
         MechanicInfo mechanic = new MechanicInfo();
         mechanic.setFirstName("Pedro");
         mechanic.setLastName("");
@@ -51,7 +48,6 @@ class MechanicInfoTest {
 
     @Test
     void testCustomConstructorWithoutId() {
-        // Usando el constructor personalizado sin id
         MechanicInfo mechanic = new MechanicInfo("Ana", "Gómez", "MECH1234");
         assertNotNull(mechanic);
 

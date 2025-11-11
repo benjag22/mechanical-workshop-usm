@@ -26,10 +26,14 @@ public class CarService {
         this.carModelRepository = carModelRepository;
     }
 
+    public void validate(CreateCarRequest createCarRequest) {
+        carValidator.validate(createCarRequest);
+    }
+
     public CreateCarResponse createCar(CreateCarRequest request) {
         carValidator.validateOnCreate(request);
 
-        Optional<CarModel> modelOpt = carModelRepository.findById((int)request.modelId());
+        Optional<CarModel> modelOpt = carModelRepository.findById(request.modelId());
         CarModel model = modelOpt.orElseThrow(() -> new MultiFieldException(
                 "Some error in fields",
                 List.of(new FieldErrorResponse("model_id", "Car model not found"))

@@ -20,11 +20,15 @@ public class ToolService {
         this.toolValidator = toolValidator;
     }
 
-    public CreateToolResponse createTool(CreateToolRequest request) throws MultiFieldException {
-        toolValidator.validateOnCreate(request);
+    public void validateOnCreate(CreateToolRequest createToolRequest) {
+        toolValidator.validateOnCreate(createToolRequest);
+    }
+
+    public CreateToolResponse createTool(CreateToolRequest createToolRequest) throws MultiFieldException {
+        toolValidator.validateOnCreate(createToolRequest);
 
         Tool tool = new Tool(
-                request.toolName()
+                createToolRequest.toolName()
         );
 
         try {

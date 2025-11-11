@@ -41,9 +41,10 @@ public class RecordState {
     @JoinColumn(name = "record_id")
     private Record record;
 
-    public RecordState(LocalDate entryDate, LocalTime entryTime, int mileage) {
+    public RecordState(LocalDate entryDate, LocalTime entryTime, int mileage, Record record) {
         this.entryDate = entryDate;
         this.entryTime = entryTime;
         this.mileage = mileage;
+        this.record = record;
     }
 }

@@ -42,8 +42,8 @@ public class Record {
     @JoinColumn(name = "client_info_id")
     private ClientInfo clientInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mechanic_info_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "mechanic_info_id", nullable = true)
     private MechanicInfo mechanicInfo;
 
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)

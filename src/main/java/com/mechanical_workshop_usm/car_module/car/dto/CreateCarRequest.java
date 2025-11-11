@@ -5,5 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record CreateCarRequest(
         @JsonProperty("vin") String VIN,
         @JsonProperty("license_plate") String licensePlate,
-        @JsonProperty("model_id") long modelId
+        @JsonProperty("model_id") int modelId
 ) {}

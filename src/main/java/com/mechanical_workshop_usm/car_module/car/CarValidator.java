@@ -40,4 +40,26 @@ public class CarValidator {
             throw new MultiFieldException("Some error in fields", errors);
         }
     }
+
+    public void validate(CreateCarRequest request) {
+
+        List<FieldErrorResponse> errors = new ArrayList<>();
+
+        if (request.VIN() == null || request.VIN().isBlank()) {
+            errors.add(new FieldErrorResponse("vin", "VIN cannot be empty or blank"));
+        } else if (carRepository.existsByVIN(request.VIN())) {
+            errors.add(new FieldErrorResponse("vin", "VIN already exists"));
+        }
+
+        if (request.licensePlate() == null || request.licensePlate().isBlank()) {
+            errors.add(new FieldErrorResponse("license_plate", "License plate cannot be empty or blank"));
+        } else if (carRepository.existsByLicensePlate(request.licensePlate())) {
+            errors.add(new FieldErrorResponse("license_plate", "License plate already exists"));
+        }
+
+        if (!errors.isEmpty()) {
+            throw new MultiFieldException("Some error in fields", errors);
+        }
+    }
+
 }
