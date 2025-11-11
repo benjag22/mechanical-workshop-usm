@@ -4,7 +4,6 @@ import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInCo
 import com.mechanical_workshop_usm.check_in_has_tools_module.CheckInHaveTool;
 import com.mechanical_workshop_usm.record_module.record.Record;
 import jakarta.persistence.*;
-
 import lombok.Getter;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -17,6 +16,7 @@ import java.util.Set;
 @PrimaryKeyJoinColumn(name = "record_state_id")
 public class CheckIn extends RecordState {
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gas_level", nullable = false)
     private GasLevel gasLevel;
 
