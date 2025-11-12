@@ -16,7 +16,6 @@ public record GetCheckInFullResponse(
         List<String> mechanicalConditionPartNames,
         List<String> mechanicalConditionStates,
         List<String> toolNames,
-        String entryDate,
         String entryTime,
         Integer mileage,
         String gasLevel,

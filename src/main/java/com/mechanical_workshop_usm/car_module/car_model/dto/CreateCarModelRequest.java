@@ -1,6 +1,5 @@
 package com.mechanical_workshop_usm.car_module.car_model.dto;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateCarModelRequest(

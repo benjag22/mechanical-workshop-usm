@@ -1,15 +1,16 @@
-package com.mechanical_workshop_usm.work_order_realized_service_module.persistence.model;
+package com.mechanical_workshop_usm.work_order_module;
 
+import com.mechanical_workshop_usm.record_module.record.Record;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.Setter;
 
-import java.time.LocalTime;
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Builder
 @Getter
@@ -19,11 +20,16 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "work_order")
 public class WorkOrder {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     @Column(name = "id")
-    private int id;
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "record_id", nullable = false)
+    private Record record;
 
     @Column(name = "estimated_date", nullable = false)
     private LocalDate estimatedDate;
@@ -31,8 +37,13 @@ public class WorkOrder {
     @Column(name = "estimated_time", nullable = false)
     private LocalTime estimatedTime;
 
-    public WorkOrder(LocalDate estimatedDate, LocalTime estimatedTime) {
+    @Column(name = "signature_path", length = 512)
+    private String signaturePath;
+
+    public WorkOrder(Record record, LocalDate estimatedDate, LocalTime estimatedTime, String signaturePath) {
+        this.record = record;
         this.estimatedDate = estimatedDate;
         this.estimatedTime = estimatedTime;
+        this.signaturePath = signaturePath;
     }
 }

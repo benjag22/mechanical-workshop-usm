@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.dashboard_light_module;
+package com.mechanical_workshop_usm.picture_module.picture;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -10,9 +10,9 @@ import java.time.Instant;
 @Getter
 @Setter
 @Entity
-@Table(name = "dashboard_light")
+@Table(name = "picture")
 @NoArgsConstructor
-public class DashboardLight {
+public class Picture {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +24,7 @@ public class DashboardLight {
     @Column(name = "path", length = 512, nullable = false)
     private String path;
 
-    public DashboardLight(String alt, String path) {
+    public Picture(String alt, String path) {
         this.alt = alt;
         this.path = path;
     }

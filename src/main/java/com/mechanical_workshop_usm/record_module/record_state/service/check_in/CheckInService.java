@@ -5,6 +5,7 @@ import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
 import com.mechanical_workshop_usm.car_module.car.Car;
 import com.mechanical_workshop_usm.car_module.car.CarRepository;
 import com.mechanical_workshop_usm.car_module.car.CarService;
+import com.mechanical_workshop_usm.car_module.car.dto.CreateCarCheckInRequest;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarResponse;
 import com.mechanical_workshop_usm.car_module.car_model.CarModelService;
@@ -13,6 +14,7 @@ import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelRespon
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrandService;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandRequest;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandResponse;
+import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelCheckInRequest;
 import com.mechanical_workshop_usm.client_info_module.ClientInfo;
 import com.mechanical_workshop_usm.client_info_module.ClientInfoRepository;
 import com.mechanical_workshop_usm.client_info_module.dtos.CreateClientResponse;
@@ -44,8 +46,7 @@ import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repos
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -112,8 +113,12 @@ public class CheckInService {
         }
         if (request.carId() == null) {
             carService.validate(request.car());
-            carModelService.validate(request.carModel());
-            carBrandService.validate(request.carBrand());
+            if (request.carModelID() == null) {
+                carModelService.validate(request.carModel());
+                if (request.carBrandID() == null) {
+                    carBrandService.validate(request.carBrand());
+                }
+            }
         }
         else {
             Optional<Record> lastRecordOpt = recordRepository.findFirstByCar_IdOrderByIdDesc(request.carId());
@@ -157,25 +162,60 @@ public class CheckInService {
         Car car;
         if (request.carId() != null) {
             car = entityFinder.findByIdOrThrow(carRepository, request.carId(), "car_id", "Car not found");
-        }
-        else {
-            CreateCarBrandRequest brandRequest = request.carBrand();
-            CreateCarBrandResponse createdBrand = carBrandService.createBrand(brandRequest);
+        } else {
+            Integer modelId = null;
 
-            CreateCarModelRequest incomingModel = request.carModel();
-            CreateCarModelRequest modelRequest = new CreateCarModelRequest(
-                    incomingModel.modelName(),
-                    incomingModel.modelType(),
-                    incomingModel.modelYear(),
-                    createdBrand.id()
-            );
-            CreateCarModelResponse createdModel = carModelService.createCarModel(modelRequest);
+            if (request.carModelID() != null) {
+                modelId = request.carModelID();
 
-            CreateCarRequest incomingCar = request.car();
+                if (request.carBrandID() != null || request.carBrand() != null) {
+                    throw new MultiFieldException("Invalid car/model/brand combination",
+                            List.of(new FieldErrorResponse("car_brand", "When providing carModelID you must not provide carBrandID or carBrand")));
+                }
+
+                if (request.car() == null) {
+                    throw new MultiFieldException("Invalid car",
+                            List.of(new FieldErrorResponse("car", "Car object is required when creating a car from carModelID")));
+                }
+            }
+            else if (request.carModel() != null) {
+                Integer brandId = null;
+
+                if (request.carBrandID() != null) {
+                    brandId = request.carBrandID();
+                } else if (request.carBrand() != null) {
+                    CreateCarBrandRequest brandRequest = request.carBrand();
+                    CreateCarBrandResponse createdBrand = carBrandService.createBrand(brandRequest);
+                    brandId = createdBrand.id();
+                } else {
+                    throw new MultiFieldException("Invalid car brand",
+                            List.of(new FieldErrorResponse("car_brand", "carBrandID or carBrand is required when creating carModel")));
+                }
+
+                CreateCarModelCheckInRequest incomingModel = request.carModel();
+                CreateCarModelRequest modelRequest = new CreateCarModelRequest(
+                        incomingModel.modelName(),
+                        incomingModel.modelType(),
+                        incomingModel.modelYear(),
+                        brandId
+                );
+                CreateCarModelResponse createdModel = carModelService.createCarModel(modelRequest);
+                modelId = createdModel.id();
+
+                if (request.car() == null) {
+                    throw new MultiFieldException("Invalid car",
+                            List.of(new FieldErrorResponse("car", "Car object is required when creating a new carModel")));
+                }
+            } else {
+                throw new MultiFieldException("Invalid car model",
+                        List.of(new FieldErrorResponse("car_model", "Either carModelID or carModel must be provided when creating a car")));
+            }
+
+            CreateCarCheckInRequest incomingCar = request.car();
             CreateCarRequest carRequest = new CreateCarRequest(
                     incomingCar.VIN(),
                     incomingCar.licensePlate(),
-                    createdModel.id()
+                    modelId
             );
             CreateCarResponse createdCar = carService.createCar(carRequest);
 
@@ -200,13 +240,11 @@ public class CheckInService {
         Record newRecord = new Record(
                 request.reason(),
                 car,
-                clientInfo,
-                null
+                clientInfo
         );
         Record savedRecord = recordRepository.save(newRecord);
 
-        LocalDate entryDate = LocalDate.parse(request.recordState().entryDate());
-        LocalTime entryTime = LocalTime.parse(request.recordState().entryTime());
+        LocalDateTime entryTime = LocalDateTime.parse(request.recordState().entryTime());
 
         GasLevel gasLevelEnum = parseGasLevel(request.gasLevel())
                 .orElseThrow(() -> new MultiFieldException(
@@ -217,7 +255,6 @@ public class CheckInService {
         CheckIn checkIn = new CheckIn(
                 gasLevelEnum,
                 request.valuables(),
-                entryDate,
                 entryTime,
                 request.recordState().mileage(),
                 savedRecord
@@ -279,7 +316,6 @@ public class CheckInService {
 
         return new CreateCheckInResponse(
                 saved.getId(),
-                saved.getEntryDate().toString(),
                 saved.getEntryTime().toString(),
                 saved.getMileage(),
                 saved.getGasLevel().toString(),
@@ -366,7 +402,6 @@ public class CheckInService {
             }
         }
 
-        String entryDate = ci.getEntryDate() != null ? ci.getEntryDate().toString() : null;
         String entryTime = ci.getEntryTime() != null ? ci.getEntryTime().toString() : null;
         Integer mileage = ci.getMileage();
         String gasLevel = ci.getGasLevel() != null ? ci.getGasLevel().toString() : null;
@@ -386,7 +421,6 @@ public class CheckInService {
                 partNames,
                 partStates,
                 tools,
-                entryDate,
                 entryTime,
                 mileage,
                 gasLevel,

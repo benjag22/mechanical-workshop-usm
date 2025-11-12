@@ -93,7 +93,6 @@ public class CheckInQueryService {
             }
         }
 
-        String entryDate = ci.getEntryDate() != null ? ci.getEntryDate().toString() : null;
         String entryTime = ci.getEntryTime() != null ? ci.getEntryTime().toString() : null;
         return new GetCheckInBasicResponse(
                 checkInId,
@@ -107,7 +106,6 @@ public class CheckInQueryService {
                 reason,
                 partNames,
                 partStates,
-                entryDate,
                 entryTime
         );
     }

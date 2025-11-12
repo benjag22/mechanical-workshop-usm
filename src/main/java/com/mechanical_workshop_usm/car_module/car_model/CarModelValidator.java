@@ -3,6 +3,7 @@ package com.mechanical_workshop_usm.car_module.car_model;
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
 import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelRequest;
+import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelCheckInRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.Year;
@@ -51,18 +52,12 @@ public class CarModelValidator {
         }
     }
 
-    public void validate(CreateCarModelRequest request) {
+    public void validate(CreateCarModelCheckInRequest request) {
 
         List<FieldErrorResponse> errors = new ArrayList<>();
 
         String modelName = request.modelName();
         int modelYear = request.modelYear();
-        int brandId = request.brandId();
-
-        boolean exists = carModelRepository.findByModelNameAndBrand_Id(modelName, brandId).isPresent();
-        if (exists) {
-            errors.add(new FieldErrorResponse("model_name", "A car model with this name already exists for the selected brand"));
-        }
 
         if (modelName == null || modelName.isBlank()) {
             errors.add(new FieldErrorResponse("model_name", "The model name cannot be empty or blank"));

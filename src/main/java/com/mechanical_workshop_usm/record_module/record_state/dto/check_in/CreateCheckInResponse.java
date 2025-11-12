@@ -6,7 +6,6 @@ import java.util.List;
 
 public record CreateCheckInResponse(
         @JsonProperty("id") int id,
-        @JsonProperty("entry_date") String entryDate,
         @JsonProperty("entry_time") String entryTime,
         @JsonProperty("mileage") int mileage,
         @JsonProperty("gas_level") String gasLevel,

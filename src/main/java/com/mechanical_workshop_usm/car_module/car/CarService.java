@@ -2,10 +2,7 @@ package com.mechanical_workshop_usm.car_module.car;
 
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
-import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
-import com.mechanical_workshop_usm.car_module.car.dto.CreateCarResponse;
-import com.mechanical_workshop_usm.car_module.car.dto.GetCarFullResponse;
-import com.mechanical_workshop_usm.car_module.car.dto.GetCarResponse;
+import com.mechanical_workshop_usm.car_module.car.dto.*;
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import com.mechanical_workshop_usm.car_module.car_model.CarModelRepository;
@@ -27,8 +24,8 @@ public class CarService {
         this.carModelRepository = carModelRepository;
     }
 
-    public void validate(CreateCarRequest createCarRequest) {
-        carValidator.validate(createCarRequest);
+    public void validate(CreateCarCheckInRequest createCarCheckInRequest) {
+        carValidator.validate(createCarCheckInRequest);
     }
 
     public CreateCarResponse createCar(CreateCarRequest request) {

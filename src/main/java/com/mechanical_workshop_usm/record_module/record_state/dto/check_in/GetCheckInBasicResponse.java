@@ -14,6 +14,5 @@ public record GetCheckInBasicResponse(
         String reason,
         List<String> mechanicalConditionPartNames,
         List<String> mechanicalConditionStates,
-        String entryDate,
         String entryTime
 ) {}

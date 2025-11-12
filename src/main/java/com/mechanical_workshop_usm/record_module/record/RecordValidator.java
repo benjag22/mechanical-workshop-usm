@@ -22,9 +22,6 @@ public class RecordValidator {
         if (request.clientInfoId() <= 0) {
             errors.add(new FieldErrorResponse("client_info_id", "Client Info ID must be valid"));
         }
-        if (request.mechanicInfoId() <= 0) {
-            errors.add(new FieldErrorResponse("mechanic_info_id", "Mechanic Info ID must be valid"));
-        }
 
         if (!errors.isEmpty()) {
             throw new MultiFieldException("Invalid record fields", errors);

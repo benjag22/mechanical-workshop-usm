@@ -42,17 +42,12 @@ public class Record {
     @JoinColumn(name = "client_info_id")
     private ClientInfo clientInfo;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "mechanic_info_id", nullable = true)
-    private MechanicInfo mechanicInfo;
-
     @OneToMany(mappedBy = "record", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecordState> recordStates = new LinkedHashSet<>();
 
-    public Record(String reason, Car car, ClientInfo clientInfo, MechanicInfo mechanicInfo) {
+    public Record(String reason, Car car, ClientInfo clientInfo) {
         this.reason = reason;
         this.car = car;
         this.clientInfo = clientInfo;
-        this.mechanicInfo = mechanicInfo;
     }
 }

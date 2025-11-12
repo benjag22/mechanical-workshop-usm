@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Builder
@@ -28,11 +29,8 @@ public class RecordState {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "entry_date")
-    private LocalDate entryDate;
-
-    @Column(name = "entry_time")
-    private LocalTime entryTime;
+    @Column(name = "entry_time", nullable = false)
+    private LocalDateTime entryTime;
 
     @Column(name = "mileage", nullable = false)
     private int mileage;
@@ -41,8 +39,7 @@ public class RecordState {
     @JoinColumn(name = "record_id")
     private Record record;
 
-    public RecordState(LocalDate entryDate, LocalTime entryTime, int mileage, Record record) {
-        this.entryDate = entryDate;
+    public RecordState(LocalDateTime entryTime, int mileage, Record record) {
         this.entryTime = entryTime;
         this.mileage = mileage;
         this.record = record;

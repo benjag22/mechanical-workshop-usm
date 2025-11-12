@@ -6,11 +6,11 @@ import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelReques
 import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelResponse;
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrandRepository;
+import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelCheckInRequest;
 import com.mechanical_workshop_usm.car_module.car_model.dto.GetCarModelResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CarModelService {
@@ -24,8 +24,8 @@ public class CarModelService {
         this.carBrandRepository = carBrandRepository;
     }
 
-    public void validate(CreateCarModelRequest createCarModelRequest) {
-        carModelValidator.validate(createCarModelRequest);
+    public void validate(CreateCarModelCheckInRequest createModelCheckInRequest) {
+        carModelValidator.validate(createModelCheckInRequest);
     }
 
     public CreateCarModelResponse createCarModel(CreateCarModelRequest createCarModelRequest) {

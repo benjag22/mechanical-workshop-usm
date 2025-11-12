@@ -14,35 +14,70 @@ public class CheckInValidator {
     public void validateOnCreate(CreateCheckInRequest request) {
         List<FieldErrorResponse> errors = new ArrayList<>();
 
+        if (request == null) {
+            errors.add(new FieldErrorResponse("request", "CreateCheckInRequest is required"));
+            throw new MultiFieldException("Invalid check-in fields", errors);
+        }
+
         boolean hasClientId = request.clientId() != null;
         boolean hasClientObject = request.client() != null;
         if (hasClientId == hasClientObject) {
             if (!hasClientId) {
-                errors.add(new FieldErrorResponse("client", "Either client_id or client must be provided"));
+                errors.add(new FieldErrorResponse("client", "Either clientId or client must be provided"));
             } else {
-                errors.add(new FieldErrorResponse("client", "Provide only one of client_id or client, not both"));
+                errors.add(new FieldErrorResponse("client", "Provide only one of clientId or client, not both"));
             }
         }
 
         boolean hasCarId = request.carId() != null;
         boolean hasCarObject = request.car() != null;
-        boolean hasCarModel = request.carModel() != null;
-        boolean hasCarBrand = request.carBrand() != null;
 
-        if (hasCarId && (hasCarObject || hasCarModel || hasCarBrand)) {
-            errors.add(new FieldErrorResponse("car", "Provide either car_id or the car/car_model/car_brand package, not both"));
-        } else if (!hasCarId) {
-            if (!(hasCarObject && hasCarModel && hasCarBrand)) {
-                errors.add(new FieldErrorResponse("car", "To create a new car you must provide car, car_model and car_brand"));
+        boolean hasCarModelId = request.carModelID() != null;
+        boolean hasCarModelObject = request.carModel() != null;
+
+        boolean hasCarBrandId = request.carBrandID() != null;
+        boolean hasCarBrandObject = request.carBrand() != null;
+
+        if (hasCarId) {
+            if (hasCarObject || hasCarModelId || hasCarModelObject || hasCarBrandId || hasCarBrandObject) {
+                errors.add(new FieldErrorResponse("car", "Provide either carId (existing car) or the car/carModel/carBrand creation package, not both"));
+            }
+        } else {
+            if (!hasCarObject) {
+                errors.add(new FieldErrorResponse("car", "To create a new car you must provide the car object"));
+            } else {
+                if (hasCarModelId == hasCarModelObject) {
+                    if (!hasCarModelId) {
+                        errors.add(new FieldErrorResponse("car_model", "Either carModelID or carModel must be provided when creating a car"));
+                    } else {
+                        errors.add(new FieldErrorResponse("car_model", "Provide only one of carModelID or carModel, not both"));
+                    }
+                } else if (hasCarModelId) {
+                    if (hasCarBrandId || hasCarBrandObject) {
+                        errors.add(new FieldErrorResponse("car_brand", "When providing carModelID you must not provide carBrandID or carBrand"));
+                    }
+                } else {
+                    if (hasCarBrandId == hasCarBrandObject) {
+                        if (!hasCarBrandId) {
+                            errors.add(new FieldErrorResponse("car_brand", "When creating a carModel you must provide either carBrandID or carBrand"));
+                        } else {
+                            errors.add(new FieldErrorResponse("car_brand", "Provide only one of carBrandID or carBrand, not both"));
+                        }
+                    }
+                }
             }
         }
 
         if (request.mechanicalConditionsIds() == null || request.mechanicalConditionsIds().isEmpty()) {
-            errors.add(new FieldErrorResponse("mechanical_conditions_ids", "At least one mechanical condition id is required"));
+            errors.add(new FieldErrorResponse("mechanicalConditionsIds", "At least one mechanical condition id is required"));
+        }
+
+        if (request.toolsIds() == null || request.toolsIds().isEmpty()) {
+            errors.add(new FieldErrorResponse("toolsIds", "At least one tool id is required"));
         }
 
         if (request.gasLevel() == null || request.gasLevel().isBlank()) {
-            errors.add(new FieldErrorResponse("gas_level", "Gas level is required"));
+            errors.add(new FieldErrorResponse("gasLevel", "Gas level is required"));
         } else {
             String normalized = request.gasLevel().trim();
             boolean matched = false;
@@ -53,7 +88,7 @@ public class CheckInValidator {
                 }
             }
             if (!matched) {
-                errors.add(new FieldErrorResponse("gas_level", "Invalid gas level"));
+                errors.add(new FieldErrorResponse("gasLevel", "Invalid gas level"));
             }
         }
 

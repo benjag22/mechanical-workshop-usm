@@ -2,6 +2,7 @@ package com.mechanical_workshop_usm.car_module.car;
 
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
+import com.mechanical_workshop_usm.car_module.car.dto.CreateCarCheckInRequest;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +42,7 @@ public class CarValidator {
         }
     }
 
-    public void validate(CreateCarRequest request) {
+    public void validate(CreateCarCheckInRequest request) {
 
         List<FieldErrorResponse> errors = new ArrayList<>();
 

@@ -1,6 +1,6 @@
-package com.mechanical_workshop_usm.dashboard_light_module;
+package com.mechanical_workshop_usm.picture_module.dashboard_light;
 
-import com.mechanical_workshop_usm.dashboard_light_module.dto.CreateDashboardLightResponse;
+import com.mechanical_workshop_usm.picture_module.picture.dto.CreatePictureResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,21 +19,21 @@ public class DashboardLightController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<CreateDashboardLightResponse> create(
+    public ResponseEntity<CreatePictureResponse> create(
             @RequestPart("image") MultipartFile image,
             @RequestPart(value = "alt", required = false) String alt
     ) {
-        CreateDashboardLightResponse resp = service.createFromMultipart(image, alt);
+        CreatePictureResponse resp = service.createFromMultipart(image, alt);
         return ResponseEntity.ok(resp);
     }
 
     @GetMapping
-    public ResponseEntity<List<CreateDashboardLightResponse>> getAll() {
+    public ResponseEntity<List<CreatePictureResponse>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CreateDashboardLightResponse> get(@PathVariable Integer id) {
+    public ResponseEntity<CreatePictureResponse> get(@PathVariable Integer id) {
         return ResponseEntity.ok(service.getById(id));
     }
 }

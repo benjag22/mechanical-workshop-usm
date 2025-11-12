@@ -6,6 +6,7 @@ import com.mechanical_workshop_usm.record_module.record.Record;
 import jakarta.persistence.*;
 import lombok.Getter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -33,8 +34,8 @@ public class CheckIn extends RecordState {
         super();
     }
 
-    public CheckIn(GasLevel gasLevel, String valuables, LocalDate entryDate, LocalTime entryTime, int mileage, Record record) {
-        super(entryDate, entryTime, mileage, record);
+    public CheckIn(GasLevel gasLevel, String valuables, LocalDateTime entryTime, int mileage, Record record) {
+        super(entryTime, mileage, record);
         this.gasLevel = gasLevel;
         this.valuables = valuables;
     }

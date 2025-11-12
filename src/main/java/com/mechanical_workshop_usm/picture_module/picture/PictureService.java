@@ -1,6 +1,6 @@
-package com.mechanical_workshop_usm.dashboard_light_module;
+package com.mechanical_workshop_usm.picture_module.picture;
 
-import com.mechanical_workshop_usm.dashboard_light_module.dto.CreateDashboardLightResponse;
+import com.mechanical_workshop_usm.picture_module.picture.dto.CreatePictureResponse;
 import com.mechanical_workshop_usm.util.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,35 +14,37 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class DashboardLightService {
+public class PictureService {
 
-    private final DashboardLightRepository repository;
+    private final PictureRepository repository;
     private final Path baseDir;
     private final String baseUrl;
 
-    public DashboardLightService(
-            DashboardLightRepository repository,
+    public PictureService(
+            PictureRepository repository,
             @Value("${storage.base-dir:./images}") String storageBaseDir,
-            @Value("${storage.base-url:http://localhost:8081}") String storageBaseUrl) {
+            @Value("${storage.base-url:http://localhost:8081}") String storageBaseUrl
+    ) {
         this.repository = repository;
         this.baseDir = Paths.get(storageBaseDir).toAbsolutePath().normalize();
-        this.baseUrl = storageBaseUrl.endsWith("/") ? storageBaseUrl.substring(0, storageBaseUrl.length() - 1) : storageBaseUrl;
+        this.baseUrl = storageBaseUrl.endsWith("/")
+                ? storageBaseUrl.substring(0, storageBaseUrl.length() - 1)
+                : storageBaseUrl;
     }
 
     @Transactional
-    public CreateDashboardLightResponse createFromMultipart(MultipartFile image, String alt) {
+    public CreatePictureResponse createFromMultipart(MultipartFile image, String alt) {
         try {
             if (image == null || image.isEmpty()) {
                 throw new IllegalArgumentException("Image file is required");
             }
 
-            Path targetDir = baseDir.resolve("dashboard");
+            Path targetDir = baseDir.resolve("pictures");
             Files.createDirectories(targetDir);
 
             String original = Optional.ofNullable(image.getOriginalFilename()).orElse("unnamed");
             String basename = FilenameUtils.getBaseName(original);
             String ext = FilenameUtils.getExtension(original);
-
             String sanitizedBase = FilenameUtils.sanitizeForFilename(basename);
             String unique = UUID.randomUUID().toString();
             String filename = sanitizedBase.isEmpty()
@@ -55,36 +57,38 @@ public class DashboardLightService {
                 Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
             }
 
-            String publicPath = "/images/dashboard/" + filename;
+            String publicPath = "/images/pictures/" + filename;
             String publicUrl = baseUrl + publicPath;
 
-            String altFinal;
-            if (alt != null && !alt.isBlank()) altFinal = alt.trim();
-            else altFinal = sanitizedBase.isEmpty() ? "" : sanitizedBase;
+            String altFinal = (alt != null && !alt.isBlank())
+                    ? alt.trim()
+                    : (sanitizedBase.isEmpty() ? "" : sanitizedBase);
 
-            DashboardLight entity = new DashboardLight(altFinal, publicUrl);
-            DashboardLight saved = repository.save(entity);
+            Picture entity = new Picture(altFinal, publicUrl);
+            Picture saved = repository.save(entity);
 
-            return new CreateDashboardLightResponse(
+            return new CreatePictureResponse(
                     saved.getId(),
                     saved.getAlt(),
                     saved.getPath()
             );
+
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to store file", e);
+            throw new IllegalStateException("Failed to store picture file", e);
         }
     }
 
     @Transactional(readOnly = true)
-    public CreateDashboardLightResponse getById(Integer id) {
-        DashboardLight d = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("DashboardLight not found: " + id));
-        return new CreateDashboardLightResponse(d.getId(), d.getAlt(), d.getPath());
+    public CreatePictureResponse getById(Integer id) {
+        Picture p = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Picture not found: " + id));
+        return new CreatePictureResponse(p.getId(), p.getAlt(), p.getPath());
     }
 
     @Transactional(readOnly = true)
-    public List<CreateDashboardLightResponse> getAll() {
+    public List<CreatePictureResponse> getAll() {
         return repository.findAll().stream()
-                .map(d -> new CreateDashboardLightResponse(d.getId(), d.getAlt(), d.getPath()))
+                .map(p -> new CreatePictureResponse(p.getId(), p.getAlt(), p.getPath()))
                 .toList();
     }
 }

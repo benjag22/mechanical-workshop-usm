@@ -48,31 +48,28 @@ public class RecordService {
 
         var client = entityFinder.findByIdOrThrow(clientInfoRepository, createRecordRequest.clientInfoId(), "client_id", "Client not found");
 
-        var mechanic = entityFinder.findByIdOrThrow(mechanicInfoRepository, createRecordRequest.mechanicInfoId(), "mechanic_id", "Mechanic not found");
 
         Record record = new Record(
                 createRecordRequest.reason(),
                 car,
-                client,
-                mechanic
+                client
         );
 
         Record saved = recordRepository.save(record);
         return new CreateRecordResponse(
                 saved.getId(),
                 saved.getCar().getId(),
-                saved.getClientInfo().getId(),
-                saved.getMechanicInfo().getId()
+                saved.getClientInfo().getId()
         );
     }
 
     public List<GetRecordResponse> getAllRecords() {
         return recordRepository.findAll().stream()
                 .map(record -> new GetRecordResponse(
+                        record.getId(),
                         record.getReason(),
                         record.getCar().getLicensePlate(),
-                        record.getClientInfo().getFirstName(),
-                        record.getMechanicInfo().getFirstName()
+                        record.getClientInfo().getFirstName()
                 ))
                 .toList();
     }

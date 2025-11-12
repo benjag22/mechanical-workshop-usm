@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.dashboard_light_module;
+package com.mechanical_workshop_usm.picture_module.dashboard_light;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

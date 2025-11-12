@@ -1,8 +1,8 @@
 package com.mechanical_workshop_usm.record_module.record_state.dto.check_in;
 
-import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
+import com.mechanical_workshop_usm.car_module.car.dto.CreateCarCheckInRequest;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandRequest;
-import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelRequest;
+import com.mechanical_workshop_usm.car_module.car_model.dto.CreateCarModelCheckInRequest;
 import com.mechanical_workshop_usm.client_info_module.dtos.CreateClientRequest;
 import com.mechanical_workshop_usm.record_module.record_state.dto.record_state.CreateRecordStateRequest;
 import com.mechanical_workshop_usm.tool_module.dto.CreateToolRequest;
@@ -21,10 +21,16 @@ public record CreateCheckInRequest(
         Integer carId,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-        CreateCarRequest car,
+        CreateCarCheckInRequest car,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-        CreateCarModelRequest carModel,
+        Integer carModelID,
+
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        CreateCarModelCheckInRequest carModel,
+
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        Integer carBrandID,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         CreateCarBrandRequest carBrand,
