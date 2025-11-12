@@ -1,7 +1,9 @@
 package com.mechanical_workshop_usm.car_module.car_brand.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateCarBrandRequest(
-        @JsonProperty("brand_name") String brandName
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String brandName
 ) {}
