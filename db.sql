@@ -443,3 +443,24 @@ SET @car_id = LAST_INSERT_ID();
 INSERT INTO client_info (first_name, last_name, email_address, address, cellphone_number)
 VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
 SET @client_id = LAST_INSERT_ID();
+
+INSERT INTO dashboard_light (alt, path) VALUES
+    ('ABS', 'http://localhost:8081/images/dashboard/abs.svg'),
+    ('Airbag', 'http://localhost:/images/dashboard/airbag-warning.svg'),
+    ('Batería / alternador', 'http://localhost:8081/images/dashboard/battery-light.svg'),
+    ('Check engine (motor)', 'http://localhost:8081/images/dashboard/check-engine-light.svg'),
+    ('Temperatura refrigerante', 'http://localhost:8081/images/dashboard/coolant-temperature.svg'),
+    ('Filtro de partículas / emisiones (diésel)', 'http://localhost:8081/images/dashboard/diesel-particulate-filter-warning.svg'),
+    ('Puerta abierta', 'http://localhost:8081/images/dashboard/door-ajar-warning-light.svg'),
+    ('Sistema de tracción (ESP/ESC)', 'http://localhost:8081/images/dashboard/electronic-stability-control-warning-light.svg'),
+    ('Intermitentes', 'http://localhost:8081/images/dashboard/flashing-warning-light.svg'),
+    ('Freno de mano / freno', 'http://localhost:8081/images/dashboard/hand-brake-warning.svg'),
+    ('Luces altas', 'http://localhost:8081/images/dashboard/high-beam-warning-light.svg'),
+    ('Capó abierto', 'http://localhost:8081/images/dashboard/hood-poppet-warning-light.svg'),
+    ('Luces bajas', 'http://localhost:8081/images/dashboard/low-beam-warning-light.svg'),
+    ('Combustible bajo', 'http://localhost:8081/images/dashboard/low-fuel-warning-light.svg'),
+    ('Aceite (presión de aceite)', 'http://localhost:8081/images/dashboard/oil-light.svg'),
+    ('Dirección asistida', 'http://localhost:8081/images/dashboard/power-steering-warning-light.svg'),
+    ('Cinturón de seguridad', 'http://localhost:8081/images/dashboard/seat-belt-warning.svg'),
+    ('Presión neumáticos (TPMS)', 'http://localhost:8081/images/dashboard/TPMS_warning-light.svg'),
+    ('Maletero abierto', 'http://localhost:8081/images/dashboard/TPMS_warning-light.svg');
