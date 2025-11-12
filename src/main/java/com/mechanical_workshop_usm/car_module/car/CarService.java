@@ -63,9 +63,7 @@ public class CarService {
     }
     public List<String> getAllPatents(){
         List<String> response = new ArrayList<>();
-        carRepository.findAll().forEach(car -> {
-            response.add(car.getLicensePlate());
-        });
+        carRepository.findAll().forEach(car -> response.add(car.getLicensePlate()));
         return response;
     }
     public GetCarFullResponse getCarById(int carId) {

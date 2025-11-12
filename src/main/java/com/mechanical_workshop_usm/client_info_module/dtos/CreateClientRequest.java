@@ -1,12 +1,24 @@
 package com.mechanical_workshop_usm.client_info_module.dtos;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateClientRequest(
-        @JsonProperty("first_name") String firstName,
-        @JsonProperty("last_name") String lastName,
-        @JsonProperty("email_address") String emailAddress,
-        @JsonProperty("address") String address,
-        @JsonProperty("cellphone_number") String cellphoneNumber
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String firstName,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String rut,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String lastName,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String emailAddress,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String address,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        String cellphoneNumber
 ) {
 }
