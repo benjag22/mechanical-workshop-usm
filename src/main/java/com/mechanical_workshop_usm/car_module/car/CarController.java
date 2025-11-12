@@ -20,8 +20,14 @@ public class CarController {
     }
 
     @GetMapping
-    public List<GetCarResponse> getAllCars() {
-        return carService.getAllCars();
+    public ResponseEntity<List<GetCarResponse>> getAllCars() {
+        return ResponseEntity.ok(carService.getAllCars());
+    }
+
+    @GetMapping("/patents")
+    public ResponseEntity<List<String>> getAllPatents() {
+        List<String> response = carService.getAllPatents();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -31,8 +37,13 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetCarFullResponse> getCarFull(@PathVariable int id) {
-        GetCarFullResponse response = carService.getCar(id);
+    public ResponseEntity<GetCarFullResponse> getCarFullById(@PathVariable int id) {
+        GetCarFullResponse response = carService.getCarById(id);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/{patent}")
+    public ResponseEntity<GetCarFullResponse> getCarFullByPatent(@PathVariable String patent) {
+        GetCarFullResponse response = carService.getCarByPatent(patent);
         return ResponseEntity.ok(response);
     }
 }

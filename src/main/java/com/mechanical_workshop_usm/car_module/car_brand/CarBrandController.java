@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.car_module.car_brand;
 
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandRequest;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandResponse;
-import com.mechanical_workshop_usm.car_module.car_brand.dto.GetCarBrandRepsonse;
+import com.mechanical_workshop_usm.car_module.car_brand.dto.SingleCarBrandResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +18,7 @@ public class CarBrandController {
     }
 
     @GetMapping
-    public List<GetCarBrandRepsonse> getAllCarBrands() {
+    public List<SingleCarBrandResponse> getAllCarBrands() {
         return carBrandService.getAllCarsBrands();
     }
 

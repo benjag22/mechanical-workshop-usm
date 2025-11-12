@@ -11,6 +11,7 @@ import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import com.mechanical_workshop_usm.car_module.car_model.CarModelRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -63,8 +64,14 @@ public class CarService {
                 ))
                 .toList();
     }
-
-    public GetCarFullResponse getCar(int carId) {
+    public List<String> getAllPatents(){
+        List<String> response = new ArrayList<>();
+        carRepository.findAll().forEach(car -> {
+            response.add(car.getLicensePlate());
+        });
+        return response;
+    }
+    public GetCarFullResponse getCarById(int carId) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new MultiFieldException(
                         "Car not found",
@@ -84,6 +91,28 @@ public class CarService {
                 carModel.getModelYear(),
                 brand.getId(),
                 brand.getBrandName()
+        );
+    }
+    public GetCarFullResponse getCarByPatent(String patent) {
+        Car car = carRepository.findByLicensePlate(patent)
+            .orElseThrow(() -> new MultiFieldException(
+                "Car not found",
+                List.of(new FieldErrorResponse("car_id", "No car found for the provided ID"))
+            ));
+
+        CarModel carModel = car.getCarModel();
+        CarBrand brand = carModel.getBrand();
+
+        return new GetCarFullResponse(
+            car.getId(),
+            car.getVIN(),
+            car.getLicensePlate(),
+            carModel.getId(),
+            carModel.getModelName(),
+            carModel.getModelType(),
+            carModel.getModelYear(),
+            brand.getId(),
+            brand.getBrandName()
         );
     }
 }

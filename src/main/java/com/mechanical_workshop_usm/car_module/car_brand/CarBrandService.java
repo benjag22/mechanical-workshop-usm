@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.car_module.car_brand;
 
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandRequest;
 import com.mechanical_workshop_usm.car_module.car_brand.dto.CreateCarBrandResponse;
-import com.mechanical_workshop_usm.car_module.car_brand.dto.GetCarBrandRepsonse;
+import com.mechanical_workshop_usm.car_module.car_brand.dto.SingleCarBrandResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,9 +33,9 @@ public class CarBrandService {
         return new CreateCarBrandResponse(savedCarBrand.getId(), savedCarBrand.getBrandName());
     }
 
-    public List<GetCarBrandRepsonse> getAllCarsBrands() {
+    public List<SingleCarBrandResponse> getAllCarsBrands() {
         return carBrandRepository.findAll().stream()
-                .map(carBrand -> new GetCarBrandRepsonse(
+                .map(carBrand -> new SingleCarBrandResponse(
                         carBrand.getId(),
                         carBrand.getBrandName()
                 ))
