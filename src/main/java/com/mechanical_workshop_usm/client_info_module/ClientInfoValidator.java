@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
@@ -26,6 +25,7 @@ public class ClientInfoValidator {
         String emailAddress = request.emailAddress();
         String address = request.address();
         String cellphoneNumber = request.cellphoneNumber();
+        String rut = request.rut();
 
         Pattern cellphonePattern = Pattern.compile("^\\+569\\d{8}$");
         Pattern emailAddressPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
@@ -53,9 +53,38 @@ public class ClientInfoValidator {
         if(cellphonePattern.matcher(cellphoneNumber).matches()){
             errors.add(new FieldErrorResponse("cellphone_number", "Invalid cellphone number"));
         }
+        if (rut == null || rut.trim().isEmpty()) {
+            errors.add(new FieldErrorResponse("rut", "RUT cannot be empty"));
+        } else if (!isValidRut(rut)) {
+            errors.add(new FieldErrorResponse("rut", "Invalid RUT verification digit"));
+        }
 
         if(!errors.isEmpty()){
             throw new MultiFieldException("Some error in fields", errors);
         }
+    }
+
+    public boolean isValidRut(String completeRUt) {
+        if (completeRUt == null || !completeRUt.matches("^\\d{7,8}-[\\dkK]$")) {
+            return false;
+        }
+
+        String[] parts = completeRUt.split("-");
+        int rut;
+        try {
+            rut = Integer.parseInt(parts[0]);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        char dv = Character.toUpperCase(parts[1].charAt(0));
+        int m = 0, s = 1;
+        while (rut != 0) {
+            s = (s + rut % 10 * (9 - m++ % 6)) % 11;
+            rut /= 10;
+        }
+
+        char dvCalculated = (s != 0) ? (char) (s + 47) : 'K';
+        return dv == dvCalculated;
     }
 }

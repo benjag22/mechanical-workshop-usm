@@ -41,7 +41,7 @@ public class CarController {
         GetCarFullResponse response = carService.getCarById(id);
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/{patent}")
+    @GetMapping("/by-patent/{patent}")
     public ResponseEntity<GetCarFullResponse> getCarFullByPatent(@PathVariable String patent) {
         GetCarFullResponse response = carService.getCarByPatent(patent);
         return ResponseEntity.ok(response);

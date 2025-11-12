@@ -9,7 +9,9 @@ public record CreateCarRequest(
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String licensePlate,
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+
+    @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     int modelId
 ) {
 }
+
