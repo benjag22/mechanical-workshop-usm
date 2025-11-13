@@ -2,6 +2,7 @@ package com.mechanical_workshop_usm.record_module.record_state.service.check_in;
 
 import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCheckInBasicResponse;
+import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.MechanicalCondition;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckInRepository;
 import org.springframework.stereotype.Service;
@@ -67,28 +68,33 @@ public class CheckInQueryService {
             reason = record.getReason();
         }
 
-        List<String> partNames = new ArrayList<>();
-        List<String> partStates = new ArrayList<>();
+        List<MechanicalCondition> conditions = new ArrayList<>();
         if (ci.getMechanicalConditions() != null) {
             for (CheckInConsiderConditions cc : ci.getMechanicalConditions()) {
                 if (cc == null) continue;
 
                 if (cc.getExteriorCondition() != null) {
                     var ec = cc.getExteriorCondition();
-                    partNames.add(ec.getPartName() == null ? "" : ec.getPartName());
-                    partStates.add(ec.getPartConditionState() == null ? "" : ec.getPartConditionState());
+                    conditions.add(new  MechanicalCondition(
+                        ec.getPartName() == null ? "" : ec.getPartName(),
+                        ec.getPartConditionState() == null ? "" : ec.getPartConditionState()
+                    ));
                 }
 
                 if (cc.getInteriorCondition() != null) {
                     var ic = cc.getInteriorCondition();
-                    partNames.add(ic.getPartName() == null ? "" : ic.getPartName());
-                    partStates.add(ic.getPartConditionState() == null ? "" : ic.getPartConditionState());
+                    conditions.add(new  MechanicalCondition(
+                        ic.getPartName() == null ? "" : ic.getPartName(),
+                        ic.getPartConditionState() == null ? "" : ic.getPartConditionState()
+                    ));
                 }
 
                 if (cc.getElectricalSystemCondition() != null) {
                     var el = cc.getElectricalSystemCondition();
-                    partNames.add(el.getPartName() == null ? "" : el.getPartName());
-                    partStates.add(el.getPartConditionState() == null ? "" : el.getPartConditionState());
+                    conditions.add(new  MechanicalCondition(
+                        el.getPartName() == null ? "" : el.getPartName(),
+                        el.getPartConditionState() == null ? "" : el.getPartConditionState()
+                    ));
                 }
             }
         }
@@ -104,8 +110,7 @@ public class CheckInQueryService {
                 modelYear,
                 licensePlate,
                 reason,
-                partNames,
-                partStates,
+                conditions,
                 entryTime
         );
     }

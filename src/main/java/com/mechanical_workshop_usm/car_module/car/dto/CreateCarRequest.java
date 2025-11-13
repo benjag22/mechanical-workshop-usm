@@ -1,6 +1,5 @@
 package com.mechanical_workshop_usm.car_module.car.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateCarRequest(
