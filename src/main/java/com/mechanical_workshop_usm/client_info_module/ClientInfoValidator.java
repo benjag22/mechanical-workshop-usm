@@ -50,7 +50,7 @@ public class ClientInfoValidator {
         if(cellphoneNumber.isEmpty()){
             errors.add(new FieldErrorResponse("cellphone_number", "The cellphone cannot be empty"));
         }
-        if(cellphonePattern.matcher(cellphoneNumber).matches()){
+        if(!cellphonePattern.matcher(cellphoneNumber).matches()){
             errors.add(new FieldErrorResponse("cellphone_number", "Invalid cellphone number"));
         }
         if (rut == null || rut.trim().isEmpty()) {
