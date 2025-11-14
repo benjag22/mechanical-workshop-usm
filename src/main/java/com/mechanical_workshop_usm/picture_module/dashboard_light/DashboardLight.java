@@ -16,7 +16,7 @@ public class DashboardLight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "alt", length = 255, nullable = false)
+    @Column(name = "alt", nullable = false)
     private String alt;
 
     @Column(name = "path", length = 512, nullable = false)
