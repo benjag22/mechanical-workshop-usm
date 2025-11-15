@@ -3,7 +3,6 @@ USE usm_mechanical_workshop;
 drop table if exists work_order_has_mechanics;
 drop table if exists car_picture;
 drop table if exists image;
-drop table if exists dashboard_light;
 drop table if exists work_order_realized_service;
 drop table if exists work_service;
 drop table if exists work_order;
@@ -182,6 +181,13 @@ create table work_order_realized_service
     foreign key (work_service_id) references work_service (id)
 );
 
+create table image
+(
+    id   int auto_increment primary key,
+    alt  varchar(255) not null,
+    path varchar(512) unique not null
+);
+
 create table dashboard_light_present
 (
     id   int auto_increment primary key,
@@ -192,12 +198,7 @@ create table dashboard_light_present
     foreign key (dashboard_light_id) references image (id)
 );
 
-create table image
-(
-    id   int auto_increment primary key,
-    alt  varchar(255) not null,
-    path varchar(512) not null
-);
+
 
 create table car_images
 (
@@ -443,22 +444,22 @@ VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '099
 SET @client_id = LAST_INSERT_ID();
 
 INSERT INTO image (alt, path)
-VALUES ('ABS', '/images/icons/abs.svg'),
-       ('Airbag', '/images/icons/airbag-warning.svg'),
-       ('Batería / alternador', '/images/icons/battery-light.svg'),
-       ('Check engine (motor)', '/images/icons/check-engine-light.svg'),
-       ('Temperatura refrigerante', '/images/icons/coolant-temperature.svg'),
-       ('Filtro de partículas / emisiones (diésel)', '/images/icons/diesel-particulate-filter-warning.svg'),
-       ('Puerta abierta', '/images/icons/door-ajar-warning-light.svg'),
-       ('Sistema de tracción (ESP/ESC)', '/images/icons/electronic-stability-control-warning-light.svg'),
-       ('Intermitentes', '/images/icons/flashing-warning-light.svg'),
-       ('Freno de mano / freno', '/images/icons/hand-brake-warning.svg'),
-       ('Luces altas', '/images/icons/high-beam-warning-light.svg'),
-       ('Capó abierto', '/images/icons/hood-poppet-warning-light.svg'),
-       ('Luces bajas', '/images/icons/low-beam-warning-light.svg'),
-       ('Combustible bajo', '/images/icons/low-fuel-warning-light.svg'),
-       ('Aceite (presión de aceite)', '/images/icons/oil-light.svg'),
-       ('Dirección asistida', '/images/icons/power-steering-warning-light.svg'),
-       ('Cinturón de seguridad', '/images/icons/seat-belt-warning.svg'),
-       ('Presión neumáticos (TPMS)', '/images/icons/TPMS_warning-light.svg'),
-       ('Maletero abierto', '/images/icons/TPMS_warning-light.svg');
+VALUES ('ABS', 'icons/abs.svg'),
+       ('Airbag', 'icons/airbag-warning.svg'),
+       ('Batería / alternador', 'icons/battery-light.svg'),
+       ('Check engine (motor)', 'icons/check-engine-light.svg'),
+       ('Temperatura refrigerante', 'icons/coolant-temperature.svg'),
+       ('Filtro de partículas / emisiones (diésel)', 'icons/diesel-particulate-filter-warning.svg'),
+       ('Puerta abierta', 'icons/door-ajar-warning-light.svg'),
+       ('Sistema de tracción (ESP/ESC)', 'icons/electronic-stability-control-warning-light.svg'),
+       ('Intermitentes', 'icons/flashing-warning-light.svg'),
+       ('Freno de mano / freno', 'icons/hand-brake-warning.svg'),
+       ('Luces altas', 'icons/high-beam-warning-light.svg'),
+       ('Capó abierto', 'icons/hood-poppet-warning-light.svg'),
+       ('Luces bajas', 'icons/low-beam-warning-light.svg'),
+       ('Combustible bajo', 'icons/low-fuel-warning-light.svg'),
+       ('Aceite (presión de aceite)', 'icons/oil-light.svg'),
+       ('Dirección asistida', '/icons/power-steering-warning-light.svg'),
+       ('Cinturón de seguridad', 'icons/seat-belt-warning.svg'),
+       ('Presión neumáticos (TPMS)', 'icons/TPMS_warning-light.svg'),
+       ('Maletero abierto', 'icons/TPMS_warning-light.svg');
