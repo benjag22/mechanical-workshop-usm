@@ -2,8 +2,7 @@ USE usm_mechanical_workshop;
 
 drop table if exists work_order_has_mechanics;
 drop table if exists car_picture;
-drop table if exists picture;
-drop table if exists work_order_has_dashboard_light;
+drop table if exists image;
 drop table if exists dashboard_light;
 drop table if exists work_order_realized_service;
 drop table if exists work_service;
@@ -22,159 +21,158 @@ drop table if exists car;
 drop table if exists car_model;
 drop table if exists car_brand;
 drop table if exists mechanic_info;
-drop table if exists client_info;
+    drop table if exists client_info;
 
-CREATE TABLE IF NOT EXISTS client_info
+create table client_info
 (
-    id               int AUTO_INCREMENT primary key,
+    id               int auto_increment primary key,
     first_name       varchar(64)  not null check (first_name != ''),
     last_name        varchar(64),
     email_address    varchar(255) not null check ( '' != email_address),
     address          varchar(128) not null check (address != ''),
     cellphone_number varchar(12)  not null check (cellphone_number != '')
-    );
+);
 
-CREATE TABLE IF NOT EXISTS mechanic_info
+create table  mechanic_info
 (
-    id                  int AUTO_INCREMENT primary key,
+    id                  int auto_increment primary key,
     first_name          varchar(64) not null check ( '' != first_name),
     last_name           varchar(64),
     registration_number varchar(16)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS car_brand
+create table car_brand
 (
-    id         int AUTO_INCREMENT primary key,
-    brand_name varchar(32) unique not null check (brand_name !='')
-    );
+    id         int auto_increment primary key,
+    brand_name varchar(32) unique not null check (brand_name != '')
+);
 
-CREATE TABLE IF NOT EXISTS car_model
+create table car_model
 (
-    id         int AUTO_INCREMENT primary key,
+    id         int auto_increment primary key,
     brand_id   int         not null,
-    model_name varchar(78) not null check (model_name !=''),
+    model_name varchar(78) not null check (model_name != ''),
     model_type varchar(64),
     model_year int,
     foreign key (brand_id) references car_brand (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS car
+create table car
 (
-    id            int AUTO_INCREMENT primary key,
+    id            int auto_increment primary key,
     model_id      int                not null,
     license_plate varchar(6) unique  not null,
-    VIN           varchar(17) unique not null check (VIN !=''),
+    VIN           varchar(17) unique not null check (VIN != ''),
     foreign key (model_id) references car_model (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS record
+create table record
 (
-    id               int AUTO_INCREMENT primary key,
-    reason           varchar(255) not null,
-    car_id           int          not null,
-    client_info_id   int          not null,
+    id             int auto_increment primary key,
+    reason         varchar(255) not null,
+    car_id         int          not null,
+    client_info_id int          not null,
     check (reason != ''),
     foreign key (car_id) references car (id),
     foreign key (client_info_id) references client_info (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS record_state
+create table record_state
 (
-    id         int AUTO_INCREMENT primary key,
-    record_id  int not null,
+    id         int auto_increment primary key,
+    record_id  int         not null,
     entry_time datetime(3) NOT NULL,
-    mileage    int not null,
+    mileage    int         not null,
     foreign key (record_id) references record (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS entry_state
+create table entry_state
 (
-    id              int AUTO_INCREMENT primary key,
+    id              int auto_increment primary key,
     record_state_id int not null,
     valuables       varchar(255),
     gas_level       enum ('FULL','THREE_QUARTERS','HALF','ONE_QUARTER','LOW'),
     foreign key (record_state_id) references record_state (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS out_state
+create table out_state
 (
-    id                int AUTO_INCREMENT primary key,
+    id                int auto_increment primary key,
     record_state_id   int     not null,
     vehicle_diagnosis varchar(255),
     rating            tinyint not null,
     foreign key (record_state_id) references record_state (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS tool
-(
-    id        int AUTO_INCREMENT primary key,
+create table tool(
+    id        int auto_increment primary key,
     tool_name varchar(32) unique not null
-    );
+);
 
-CREATE TABLE IF NOT EXISTS entry_state_has_tool
+create table entry_state_has_tool
 (
-    id             int AUTO_INCREMENT primary key,
+    id             int auto_increment primary key,
     tool_id        int not null,
     entry_state_id int not null,
     foreign key (tool_id) references tool (id),
     foreign key (entry_state_id) references entry_state (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS exterior_condition
+create table exterior_condition
 (
-    id                      int auto_increment primary key,
+    id                   int auto_increment primary key,
     part_name            varchar(64) not null check (part_name != ''),
     part_condition_state varchar(128),
     unique uk_part_name_condition (part_name, part_condition_state)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS interior_condition
+create table interior_condition
 (
-    id                      int auto_increment primary key,
+    id                   int auto_increment primary key,
     part_name            varchar(64) not null check (part_name != ''),
     part_condition_state varchar(128),
     unique uk_part_name_condition (part_name, part_condition_state)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS electrical_system_condition
+create table electrical_system_condition
 (
-    id                      int auto_increment primary key,
+    id                   int auto_increment primary key,
     part_name            varchar(64) not null check (part_name != ''),
     part_condition_state varchar(128),
-    unique uk_part_name_condition (part_name, part_condition_state)
-    );
+    unique (part_name, part_condition_state)
+);
 
-CREATE TABLE IF NOT EXISTS entry_state_consider_condition
+create table entry_state_consider_condition
 (
-    id int AUTO_INCREMENT primary key,
-    exterior_condition_id int default null,
-    interior_condition_id int default null,
+    id                             int AUTO_INCREMENT primary key,
+    exterior_condition_id          int default null,
+    interior_condition_id          int default null,
     electrical_system_condition_id int default null,
-    entry_state_id          int not null,
+    entry_state_id                 int not null,
     foreign key (exterior_condition_id) references exterior_condition (id),
     foreign key (interior_condition_id) references interior_condition (id),
     foreign key (electrical_system_condition_id) references electrical_system_condition (id),
     foreign key (entry_state_id) references entry_state (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS work_order
+create table work_order
 (
     id             int auto_increment primary key,
-    record_id      int not null,
+    record_id      int  not null,
     estimated_date date not null,
     estimated_time time not null,
     signature_path varchar(512) default null,
     foreign key (record_id) references record (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS work_service
+create table work_service
 (
-    id           int auto_increment primary key,
-    service_name varchar(32) unique not null check (service_name != ''),
-    estimated_time time not null
-    );
+    id             int auto_increment primary key,
+    service_name   varchar(32) unique not null check (service_name != ''),
+    estimated_time time               not null
+);
 
-CREATE TABLE IF NOT EXISTS work_order_realized_service
+create table work_order_realized_service
 (
     id              int auto_increment primary key,
     work_order_id   int  not null,
@@ -182,49 +180,44 @@ CREATE TABLE IF NOT EXISTS work_order_realized_service
     finalized       bool not null,
     foreign key (work_order_id) references work_order (id),
     foreign key (work_service_id) references work_service (id)
-    );
+);
 
-CREATE TABLE IF NOT EXISTS dashboard_light
+create table dashboard_light_present
 (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    alt VARCHAR(255) NOT NULL,
-    path VARCHAR(512) NOT NULL
-    );
+    id   int auto_increment primary key,
+    dashboard_light_id int not null,
+    work_order_id      int not null,
+    is_functional boolean,
+    foreign key (work_order_id) references work_order (id),
+    foreign key (dashboard_light_id) references image (id)
+);
 
-CREATE TABLE IF NOT EXISTS work_order_has_dashboard_light
+create table image
 (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    work_order_id INT NOT NULL,
-    dashboard_light_id INT NOT NULL,
-    present BOOLEAN NOT NULL DEFAULT FALSE,
-    operates BOOLEAN NOT NULL DEFAULT FALSE,
-    CONSTRAINT fk_wodl_work_order FOREIGN KEY (work_order_id) REFERENCES work_order(id),
-    CONSTRAINT fk_wodl_dashboard_light FOREIGN KEY (dashboard_light_id) REFERENCES dashboard_light(id),
-    UNIQUE KEY uk_wodl_pair (work_order_id, dashboard_light_id)
-    );
+    id   int auto_increment primary key,
+    alt  varchar(255) not null,
+    path varchar(512) not null
+);
 
-CREATE TABLE IF NOT EXISTS picture (
-                                       id INT AUTO_INCREMENT PRIMARY KEY,
-                                       alt VARCHAR(255) NOT NULL,
-    path VARCHAR(512) NOT NULL
-    );
+create table car_images
+(
+    id            int auto_increment primary key,
+    work_order_id int not null,
+    image_id      int not null,
+    foreign key (work_order_id) references work_order (id),
+    foreign key (image_id) references image (id)
+);
 
-CREATE TABLE IF NOT EXISTS car_picture (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    work_order_id INT NOT NULL,
-    path VARCHAR(512) NOT NULL,
-    CONSTRAINT fk_car_picture_work_order FOREIGN KEY (work_order_id) REFERENCES work_order(id)
-    );
-
-CREATE TABLE IF NOT EXISTS work_order_has_mechanics (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    work_order_id INT NOT NULL,
-    mechanic_info_id INT NOT NULL,
-    is_leader bool not null,
-    CONSTRAINT fk_womh_work_order FOREIGN KEY (work_order_id) REFERENCES work_order(id),
-    CONSTRAINT fk_womh_mechanic_info FOREIGN KEY (mechanic_info_id) REFERENCES mechanic_info(id),
-    UNIQUE KEY uk_womh_pair (work_order_id, mechanic_info_id)
-    );
+create table work_order_has_mechanics
+(
+    id               int auto_increment primary key,
+    work_order_id    int  not null,
+    mechanic_info_id int  not null,
+    is_leader        bool not null,
+    foreign key (work_order_id) references work_order (id),
+    foreign key (mechanic_info_id) references mechanic_info (id),
+    unique (work_order_id, mechanic_info_id)
+);
 
 INSERT INTO interior_condition (part_name, part_condition_state)
 values ('Encendedor', 'Malo'),
@@ -294,146 +287,147 @@ values ('Encendedor', 'Malo'),
        ('Accesorios Electrónico', 'Roto'),
        ('Accesorios Electrónico', 'Ausente');
 
-insert into exterior_condition (part_name,  part_condition_state) values
-        ('Luneta Delantera', 'Malo'),
-        ('Luneta Delantera', 'Trizado'),
-        ('Luneta Delantera', 'Abollado'),
-        ('Luneta Delantera', 'Rayado'),
-        ('Luneta Delantera', 'Roto'),
-        ('Luneta Delantera', 'Ausente'),
-        ('Luneta Trasera', 'Malo'),
-        ('Luneta Trasera', 'Trizado'),
-        ('Luneta Trasera', 'Abollado'),
-        ('Luneta Trasera', 'Rayado'),
-        ('Luneta Trasera', 'Roto'),
-        ('Luneta Trasera', 'Ausente'),
-        ('Luneta Laterales', 'Malo'),
-        ('Luneta Laterales', 'Trizado'),
-        ('Luneta Laterales', 'Abollado'),
-        ('Luneta Laterales', 'Rayado'),
-        ('Luneta Laterales', 'Roto'),
-        ('Luneta Laterales', 'Ausente'),
-        ('Limpia Parabrisas', 'Malo'),
-        ('Limpia Parabrisas', 'Trizado'),
-        ('Limpia Parabrisas', 'Abollado'),
-        ('Limpia Parabrisas', 'Rayado'),
-        ('Limpia Parabrisas', 'Roto'),
-        ('Limpia Parabrisas', 'Ausente'),
-        ('Retrovisores Exteriores', 'Malo'),
-        ('Retrovisores Exteriores', 'Trizado'),
-        ('Retrovisores Exteriores', 'Abollado'),
-        ('Retrovisores Exteriores', 'Rayado'),
-        ('Retrovisores Exteriores', 'Roto'),
-        ('Retrovisores Exteriores', 'Ausente'),
-        ('Neumáticos Delanteros', 'Malo'),
-        ('Neumáticos Delanteros', 'Trizado'),
-        ('Neumáticos Delanteros', 'Abollado'),
-        ('Neumáticos Delanteros', 'Rayado'),
-        ('Neumáticos Delanteros', 'Roto'),
-        ('Neumáticos Delanteros', 'Ausente'),
-        ('Neumáticos Traseros', 'Malo'),
-        ('Neumáticos Traseros', 'Trizado'),
-        ('Neumáticos Traseros', 'Abollado'),
-        ('Neumáticos Traseros', 'Rayado'),
-        ('Neumáticos Traseros', 'Roto'),
-        ('Neumáticos Traseros', 'Ausente'),
-        ('Luminaria Delantera', 'Malo'),
-        ('Luminaria Delantera', 'Trizado'),
-        ('Luminaria Delantera', 'Abollado'),
-        ('Luminaria Delantera', 'Rayado'),
-        ('Luminaria Delantera', 'Roto'),
-        ('Luminaria Delantera', 'Ausente'),
-        ('Luminaria Trasera', 'Malo'),
-        ('Luminaria Trasera', 'Trizado'),
-        ('Luminaria Trasera', 'Abollado'),
-        ('Luminaria Trasera', 'Rayado'),
-        ('Luminaria Trasera', 'Roto'),
-        ('Luminaria Trasera', 'Ausente'),
-        ('Antena', 'Malo'),
-        ('Antena', 'Trizado'),
-        ('Antena', 'Abollado'),
-        ('Antena', 'Rayado'),
-        ('Antena', 'Roto'),
-        ('Antena', 'Ausente'),
-        ('Llantas', 'Malo'),
-        ('Llantas', 'Trizado'),
-        ('Llantas', 'Abollado'),
-        ('Llantas', 'Rayado'),
-        ('Llantas', 'Roto'),
-        ('Llantas', 'Ausente'),
-        ('Molduras', 'Malo'),
-        ('Molduras', 'Trizado'),
-        ('Molduras', 'Abollado'),
-        ('Molduras', 'Rayado'),
-        ('Molduras', 'Roto'),
-        ('Molduras', 'Ausente'),
-        ('Emblemas', 'Malo'),
-        ('Emblemas', 'Trizado'),
-        ('Emblemas', 'Abollado'),
-        ('Emblemas', 'Rayado'),
-        ('Emblemas', 'Roto'),
-        ('Emblemas', 'Ausente'),
-        ('Manillas y Botoneras', 'Malo'),
-        ('Manillas y Botoneras', 'Trizado'),
-        ('Manillas y Botoneras', 'Abollado'),
-        ('Manillas y Botoneras', 'Rayado'),
-        ('Manillas y Botoneras', 'Roto'),
-        ('Manillas y Botoneras', 'Ausente'),
-        ('Tapón de Combustibles', 'Malo'),
-        ('Tapón de Combustibles', 'Trizado'),
-        ('Tapón de Combustibles', 'Abollado'),
-        ('Tapón de Combustibles', 'Rayado'),
-        ('Tapón de Combustibles', 'Roto'),
-        ('Tapón de Combustibles', 'Ausente'),
-        ('Tapa de Combustible', 'Malo'),
-        ('Tapa de Combustible', 'Trizado'),
-        ('Tapa de Combustible', 'Abollado'),
-        ('Tapa de Combustible', 'Rayado'),
-        ('Tapa de Combustible', 'Roto'),
-        ('Tapa de Combustible', 'Ausente');
+insert into exterior_condition (part_name, part_condition_state)
+values ('Luneta Delantera', 'Malo'),
+       ('Luneta Delantera', 'Trizado'),
+       ('Luneta Delantera', 'Abollado'),
+       ('Luneta Delantera', 'Rayado'),
+       ('Luneta Delantera', 'Roto'),
+       ('Luneta Delantera', 'Ausente'),
+       ('Luneta Trasera', 'Malo'),
+       ('Luneta Trasera', 'Trizado'),
+       ('Luneta Trasera', 'Abollado'),
+       ('Luneta Trasera', 'Rayado'),
+       ('Luneta Trasera', 'Roto'),
+       ('Luneta Trasera', 'Ausente'),
+       ('Luneta Laterales', 'Malo'),
+       ('Luneta Laterales', 'Trizado'),
+       ('Luneta Laterales', 'Abollado'),
+       ('Luneta Laterales', 'Rayado'),
+       ('Luneta Laterales', 'Roto'),
+       ('Luneta Laterales', 'Ausente'),
+       ('Limpia Parabrisas', 'Malo'),
+       ('Limpia Parabrisas', 'Trizado'),
+       ('Limpia Parabrisas', 'Abollado'),
+       ('Limpia Parabrisas', 'Rayado'),
+       ('Limpia Parabrisas', 'Roto'),
+       ('Limpia Parabrisas', 'Ausente'),
+       ('Retrovisores Exteriores', 'Malo'),
+       ('Retrovisores Exteriores', 'Trizado'),
+       ('Retrovisores Exteriores', 'Abollado'),
+       ('Retrovisores Exteriores', 'Rayado'),
+       ('Retrovisores Exteriores', 'Roto'),
+       ('Retrovisores Exteriores', 'Ausente'),
+       ('Neumáticos Delanteros', 'Malo'),
+       ('Neumáticos Delanteros', 'Trizado'),
+       ('Neumáticos Delanteros', 'Abollado'),
+       ('Neumáticos Delanteros', 'Rayado'),
+       ('Neumáticos Delanteros', 'Roto'),
+       ('Neumáticos Delanteros', 'Ausente'),
+       ('Neumáticos Traseros', 'Malo'),
+       ('Neumáticos Traseros', 'Trizado'),
+       ('Neumáticos Traseros', 'Abollado'),
+       ('Neumáticos Traseros', 'Rayado'),
+       ('Neumáticos Traseros', 'Roto'),
+       ('Neumáticos Traseros', 'Ausente'),
+       ('Luminaria Delantera', 'Malo'),
+       ('Luminaria Delantera', 'Trizado'),
+       ('Luminaria Delantera', 'Abollado'),
+       ('Luminaria Delantera', 'Rayado'),
+       ('Luminaria Delantera', 'Roto'),
+       ('Luminaria Delantera', 'Ausente'),
+       ('Luminaria Trasera', 'Malo'),
+       ('Luminaria Trasera', 'Trizado'),
+       ('Luminaria Trasera', 'Abollado'),
+       ('Luminaria Trasera', 'Rayado'),
+       ('Luminaria Trasera', 'Roto'),
+       ('Luminaria Trasera', 'Ausente'),
+       ('Antena', 'Malo'),
+       ('Antena', 'Trizado'),
+       ('Antena', 'Abollado'),
+       ('Antena', 'Rayado'),
+       ('Antena', 'Roto'),
+       ('Antena', 'Ausente'),
+       ('Llantas', 'Malo'),
+       ('Llantas', 'Trizado'),
+       ('Llantas', 'Abollado'),
+       ('Llantas', 'Rayado'),
+       ('Llantas', 'Roto'),
+       ('Llantas', 'Ausente'),
+       ('Molduras', 'Malo'),
+       ('Molduras', 'Trizado'),
+       ('Molduras', 'Abollado'),
+       ('Molduras', 'Rayado'),
+       ('Molduras', 'Roto'),
+       ('Molduras', 'Ausente'),
+       ('Emblemas', 'Malo'),
+       ('Emblemas', 'Trizado'),
+       ('Emblemas', 'Abollado'),
+       ('Emblemas', 'Rayado'),
+       ('Emblemas', 'Roto'),
+       ('Emblemas', 'Ausente'),
+       ('Manillas y Botoneras', 'Malo'),
+       ('Manillas y Botoneras', 'Trizado'),
+       ('Manillas y Botoneras', 'Abollado'),
+       ('Manillas y Botoneras', 'Rayado'),
+       ('Manillas y Botoneras', 'Roto'),
+       ('Manillas y Botoneras', 'Ausente'),
+       ('Tapón de Combustibles', 'Malo'),
+       ('Tapón de Combustibles', 'Trizado'),
+       ('Tapón de Combustibles', 'Abollado'),
+       ('Tapón de Combustibles', 'Rayado'),
+       ('Tapón de Combustibles', 'Roto'),
+       ('Tapón de Combustibles', 'Ausente'),
+       ('Tapa de Combustible', 'Malo'),
+       ('Tapa de Combustible', 'Trizado'),
+       ('Tapa de Combustible', 'Abollado'),
+       ('Tapa de Combustible', 'Rayado'),
+       ('Tapa de Combustible', 'Roto'),
+       ('Tapa de Combustible', 'Ausente');
 
-insert into electrical_system_condition (part_name, part_condition_state) values
-  ('Control de Niveles Motor', 'Malo'),
-  ('Control de Niveles Motor', 'Trizado'),
-  ('Control de Niveles Motor', 'Abollado'),
-  ('Control de Niveles Motor', 'Rayado'),
-  ('Control de Niveles Motor', 'Roto'),
-  ('Control de Niveles Motor', 'Ausente'),
-  ('Control de Niveles Accesorios', 'Malo'),
-  ('Control de Niveles Accesorios', 'Trizado'),
-  ('Control de Niveles Accesorios', 'Abollado'),
-  ('Control de Niveles Accesorios', 'Rayado'),
-  ('Control de Niveles Accesorios', 'Roto'),
-  ('Control de Niveles Accesorios', 'Ausente'),
-  ('Estado Fluido líquido de Frenos', 'Malo'),
-  ('Estado Fluido líquido de Frenos', 'Trizado'),
-  ('Estado Fluido líquido de Frenos', 'Abollado'),
-  ('Estado Fluido líquido de Frenos', 'Rayado'),
-  ('Estado Fluido líquido de Frenos', 'Roto'),
-  ('Estado Fluido líquido de Frenos', 'Ausente'),
-  ('Estado del Sistema de Carga', 'Malo'),
-  ('Estado del Sistema de Carga', 'Trizado'),
-  ('Estado del Sistema de Carga', 'Abollado'),
-  ('Estado del Sistema de Carga', 'Rayado'),
-  ('Estado del Sistema de Carga', 'Roto'),
-  ('Estado del Sistema de Carga', 'Ausente'),
-  ('Luces Indicadoras de Falla', 'Malo'),
-  ('Luces Indicadoras de Falla', 'Trizado'),
-  ('Luces Indicadoras de Falla', 'Abollado'),
-  ('Luces Indicadoras de Falla', 'Rayado'),
-  ('Luces Indicadoras de Falla', 'Roto'),
-  ('Luces Indicadoras de Falla', 'Ausente');
+insert into electrical_system_condition (part_name, part_condition_state)
+values ('Control de Niveles Motor', 'Malo'),
+       ('Control de Niveles Motor', 'Trizado'),
+       ('Control de Niveles Motor', 'Abollado'),
+       ('Control de Niveles Motor', 'Rayado'),
+       ('Control de Niveles Motor', 'Roto'),
+       ('Control de Niveles Motor', 'Ausente'),
+       ('Control de Niveles Accesorios', 'Malo'),
+       ('Control de Niveles Accesorios', 'Trizado'),
+       ('Control de Niveles Accesorios', 'Abollado'),
+       ('Control de Niveles Accesorios', 'Rayado'),
+       ('Control de Niveles Accesorios', 'Roto'),
+       ('Control de Niveles Accesorios', 'Ausente'),
+       ('Estado Fluido líquido de Frenos', 'Malo'),
+       ('Estado Fluido líquido de Frenos', 'Trizado'),
+       ('Estado Fluido líquido de Frenos', 'Abollado'),
+       ('Estado Fluido líquido de Frenos', 'Rayado'),
+       ('Estado Fluido líquido de Frenos', 'Roto'),
+       ('Estado Fluido líquido de Frenos', 'Ausente'),
+       ('Estado del Sistema de Carga', 'Malo'),
+       ('Estado del Sistema de Carga', 'Trizado'),
+       ('Estado del Sistema de Carga', 'Abollado'),
+       ('Estado del Sistema de Carga', 'Rayado'),
+       ('Estado del Sistema de Carga', 'Roto'),
+       ('Estado del Sistema de Carga', 'Ausente'),
+       ('Luces Indicadoras de Falla', 'Malo'),
+       ('Luces Indicadoras de Falla', 'Trizado'),
+       ('Luces Indicadoras de Falla', 'Abollado'),
+       ('Luces Indicadoras de Falla', 'Rayado'),
+       ('Luces Indicadoras de Falla', 'Roto'),
+       ('Luces Indicadoras de Falla', 'Ausente');
 
-INSERT IGNORE INTO tool (tool_name) VALUES
-  ('Botiquín'),
-  ('Extintor'),
-  ('Equipo de Levante'),
-  ('Herramientas'),
-  ('Triángulos'),
-  ('Chaqueta Reflectante'),
-  ('Rueda de Repuesto');
+INSERT IGNORE INTO tool (tool_name)
+VALUES ('Botiquín'),
+       ('Extintor'),
+       ('Equipo de Levante'),
+       ('Herramientas'),
+       ('Triángulos'),
+       ('Chaqueta Reflectante'),
+       ('Rueda de Repuesto');
 
-INSERT INTO car_brand (brand_name) VALUES ('Toyota');
+INSERT INTO car_brand (brand_name)
+VALUES ('Toyota');
 SET @brand_id = LAST_INSERT_ID();
 
 INSERT INTO car_model (brand_id, model_name, model_type, model_year)
@@ -448,23 +442,23 @@ INSERT INTO client_info (first_name, last_name, email_address, address, cellphon
 VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
 SET @client_id = LAST_INSERT_ID();
 
-INSERT INTO dashboard_light (alt, path) VALUES
-('ABS', '/images/dashboard/abs.svg'),
-('Airbag', '/images/dashboard/airbag-warning.svg'),
-('Batería / alternador', '/images/dashboard/battery-light.svg'),
-('Check engine (motor)', '/images/dashboard/check-engine-light.svg'),
-('Temperatura refrigerante', '/images/dashboard/coolant-temperature.svg'),
-('Filtro de partículas / emisiones (diésel)', '/images/dashboard/diesel-particulate-filter-warning.svg'),
-('Puerta abierta', '/images/dashboard/door-ajar-warning-light.svg'),
-('Sistema de tracción (ESP/ESC)', '/images/dashboard/electronic-stability-control-warning-light.svg'),
-('Intermitentes', '/images/dashboard/flashing-warning-light.svg'),
-('Freno de mano / freno', '/images/dashboard/hand-brake-warning.svg'),
-('Luces altas', '/images/dashboard/high-beam-warning-light.svg'),
-('Capó abierto', '/images/dashboard/hood-poppet-warning-light.svg'),
-('Luces bajas', '/images/dashboard/low-beam-warning-light.svg'),
-('Combustible bajo', '/images/dashboard/low-fuel-warning-light.svg'),
-('Aceite (presión de aceite)', '/images/dashboard/oil-light.svg'),
-('Dirección asistida', '/images/dashboard/power-steering-warning-light.svg'),
-('Cinturón de seguridad', '/images/dashboard/seat-belt-warning.svg'),
-('Presión neumáticos (TPMS)', '/images/dashboard/TPMS_warning-light.svg'),
-('Maletero abierto', '/images;/dashboard/TPMS_warning-light.svg');
+INSERT INTO image (alt, path)
+VALUES ('ABS', '/images/icons/abs.svg'),
+       ('Airbag', '/images/icons/airbag-warning.svg'),
+       ('Batería / alternador', '/images/icons/battery-light.svg'),
+       ('Check engine (motor)', '/images/icons/check-engine-light.svg'),
+       ('Temperatura refrigerante', '/images/icons/coolant-temperature.svg'),
+       ('Filtro de partículas / emisiones (diésel)', '/images/icons/diesel-particulate-filter-warning.svg'),
+       ('Puerta abierta', '/images/icons/door-ajar-warning-light.svg'),
+       ('Sistema de tracción (ESP/ESC)', '/images/icons/electronic-stability-control-warning-light.svg'),
+       ('Intermitentes', '/images/icons/flashing-warning-light.svg'),
+       ('Freno de mano / freno', '/images/icons/hand-brake-warning.svg'),
+       ('Luces altas', '/images/icons/high-beam-warning-light.svg'),
+       ('Capó abierto', '/images/icons/hood-poppet-warning-light.svg'),
+       ('Luces bajas', '/images/icons/low-beam-warning-light.svg'),
+       ('Combustible bajo', '/images/icons/low-fuel-warning-light.svg'),
+       ('Aceite (presión de aceite)', '/images/icons/oil-light.svg'),
+       ('Dirección asistida', '/images/icons/power-steering-warning-light.svg'),
+       ('Cinturón de seguridad', '/images/icons/seat-belt-warning.svg'),
+       ('Presión neumáticos (TPMS)', '/images/icons/TPMS_warning-light.svg'),
+       ('Maletero abierto', '/images;/icons/TPMS_warning-light.svg');
