@@ -68,7 +68,11 @@ public class CheckInValidator {
             }
         }
 
-        if (request.mechanicalConditionsIds() == null || request.mechanicalConditionsIds().isEmpty()) {
+        if ((
+                request.interiorConditionsIds() == null || request.interiorConditionsIds().isEmpty())&&
+                request.exteriorConditionsIds() == null || request.exteriorConditionsIds().isEmpty()&&
+                request.electricalConditionsIds() == null || request.electricalConditionsIds().isEmpty()
+        ) {
             errors.add(new FieldErrorResponse("mechanicalConditionsIds", "At least one mechanical condition id is required"));
         }
 

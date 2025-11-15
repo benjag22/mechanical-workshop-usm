@@ -3,6 +3,7 @@ USE usm_mechanical_workshop;
 drop table if exists work_order_has_mechanics;
 drop table if exists car_picture;
 drop table if exists image;
+drop table if exists dashboard_light;
 drop table if exists work_order_realized_service;
 drop table if exists work_service;
 drop table if exists work_order;
@@ -20,7 +21,7 @@ drop table if exists car;
 drop table if exists car_model;
 drop table if exists car_brand;
 drop table if exists mechanic_info;
-    drop table if exists client_info;
+drop table if exists client_info;
 
 create table client_info
 (
@@ -44,7 +45,7 @@ create table car_brand
 (
     id         int auto_increment primary key,
     brand_name varchar(32) unique not null check (brand_name != '')
-);
+    );
 
 create table car_model
 (
@@ -90,6 +91,7 @@ create table entry_state
     id              int auto_increment primary key,
     record_state_id int not null,
     valuables       varchar(255),
+    observations    varchar(255),
     gas_level       enum ('FULL','THREE_QUARTERS','HALF','ONE_QUARTER','LOW'),
     foreign key (record_state_id) references record_state (id)
 );
@@ -197,8 +199,6 @@ create table dashboard_light_present
     foreign key (work_order_id) references work_order (id),
     foreign key (dashboard_light_id) references image (id)
 );
-
-
 
 create table car_images
 (
@@ -441,6 +441,10 @@ SET @car_id = LAST_INSERT_ID();
 
 INSERT INTO client_info (first_name, last_name, email_address, address, cellphone_number)
 VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
+SET @client_id = LAST_INSERT_ID();
+
+INSERT INTO mechanic_info (first_name, last_name, registration_number)
+VALUES ('Matias', 'Fernandez', '12211223');
 SET @client_id = LAST_INSERT_ID();
 
 INSERT INTO image (alt, path)

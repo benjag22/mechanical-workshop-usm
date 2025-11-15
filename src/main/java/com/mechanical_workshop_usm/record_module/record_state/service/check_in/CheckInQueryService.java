@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.record_module.record_state.service.check_in;
 
 import com.mechanical_workshop_usm.check_in_consider_conditions_module.CheckInConsiderConditions;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCheckInBasicResponse;
-import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.MechanicalCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.MechanicalCondition;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckInRepository;
 import org.springframework.stereotype.Service;
@@ -38,6 +38,7 @@ public class CheckInQueryService {
         Integer modelYear = null;
         String licensePlate = null;
         String reason = null;
+        String observations = null;
 
         if (ci.getRecord() != null) {
             var record = ci.getRecord();
@@ -99,6 +100,8 @@ public class CheckInQueryService {
             }
         }
 
+        observations = ci.getObservations();
+
         String entryTime = ci.getEntryTime() != null ? ci.getEntryTime().toString() : null;
         return new GetCheckInBasicResponse(
                 checkInId,
@@ -110,6 +113,7 @@ public class CheckInQueryService {
                 modelYear,
                 licensePlate,
                 reason,
+                observations,
                 conditions,
                 entryTime
         );

@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm.record_module.record_state.dto.check_in;
+package com.mechanical_workshop_usm.mechanical_condition_module.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

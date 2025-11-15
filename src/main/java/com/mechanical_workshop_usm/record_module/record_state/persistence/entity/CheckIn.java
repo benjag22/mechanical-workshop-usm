@@ -22,6 +22,9 @@ public class CheckIn extends RecordState {
     @Column(name = "valuables", length = 255)
     private String valuables;
 
+    @Column(name = "observations", length = 255)
+    private String observations;
+
     @OneToMany(mappedBy = "checkIn", cascade = CascadeType.ALL)
     private final Set<CheckInConsiderConditions> mechanicalConditions = new LinkedHashSet<>();
 
@@ -32,9 +35,10 @@ public class CheckIn extends RecordState {
         super();
     }
 
-    public CheckIn(GasLevel gasLevel, String valuables, LocalDateTime entryTime, int mileage, Record record) {
+    public CheckIn(GasLevel gasLevel, String valuables, String observations, LocalDateTime entryTime, int mileage, Record record) {
         super(entryTime, mileage, record);
         this.gasLevel = gasLevel;
         this.valuables = valuables;
+        this.observations = observations;
     }
 }

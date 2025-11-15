@@ -36,7 +36,13 @@ public record CreateCheckInRequest(
         CreateCarBrandRequest carBrand,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        List<Integer> mechanicalConditionsIds,
+        List<Integer> interiorConditionsIds,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        List<Integer> exteriorConditionsIds,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        List<Integer> electricalConditionsIds,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<Integer> toolsIds,
@@ -54,5 +60,8 @@ public record CreateCheckInRequest(
         String gasLevel,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-        String valuables
+        String valuables,
+
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+        String observations
 ) {}

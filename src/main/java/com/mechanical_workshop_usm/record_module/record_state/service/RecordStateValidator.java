@@ -20,16 +20,6 @@ public class RecordStateValidator {
             throw new MultiFieldException("Invalid record state create request", errors);
         }
 
-        if (request.entryTime() == null || request.entryTime().isBlank()) {
-            errors.add(new FieldErrorResponse("entry_time", "Entry time is required"));
-        } else {
-            try {
-                LocalDateTime.parse(request.entryTime());
-            } catch (DateTimeParseException ex) {
-                errors.add(new FieldErrorResponse("entry_time", "Invalid entry_time format, expected yyyy-MM-ddTHH:mm[:ss]"));
-            }
-        }
-
         if (request.mileage() < 0) {
             errors.add(new FieldErrorResponse("mileage", "Mileage must be non-negative"));
         }

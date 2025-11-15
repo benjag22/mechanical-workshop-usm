@@ -38,35 +38,33 @@ public class WorkOrderController {
     )
     @Operation(
             summary = "Create a full work order",
-            description = "Send JSON in 'payload' and multiple carPictures[] files."
+            description = "Send a multipart request: the 'payload' part must be application/json (the JSON body), and carPictures/signature as file parts."
     )
     public ResponseEntity<CreateWorkOrderResponse> createFull(
             @Parameter(
-                    description = "JSON payload describing the work order",
-                    content = @Content(
-                            mediaType = "application/json",
-                            schema = @Schema(implementation = CreateWorkOrderRequest.class)
-                    )
+                    description = "JSON payload describing the work order (application/json).",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateWorkOrderRequest.class))
             )
             @RequestPart("payload")
-            String payloadJson,
+            CreateWorkOrderRequest payload,
 
             @Parameter(
-                    description = "Multiple car pictures",
+                    description = "Optional car pictures (one or more files). Send multiple parts named 'carPictures'.",
                     content = @Content(
-                            mediaType = MediaType.MULTIPART_FORM_DATA_VALUE,
+                            mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE,
                             array = @ArraySchema(schema = @Schema(type = "string", format = "binary"))
                     )
             )
             @RequestPart(value = "carPictures", required = false)
             List<MultipartFile> carPictures,
 
+            @Parameter(
+                    description = "Mechanic signature image (single file)",
+                    content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(type = "string", format = "binary"))
+            )
             @RequestPart(value = "signature", required = false)
             MultipartFile signature
-    ) throws JsonProcessingException {
-
-        CreateWorkOrderRequest payload = objectMapper.readValue(payloadJson, CreateWorkOrderRequest.class);
-
+    ) {
         CreateWorkOrderResponse resp = service.createFull(payload, carPictures, signature);
         return ResponseEntity.ok(resp);
     }

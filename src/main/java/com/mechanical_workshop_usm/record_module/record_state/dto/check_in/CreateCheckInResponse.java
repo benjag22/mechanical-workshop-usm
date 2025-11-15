@@ -10,7 +10,6 @@ public record CreateCheckInResponse(
         @JsonProperty("mileage") int mileage,
         @JsonProperty("gas_level") String gasLevel,
         @JsonProperty("valuables") String valuables,
-
         @JsonProperty("client_id") int clientId,
         @JsonProperty("car_id") int carId,
         @JsonProperty("mechanical_conditions_ids") List<Integer> MechanicalConditionsIds,

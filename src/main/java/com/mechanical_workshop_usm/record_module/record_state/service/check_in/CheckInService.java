@@ -24,6 +24,7 @@ import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.CreateCheckInRequest;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.CreateCheckInResponse;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCheckInFullResponse;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.MechanicalConditionInfo;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckOut;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.GasLevel;
@@ -43,6 +44,7 @@ import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entit
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repository.ExteriorConditionRepository;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repository.InteriorConditionRepository;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repository.ElectricalSystemConditionRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -244,7 +246,7 @@ public class CheckInService {
         );
         Record savedRecord = recordRepository.save(newRecord);
 
-        LocalDateTime entryTime = LocalDateTime.parse(request.recordState().entryTime());
+        LocalDateTime entryTime = LocalDateTime.now();
 
         GasLevel gasLevelEnum = parseGasLevel(request.gasLevel())
                 .orElseThrow(() -> new MultiFieldException(
@@ -255,50 +257,45 @@ public class CheckInService {
         CheckIn checkIn = new CheckIn(
                 gasLevelEnum,
                 request.valuables(),
+                request.observations(),
                 entryTime,
                 request.recordState().mileage(),
                 savedRecord
         );
 
 
-        if (request.mechanicalConditionsIds() != null) {
-            for (Integer condId : request.mechanicalConditionsIds()) {
-                boolean bound = false;
-                try {
-                    ExteriorCondition ec = entityFinder.findByIdOrThrow(exteriorConditionRepository, condId, "mechanical_condition_id", "Exterior condition not found");
-                    CheckInConsiderConditions cc = new CheckInConsiderConditions();
-                    cc.setCheckIn(checkIn);
-                    cc.setExteriorCondition(ec);
-                    checkIn.getMechanicalConditions().add(cc);
-                    bound = true;
-                } catch (RuntimeException ignored) {}
+        List<Integer> combinedMechanicalIds = new ArrayList<>();
 
-                if (bound) continue;
+        if (request.exteriorConditionsIds() != null) {
+            for (Integer condId : request.exteriorConditionsIds()) {
+                ExteriorCondition ec = entityFinder.findByIdOrThrow(exteriorConditionRepository, condId, "exterior_condition_id", "Exterior condition not found");
+                CheckInConsiderConditions cc = new CheckInConsiderConditions();
+                cc.setCheckIn(checkIn);
+                cc.setExteriorCondition(ec);
+                checkIn.getMechanicalConditions().add(cc);
+                combinedMechanicalIds.add(condId);
+            }
+        }
 
-                try {
-                    InteriorCondition ic = entityFinder.findByIdOrThrow(interiorConditionRepository, condId, "mechanical_condition_id", "Interior condition not found");
-                    CheckInConsiderConditions cc = new CheckInConsiderConditions();
-                    cc.setCheckIn(checkIn);
-                    cc.setInteriorCondition(ic);
-                    checkIn.getMechanicalConditions().add(cc);
-                    bound = true;
-                } catch (RuntimeException ignored) {}
+        if (request.interiorConditionsIds() != null) {
+            for (Integer condId : request.interiorConditionsIds()) {
+                InteriorCondition ic = entityFinder.findByIdOrThrow(interiorConditionRepository, condId, "interior_condition_id", "Interior condition not found");
+                CheckInConsiderConditions cc = new CheckInConsiderConditions();
+                cc.setCheckIn(checkIn);
+                cc.setInteriorCondition(ic);
+                checkIn.getMechanicalConditions().add(cc);
+                combinedMechanicalIds.add(condId);
+            }
+        }
 
-                if (bound) continue;
-
-                try {
-                    ElectricalSystemCondition el = entityFinder.findByIdOrThrow(electricalSystemConditionRepository, condId, "mechanical_condition_id", "Electrical system condition not found");
-                    CheckInConsiderConditions cc = new CheckInConsiderConditions();
-                    cc.setCheckIn(checkIn);
-                    cc.setElectricalSystemCondition(el);
-                    checkIn.getMechanicalConditions().add(cc);
-                    bound = true;
-                } catch (RuntimeException ignored) {}
-
-                if (!bound) {
-                    throw new MultiFieldException("Invalid mechanical condition ids",
-                            List.of(new FieldErrorResponse("mechanical_condition_id", "Condition id " + condId + " not found")));
-                }
+        if (request.electricalConditionsIds() != null) {
+            for (Integer condId : request.electricalConditionsIds()) {
+                ElectricalSystemCondition el = entityFinder.findByIdOrThrow(electricalSystemConditionRepository, condId, "electrical_condition_id", "Electrical condition not found");
+                CheckInConsiderConditions cc = new CheckInConsiderConditions();
+                cc.setCheckIn(checkIn);
+                cc.setElectricalSystemCondition(el);
+                checkIn.getMechanicalConditions().add(cc);
+                combinedMechanicalIds.add(condId);
             }
         }
 
@@ -322,7 +319,7 @@ public class CheckInService {
                 saved.getValuables(),
                 clientInfo.getId(),
                 car.getId(),
-                request.mechanicalConditionsIds(),
+                combinedMechanicalIds,
                 combinedToolIds
         );
     }
@@ -332,65 +329,7 @@ public class CheckInService {
     public GetCheckInFullResponse getCheckInById(Integer checkInId) {
         CheckIn ci = entityFinder.findByIdOrThrow(checkInRepository, checkInId, "check_in_id", "Check-in not found");
 
-        Integer clientId = null;
-        String clientName = null;
-        String clientEmail = null;
-        String brandName = null;
-        String modelName = null;
-        String modelType = null;
-        Integer modelYear = null;
-        String licensePlate = null;
-        String reason = null;
-
-        if (ci.getRecord() != null) {
-            var record = ci.getRecord();
-            var client = record.getClientInfo();
-            if (client != null) {
-                clientId = client.getId();
-                String first = client.getFirstName() == null ? "" : client.getFirstName();
-                String last = client.getLastName() == null ? "" : client.getLastName();
-                clientName = (first + (last.isBlank() ? "" : " " + last)).trim();
-                clientEmail = client.getEmailAddress();
-            }
-
-            var car = record.getCar();
-            if (car != null) {
-                licensePlate = car.getLicensePlate();
-                var model = car.getCarModel();
-                if (model != null) {
-                    modelName = model.getModelName();
-                    modelType = model.getModelType();
-                    modelYear = model.getModelYear();
-                    var brand = model.getBrand();
-                    if (brand != null) brandName = brand.getBrandName();
-                }
-            }
-
-            reason = record.getReason();
-        }
-
-        List<String> partNames = new ArrayList<>();
-        List<String> partStates = new ArrayList<>();
-        if (ci.getMechanicalConditions() != null) {
-            for (CheckInConsiderConditions cc : ci.getMechanicalConditions()) {
-                if (cc == null) continue;
-                if (cc.getExteriorCondition() != null) {
-                    var ec = cc.getExteriorCondition();
-                    partNames.add(ec.getPartName() == null ? "" : ec.getPartName());
-                    partStates.add(ec.getPartConditionState() == null ? "" : ec.getPartConditionState());
-                }
-                if (cc.getInteriorCondition() != null) {
-                    var ic = cc.getInteriorCondition();
-                    partNames.add(ic.getPartName() == null ? "" : ic.getPartName());
-                    partStates.add(ic.getPartConditionState() == null ? "" : ic.getPartConditionState());
-                }
-                if (cc.getElectricalSystemCondition() != null) {
-                    var el = cc.getElectricalSystemCondition();
-                    partNames.add(el.getPartName() == null ? "" : el.getPartName());
-                    partStates.add(el.getPartConditionState() == null ? "" : el.getPartConditionState());
-                }
-            }
-        }
+        List<MechanicalConditionInfo> mechanicalConditions = getMechanicalConditionInfos(ci);
 
         List<String> tools = new ArrayList<>();
         if (ci.getTools() != null) {
@@ -408,18 +347,19 @@ public class CheckInService {
         String valuables = ci.getValuables();
 
         return new GetCheckInFullResponse(
+                ci.getRecord().getId(),
                 ci.getId(),
-                clientId,
-                clientName,
-                clientEmail,
-                brandName,
-                modelName,
-                modelType,
-                modelYear,
-                licensePlate,
-                reason,
-                partNames,
-                partStates,
+                ci.getRecord().getClientInfo().getId(),
+                (ci.getRecord().getClientInfo().getFirstName() + " " + ci.getRecord().getClientInfo().getLastName()).trim(),
+                ci.getRecord().getClientInfo().getEmailAddress(),
+                ci.getRecord().getCar().getCarModel().getBrand().getBrandName(),
+                ci.getRecord().getCar().getCarModel().getModelName(),
+                ci.getRecord().getCar().getCarModel().getModelType(),
+                ci.getRecord().getCar().getCarModel().getModelYear(),
+                ci.getRecord().getCar().getLicensePlate(),
+                ci.getRecord().getReason(),
+                ci.getObservations(),
+                mechanicalConditions,
                 tools,
                 entryTime,
                 mileage,
@@ -427,6 +367,49 @@ public class CheckInService {
                 valuables
         );
     }
+
+    @NotNull
+    private static List<MechanicalConditionInfo> getMechanicalConditionInfos(CheckIn ci) {
+        List<MechanicalConditionInfo> mechanicalConditions = new ArrayList<>();
+
+        if (ci.getMechanicalConditions() != null) {
+            for (CheckInConsiderConditions cc : ci.getMechanicalConditions()) {
+                if (cc == null) continue;
+
+                if (cc.getExteriorCondition() != null) {
+                    ExteriorCondition ec = cc.getExteriorCondition();
+                    mechanicalConditions.add(new MechanicalConditionInfo(
+                            ec.getId(),
+                            "exterior",
+                            ec.getPartName() == null ? "" : ec.getPartName(),
+                            ec.getPartConditionState() == null ? "" : ec.getPartConditionState()
+                    ));
+                }
+
+                if (cc.getInteriorCondition() != null) {
+                    InteriorCondition ic = cc.getInteriorCondition();
+                    mechanicalConditions.add(new MechanicalConditionInfo(
+                            ic.getId(),
+                            "interior",
+                            ic.getPartName() == null ? "" : ic.getPartName(),
+                            ic.getPartConditionState() == null ? "" : ic.getPartConditionState()
+                    ));
+                }
+
+                if (cc.getElectricalSystemCondition() != null) {
+                    ElectricalSystemCondition el = cc.getElectricalSystemCondition();
+                    mechanicalConditions.add(new MechanicalConditionInfo(
+                            el.getId(),
+                            "electrical",
+                            el.getPartName() == null ? "" : el.getPartName(),
+                            el.getPartConditionState() == null ? "" : el.getPartConditionState()
+                    ));
+                }
+            }
+        }
+        return mechanicalConditions;
+    }
+
 
     private Optional<GasLevel> parseGasLevel(String value) {
         if (value == null || value.isBlank()) return Optional.empty();
