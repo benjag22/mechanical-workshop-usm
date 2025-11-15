@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.work_order_module;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderFullRequest;
+import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +27,7 @@ public class WorkOrderController {
             @RequestPart(value = "carPictures", required = false) List<MultipartFile> carPictures,
             @RequestPart(value = "signature", required = false) MultipartFile signature
     ) throws JsonProcessingException {
-        CreateWorkOrderFullRequest payload = new ObjectMapper().readValue(payloadJson, CreateWorkOrderFullRequest.class);
+        CreateWorkOrderRequest payload = new ObjectMapper().readValue(payloadJson, CreateWorkOrderRequest.class);
         CreateWorkOrderResponse resp = service.createFull(payload, carPictures, signature);
         return ResponseEntity.ok(resp);
     }

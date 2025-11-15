@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS work_order_has_mechanics (
     id INT AUTO_INCREMENT PRIMARY KEY,
     work_order_id INT NOT NULL,
     mechanic_info_id INT NOT NULL,
+    is_leader bool not null,
     CONSTRAINT fk_womh_work_order FOREIGN KEY (work_order_id) REFERENCES work_order(id),
     CONSTRAINT fk_womh_mechanic_info FOREIGN KEY (mechanic_info_id) REFERENCES mechanic_info(id),
     UNIQUE KEY uk_womh_pair (work_order_id, mechanic_info_id)
