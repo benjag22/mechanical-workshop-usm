@@ -4,15 +4,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 
 public record CreateWorkOrder(
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID del record asociado")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Associated record ID")
         Integer recordId,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Fecha estimada en formato yyyy-MM-dd")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Estimated date in yyyy-MM-dd format")
         String estimatedDate,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Hora estimada en formato HH:mm o HH:mm:ss")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Estimated time in HH:mm or HH:mm:ss format")
         String estimatedTime,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Ruta al archivo de firma")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Path to signature file")
         String signaturePath
 ) {}

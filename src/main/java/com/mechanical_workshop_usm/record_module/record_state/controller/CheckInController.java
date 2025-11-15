@@ -6,11 +6,14 @@ import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCh
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCheckInFullResponse;
 import com.mechanical_workshop_usm.record_module.record_state.service.check_in.CheckInQueryService;
 import com.mechanical_workshop_usm.record_module.record_state.service.check_in.CheckInService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+
+@Tag(name = "Check In")
 @RestController
 @RequestMapping("/api/checkin")
 public class CheckInController {

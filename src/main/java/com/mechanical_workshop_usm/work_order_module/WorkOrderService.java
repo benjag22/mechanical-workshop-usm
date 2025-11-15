@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WorkOrderService {
@@ -46,7 +47,6 @@ public class WorkOrderService {
     private final WorkOrderValidator workOrderValidator;
 
     private final Path baseDir;
-    private final String baseUrl;
 
     public WorkOrderService(
             WorkOrderRepository workOrderRepository,
@@ -59,8 +59,7 @@ public class WorkOrderService {
             WorkOrderHasMechanicService workOrderHasMechanicService,
             EntityFinder entityFinder,
             WorkOrderValidator workOrderValidator,
-            @Value("${storage.base-dir}") String storageBaseDir,
-            @Value("${storage.base-url}") String storageBaseUrl
+            @Value("${storage.base-dir}") String storageBaseDir
     ) {
         this.workOrderRepository = workOrderRepository;
         this.recordRepository = recordRepository;
@@ -74,7 +73,6 @@ public class WorkOrderService {
         this.workOrderValidator = workOrderValidator;
 
         this.baseDir = StorageUtils.toBaseDir(storageBaseDir);
-        this.baseUrl = StorageUtils.normalizeBaseUrl(storageBaseUrl);
     }
 
     @Transactional
@@ -83,7 +81,7 @@ public class WorkOrderService {
 
         Record record = entityFinder.findByIdOrThrow(recordRepository, request.recordId(), "recordId", "Record id not found");
 
-        WorkOrder workOrder = new WorkOrder(record, LocalDate.now(), LocalTime.now(), null);
+        WorkOrder workOrder = new WorkOrder(record, LocalDate.of(2025, 11, 15), LocalTime.of(9, 0), null);
         WorkOrder saved = workOrderRepository.save(workOrder);
 
         if (signature != null && !signature.isEmpty()) {
@@ -131,12 +129,7 @@ public class WorkOrderService {
         if (request.dashboardLightsActive() != null) {
             for (var dlReq : request.dashboardLightsActive()) {
                 dashboardLightRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
-                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(
-                            saved,
-                            dl,
-                            Boolean.TRUE.equals(dlReq.present()),
-                            Boolean.TRUE.equals(dlReq.operates())
-                    );
+                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, Boolean.TRUE.equals(dlReq.present()), Boolean.TRUE.equals(dlReq.operates()));
                     workOrderHasDashboardLightRepository.save(assoc);
                 });
             }
@@ -146,14 +139,7 @@ public class WorkOrderService {
 
         for (Integer mechanicId : request.mechanicIds()) {
             boolean isLeader = mechanicId.equals(leaderId);
-
-            workOrderHasMechanicService.create(
-                    new CreateWorkOrderHasMechanicRequest(
-                            saved.getId(),
-                            mechanicId,
-                            isLeader
-                    )
-            );
+            workOrderHasMechanicService.create(new CreateWorkOrderHasMechanicRequest(saved.getId(), mechanicId, isLeader));
         }
 
         return new CreateWorkOrderResponse(
@@ -163,5 +149,18 @@ public class WorkOrderService {
                 saved.getEstimatedTime().toString(),
                 saved.getSignaturePath()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<CreateWorkOrderResponse> getAll() {
+        return workOrderRepository.findAll().stream()
+                .map(w -> new CreateWorkOrderResponse(
+                        w.getId(),
+                        w.getRecord() == null ? null : w.getRecord().getId(),
+                        w.getEstimatedDate() == null ? null : w.getEstimatedDate().toString(),
+                        w.getEstimatedTime() == null ? null : w.getEstimatedTime().toString(),
+                        w.getSignaturePath()
+                ))
+                .collect(Collectors.toList());
     }
 }

@@ -72,9 +72,6 @@ public class CheckInValidator {
             errors.add(new FieldErrorResponse("mechanicalConditionsIds", "At least one mechanical condition id is required"));
         }
 
-        if (request.toolsIds() == null || request.toolsIds().isEmpty()) {
-            errors.add(new FieldErrorResponse("toolsIds", "At least one tool id is required"));
-        }
 
         if (request.gasLevel() == null || request.gasLevel().isBlank()) {
             errors.add(new FieldErrorResponse("gasLevel", "Gas level is required"));

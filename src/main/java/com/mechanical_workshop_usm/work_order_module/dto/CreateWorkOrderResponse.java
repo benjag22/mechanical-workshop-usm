@@ -2,20 +2,20 @@ package com.mechanical_workshop_usm.work_order_module.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-
+@Schema(description = "WorkOrder Response")
 public record CreateWorkOrderResponse(
-        @Schema(description = "ID del work order creado")
+        @Schema(description = "ID of the created work order")
         Integer id,
 
-        @Schema(description = "ID del record asociado")
+        @Schema(description = "Associated record ID")
         Integer recordId,
 
-        @Schema(description = "Fecha estimada en formato yyyy-MM-dd")
+        @Schema(description = "Estimated date in yyyy-MM-dd format")
         String estimatedDate,
 
-        @Schema(description = "Hora estimada en formato HH:mm[:ss]")
+        @Schema(description = "Estimated time in HH:mm[:ss] format")
         String estimatedTime,
 
-        @Schema(description = "Ruta al archivo de firma (si existe)")
+        @Schema(description = "Path to the signature file")
         String signaturePath
 ) {}
