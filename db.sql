@@ -461,4 +461,4 @@ VALUES ('ABS', '/images/icons/abs.svg'),
        ('Dirección asistida', '/images/icons/power-steering-warning-light.svg'),
        ('Cinturón de seguridad', '/images/icons/seat-belt-warning.svg'),
        ('Presión neumáticos (TPMS)', '/images/icons/TPMS_warning-light.svg'),
-       ('Maletero abierto', '/images;/icons/TPMS_warning-light.svg');
+       ('Maletero abierto', '/images/icons/TPMS_warning-light.svg');
