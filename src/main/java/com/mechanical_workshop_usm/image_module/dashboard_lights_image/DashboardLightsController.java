@@ -1,5 +1,7 @@
-package com.mechanical_workshop_usm;
+package com.mechanical_workshop_usm.image_module.dashboard_lights_image;
 
+import com.mechanical_workshop_usm.image_module.image.dto.CreateImageRequest;
+import com.mechanical_workshop_usm.image_module.image.ImageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,8 +19,8 @@ public class DashboardLightsController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Image>> getImageCategory() {
-        List<Image> response = imageService.findAllDashboardLights();
+    public ResponseEntity<List<CreateImageRequest>> getImageCategory() {
+        List<CreateImageRequest> response = imageService.findAllDashboardLights();
         return ResponseEntity.ok(response);
     }
 

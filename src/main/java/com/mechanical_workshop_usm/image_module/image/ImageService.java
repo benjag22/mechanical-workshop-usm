@@ -1,6 +1,9 @@
-package com.mechanical_workshop_usm;
+package com.mechanical_workshop_usm.image_module.image;
 
 import com.mechanical_workshop_usm.config.ImageConfig;
+import com.mechanical_workshop_usm.image_module.car_image.CarImage;
+import com.mechanical_workshop_usm.image_module.car_image.CarImageRepository;
+import com.mechanical_workshop_usm.image_module.image.dto.CreateImageRequest;
 import com.mechanical_workshop_usm.work_order_module.WorkOrder;
 import com.mechanical_workshop_usm.work_order_module.WorkOrderRepository;
 import org.apache.tika.Tika;
@@ -14,9 +17,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -44,14 +49,71 @@ public class ImageService {
         this.workOrderRepository = workOrderRepository;
     }
 
-    public List<Image> findAllDashboardLights() {
+    public List<CreateImageRequest> findAllDashboardLights() {
         return imageRepository.findAll().stream()
             .filter(img -> img.getPath().startsWith(ImageCategory.ICONS.dir + "/"))
-            .map(img -> new Image(img.getId(), buildPublicUrl(img.getPath()), img.getAlt()))
+            .map(img -> new CreateImageRequest(img.getId(), buildPublicUrl(img.getPath()), img.getAlt()))
             .toList();
     }
 
-    public CarImageModel saveCarImage(int workOrderId, MultipartFile file, String alt) {
+
+
+    public String saveSignatureFile(MultipartFile signature) throws IOException {
+        validateFile(signature);
+
+        String ext = extractExtensionWithDot(signature.getOriginalFilename());
+        String filename = UUID.randomUUID().toString() + ext;
+
+        // directorio relativo donde queremos guardar las firmas
+        String relativeDir = "images/work-orders/signature";
+        Path targetDir = resolveFullPath(relativeDir);
+
+        // crea directorios si faltan
+        Files.createDirectories(targetDir);
+
+        Path target = targetDir.resolve(filename);
+
+        try (InputStream in = signature.getInputStream()) {
+            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+
+        return filename;
+    }
+
+    private static String extractExtensionWithDot(String filename) {
+        if (filename == null || filename.isBlank()) return "";
+        int idx = filename.lastIndexOf('.');
+        return (idx >= 0) ? filename.substring(idx) : "";
+    }
+
+
+    public String saveSignature(MultipartFile signature, int workOrderId) {
+        validateFile(signature);
+
+        String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+        String sanitized = sanitizeFilename(signature.getOriginalFilename());
+
+        String relativePath = String.format(
+                "images/work-orders/%d/signature/%s_%s",
+                workOrderId,
+                timestamp,
+                sanitized
+        );
+
+        Path fullPath = resolveFullPath(relativePath);
+
+        try {
+            createDirectoriesIfMissing(fullPath.getParent());
+            Files.write(fullPath, signature.getBytes());
+        } catch (IOException e) {
+            LOGGER.error("Could not save signature file", e);
+            throw new RuntimeException("Could not save signature file", e);
+        }
+
+        return relativePath;
+    }
+
+    public CarImage saveCarImage(int workOrderId, MultipartFile file, String alt) {
         validateFile(file);
 
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
@@ -68,13 +130,13 @@ public class ImageService {
             throw new RuntimeException("Could not save car image file", e);
         }
 
-        ImageModel imageModel = ImageModel.builder()
+        Image imageModel = Image.builder()
             .path(relativePath)
             .alt(alt)
             .build();
         imageModel = imageRepository.save(imageModel);
 
-        CarImageModel carImageModel = CarImageModel.builder()
+        CarImage carImageModel = CarImage.builder()
             .workOrder(workOrder)
             .image(imageModel)
             .build();
@@ -82,22 +144,22 @@ public class ImageService {
         return carImageRepository.save(carImageModel);
     }
 
-    public List<Image> getCarImagesByWorkOrderId(int workOrderId) {
-        List<CarImageModel> carImages = carImageRepository.findByWorkOrder_Id(workOrderId);
+    public List<CreateImageRequest> getCarImagesByWorkOrderId(int workOrderId) {
+        List<CarImage> carImages = carImageRepository.findByWorkOrder_Id(workOrderId);
 
         return carImages.stream()
             .map(carImage -> {
-                ImageModel img = carImage.getImage();
-                return new Image(img.getId(), buildPublicUrl(img.getPath()), img.getAlt());
+                Image img = carImage.getImage();
+                return new CreateImageRequest(img.getId(), buildPublicUrl(img.getPath()), img.getAlt());
             })
             .toList();
     }
 
     public void deleteCarImage(int carImageId) {
-        CarImageModel carImage = carImageRepository.findById(carImageId)
+        CarImage carImage = carImageRepository.findById(carImageId)
             .orElseThrow(() -> new RuntimeException("Car image not found with id: " + carImageId));
 
-        ImageModel image = carImage.getImage();
+        Image image = carImage.getImage();
 
         carImageRepository.delete(carImage);
 
@@ -106,7 +168,7 @@ public class ImageService {
         }
     }
 
-    private void deleteImageFile(ImageModel image) {
+    private void deleteImageFile(Image image) {
         final Path fullPath = resolveFullPath(image.getPath());
 
         try {
@@ -130,7 +192,7 @@ public class ImageService {
         return filename != null ? filename.replaceAll("[^a-zA-Z0-9._-]", "_") : "file.jpg";
     }
 
-    private String buildPublicUrl(String relativePath) {
+    public String buildPublicUrl(String relativePath) {
         String normalizedPath = relativePath.replaceFirst("^/", "");
 
         if (!normalizedPath.startsWith("images/")) {

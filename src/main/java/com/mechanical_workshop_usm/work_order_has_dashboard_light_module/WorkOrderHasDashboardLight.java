@@ -1,6 +1,6 @@
 package com.mechanical_workshop_usm.work_order_has_dashboard_light_module;
 
-import com.mechanical_workshop_usm.picture_module.dashboard_light.DashboardLight;
+import com.mechanical_workshop_usm.image_module.image.Image;
 import com.mechanical_workshop_usm.work_order_module.WorkOrder;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -16,7 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "work_order_has_dashboard_light", uniqueConstraints = {@UniqueConstraint(name = "uk_wodl_pair", columnNames = {"work_order_id", "dashboard_light_id"})})
+@Table(name = "dashboard_light_present", uniqueConstraints = {@UniqueConstraint(name = "uk_wodl_pair", columnNames = {"work_order_id", "dashboard_light_id"})})
 public class WorkOrderHasDashboardLight {
 
     @Id
@@ -30,18 +30,15 @@ public class WorkOrderHasDashboardLight {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "dashboard_light_id", nullable = false)
-    private DashboardLight dashboardLight;
+    private Image dashboardLight;
 
-    @Column(name = "present", nullable = false)
-    private boolean present = false;
+    @Column(name = "is_functional", nullable = false)
+    private boolean is_functional = false;
 
-    @Column(name = "operates", nullable = false)
-    private boolean operates = false;
 
-    public WorkOrderHasDashboardLight(WorkOrder workOrder, DashboardLight dashboardLight, boolean present, boolean operates) {
+    public WorkOrderHasDashboardLight(WorkOrder workOrder, Image dashboardLight, boolean is_functional) {
         this.workOrder = workOrder;
         this.dashboardLight = dashboardLight;
-        this.present = present;
-        this.operates = operates;
+        this.is_functional = is_functional;
     }
 }

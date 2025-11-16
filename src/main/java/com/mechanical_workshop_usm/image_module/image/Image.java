@@ -1,4 +1,4 @@
-package com.mechanical_workshop_usm;
+package com.mechanical_workshop_usm.image_module.image;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ImageModel {
+public class Image {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

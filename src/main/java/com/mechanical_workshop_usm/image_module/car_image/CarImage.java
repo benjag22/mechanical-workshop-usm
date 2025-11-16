@@ -1,5 +1,6 @@
-package com.mechanical_workshop_usm;
+package com.mechanical_workshop_usm.image_module.car_image;
 
+import com.mechanical_workshop_usm.image_module.image.Image;
 import com.mechanical_workshop_usm.work_order_module.WorkOrder;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CarImageModel {
+public class CarImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -26,6 +27,6 @@ public class CarImageModel {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "image_id", nullable = false)
-    private ImageModel image;
+    private Image image;
 
 }

@@ -1,8 +1,8 @@
 package com.mechanical_workshop_usm.work_order_module;
 
-import com.mechanical_workshop_usm.picture_module.car_picture.CarPictureService;
-import com.mechanical_workshop_usm.picture_module.car_picture.dto.CreateCarPictureRequest;
-import com.mechanical_workshop_usm.picture_module.commons.StorageUtils;
+import com.mechanical_workshop_usm.image_module.car_image.CarImage;
+import com.mechanical_workshop_usm.image_module.image.ImageRepository;
+import com.mechanical_workshop_usm.image_module.image.ImageService;
 import com.mechanical_workshop_usm.util.EntityFinder;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrderHasDashboardLight;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrderHasDashboardLightRepository;
@@ -39,40 +39,37 @@ public class WorkOrderService {
     private final WorkServiceRepository workServiceRepository;
     private final WorkOrderRealizedServiceRepository realizedServiceRepository;
     private final WorkOrderHasDashboardLightRepository workOrderHasDashboardLightRepository;
-    private final com.mechanical_workshop_usm.picture_module.dashboard_light.DashboardLightRepository dashboardLightRepository;
 
-    private final CarPictureService carPictureService;
     private final WorkOrderHasMechanicService workOrderHasMechanicService;
     private final EntityFinder entityFinder;
     private final WorkOrderValidator workOrderValidator;
 
-    private final Path baseDir;
+
+    private final ImageRepository imageRepository;
+    private  final ImageService imageService;
 
     public WorkOrderService(
             WorkOrderRepository workOrderRepository,
             RecordRepository recordRepository,
             WorkServiceRepository workServiceRepository,
             WorkOrderRealizedServiceRepository realizedServiceRepository,
-            com.mechanical_workshop_usm.picture_module.dashboard_light.DashboardLightRepository dashboardLightRepository,
             WorkOrderHasDashboardLightRepository workOrderHasDashboardLightRepository,
-            CarPictureService carPictureService,
+            ImageRepository imageRepository,
             WorkOrderHasMechanicService workOrderHasMechanicService,
             EntityFinder entityFinder,
             WorkOrderValidator workOrderValidator,
-            @Value("${storage.base-dir}") String storageBaseDir
+            ImageService imageService
     ) {
         this.workOrderRepository = workOrderRepository;
         this.recordRepository = recordRepository;
         this.workServiceRepository = workServiceRepository;
         this.realizedServiceRepository = realizedServiceRepository;
-        this.dashboardLightRepository = dashboardLightRepository;
         this.workOrderHasDashboardLightRepository = workOrderHasDashboardLightRepository;
-        this.carPictureService = carPictureService;
         this.workOrderHasMechanicService = workOrderHasMechanicService;
         this.entityFinder = entityFinder;
         this.workOrderValidator = workOrderValidator;
-
-        this.baseDir = StorageUtils.toBaseDir(storageBaseDir);
+        this.imageRepository = imageRepository;
+        this.imageService = imageService;
     }
 
     @Transactional
@@ -86,8 +83,8 @@ public class WorkOrderService {
 
         if (signature != null && !signature.isEmpty()) {
             try {
-                String sigFilename = StorageUtils.saveMultipartFile(baseDir, "work-orders", signature);
-                String sigPath = StorageUtils.publicPath("work-orders", sigFilename);
+                String sigFilename = imageService.saveSignatureFile(signature);
+                String sigPath = imageService.buildPublicUrl("images/work-orders/signature/" + sigFilename);
                 saved.setSignaturePath(sigPath);
                 workOrderRepository.save(saved);
             } catch (IOException e) {
@@ -95,11 +92,10 @@ public class WorkOrderService {
             }
         }
 
-        if (carPictures != null) {
+        if (carPictures != null && !carPictures.isEmpty()) {
             for (MultipartFile file : carPictures) {
                 if (file == null || file.isEmpty()) continue;
-                CreateCarPictureRequest picReq = new CreateCarPictureRequest(file, saved.getId());
-                carPictureService.createFromRequest(picReq);
+                CarImage carImage = imageService.saveCarImage(saved.getId(), file, file.getOriginalFilename());
             }
         }
 
@@ -128,8 +124,8 @@ public class WorkOrderService {
 
         if (request.dashboardLightsActive() != null) {
             for (var dlReq : request.dashboardLightsActive()) {
-                dashboardLightRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
-                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, Boolean.TRUE.equals(dlReq.present()), Boolean.TRUE.equals(dlReq.operates()));
+                imageRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
+                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, Boolean.TRUE.equals(dlReq.is_functional()));
                     workOrderHasDashboardLightRepository.save(assoc);
                 });
             }
