@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MechanicInfoRepository extends JpaRepository<MechanicInfo, Integer> {
+    boolean existsByRut(String rut);
 }

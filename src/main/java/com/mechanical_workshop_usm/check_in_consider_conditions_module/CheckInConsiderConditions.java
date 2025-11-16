@@ -45,12 +45,10 @@ public class CheckInConsiderConditions {
         if (!(o instanceof CheckInConsiderConditions)) return false;
         CheckInConsiderConditions that = (CheckInConsiderConditions) o;
 
-        // if both persisted compare by id
         if (this.id != null && that.id != null) {
             return Objects.equals(this.id, that.id);
         }
 
-        // otherwise build comparison key
         Integer thisCheckInId = (this.checkIn != null) ? this.checkIn.getId() : null;
         Integer thatCheckInId = (that.checkIn != null) ? that.checkIn.getId() : null;
         if (!Objects.equals(thisCheckInId, thatCheckInId)) return false;
@@ -93,7 +91,6 @@ public class CheckInConsiderConditions {
 
     @Override
     public int hashCode() {
-        // If persisted use id
         if (this.id != null) {
             return Objects.hash(this.id);
         }

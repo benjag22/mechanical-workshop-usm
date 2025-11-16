@@ -1,5 +1,6 @@
 package com.mechanical_workshop_usm.work_order_module.dto;
 
+import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.dto.CreateWorkOrderHasDashboardLightRequest;
 import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +23,12 @@ public record CreateWorkOrderRequest(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Mechanic IDs to associate with the order")
         List<Integer> mechanicIds,
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "New mechanics to be created")
+        List<CreateMechanicRequest> newMechanics,
+
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID of the mechanic who will be the leader")
-        Integer leaderMechanicId
+        Integer leaderMechanicId,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "New mechanics to be created")
+        CreateMechanicRequest newLeaderMechanic
 ) {}

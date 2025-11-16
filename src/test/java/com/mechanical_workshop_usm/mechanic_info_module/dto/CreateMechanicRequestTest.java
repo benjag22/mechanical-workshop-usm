@@ -11,6 +11,6 @@ class CreateMechanicRequestTest {
 
         assertEquals("Ana", dto.firstName());
         assertEquals("Gómez", dto.lastName());
-        assertEquals("REG2023", dto.registrationNumber());
+        assertEquals("REG2023", dto.rut());
     }*/
 }

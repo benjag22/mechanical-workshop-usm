@@ -1,8 +1,11 @@
 package com.mechanical_workshop_usm.work_order_module;
 
-import com.mechanical_workshop_usm.image_module.car_image.CarImage;
 import com.mechanical_workshop_usm.image_module.image.ImageRepository;
 import com.mechanical_workshop_usm.image_module.image.ImageService;
+import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfo;
+import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoService;
+import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
+import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicResponse;
 import com.mechanical_workshop_usm.util.EntityFinder;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrderHasDashboardLight;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrderHasDashboardLightRepository;
@@ -18,17 +21,15 @@ import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceRequ
 import com.mechanical_workshop_usm.record_module.record.Record;
 import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +45,8 @@ public class WorkOrderService {
     private final EntityFinder entityFinder;
     private final WorkOrderValidator workOrderValidator;
 
+    private final MechanicInfoService mechanicInfoService;
+
 
     private final ImageRepository imageRepository;
     private  final ImageService imageService;
@@ -58,7 +61,8 @@ public class WorkOrderService {
             WorkOrderHasMechanicService workOrderHasMechanicService,
             EntityFinder entityFinder,
             WorkOrderValidator workOrderValidator,
-            ImageService imageService
+            ImageService imageService,
+            MechanicInfoService mechanicInfoService
     ) {
         this.workOrderRepository = workOrderRepository;
         this.recordRepository = recordRepository;
@@ -70,6 +74,7 @@ public class WorkOrderService {
         this.workOrderValidator = workOrderValidator;
         this.imageRepository = imageRepository;
         this.imageService = imageService;
+        this.mechanicInfoService =  mechanicInfoService;
     }
 
     @Transactional
@@ -81,25 +86,8 @@ public class WorkOrderService {
         WorkOrder workOrder = new WorkOrder(record, LocalDate.of(2025, 11, 15), LocalTime.of(9, 0), null);
         WorkOrder saved = workOrderRepository.save(workOrder);
 
-        if (signature != null && !signature.isEmpty()) {
-            try {
-                String sigFilename = imageService.saveSignatureFile(signature);
-                String sigPath = imageService.buildPublicUrl("images/work-orders/signature/" + sigFilename);
-                saved.setSignaturePath(sigPath);
-                workOrderRepository.save(saved);
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to store signature file", e);
-            }
-        }
 
-        if (carPictures != null && !carPictures.isEmpty()) {
-            for (MultipartFile file : carPictures) {
-                if (file == null || file.isEmpty()) continue;
-                CarImage carImage = imageService.saveCarImage(saved.getId(), file, file.getOriginalFilename());
-            }
-        }
-
-        List<Integer> allServiceIds = new ArrayList<>();
+        AtomicReference<List<Integer>> allServiceIds = new AtomicReference<>(new ArrayList<>());
         if (request.newServices() != null) {
             for (CreateWorkServiceRequest sReq : request.newServices()) {
                 WorkService ws = new WorkService(
@@ -109,19 +97,63 @@ public class WorkOrderService {
                 WorkService savedWs = workServiceRepository.save(ws);
 
                 realizedServiceRepository.save(new WorkOrderRealizedService(saved, savedWs, false));
-                allServiceIds.add(savedWs.getId());
+                allServiceIds.get().add(savedWs.getId());
             }
         }
-
         if (request.serviceIds() != null) {
             for (Integer sid : request.serviceIds()) {
                 workServiceRepository.findById(sid).ifPresent(ws -> {
                     realizedServiceRepository.save(new WorkOrderRealizedService(saved, ws, false));
-                    allServiceIds.add(sid);
+                    allServiceIds.get().add(sid);
                 });
             }
         }
 
+        // Apartado de mecanicos
+        List<Integer> mechanicIdsList = new ArrayList<>();
+        Integer leaderId;
+
+        if (request.newLeaderMechanic() != null) {
+            CreateMechanicResponse mechanic = mechanicInfoService.createMechanic(new CreateMechanicRequest(
+                    request.newLeaderMechanic().name(),
+                    request.newLeaderMechanic().rut()
+            ));
+            leaderId = mechanic.id();
+            mechanicIdsList.add(leaderId);
+        }
+        else {
+            leaderId = request.leaderMechanicId();
+            mechanicIdsList.add(leaderId);
+        }
+
+        if (request.newMechanics() != null &&  !request.newMechanics().isEmpty()) {
+            for (CreateMechanicRequest newMechanic : request.newMechanics()) {
+                CreateMechanicResponse mechanic = mechanicInfoService.createMechanic(new CreateMechanicRequest(newMechanic.name(), newMechanic.rut()));
+                mechanicIdsList.add(mechanic.id());
+            }
+        }
+
+        mechanicIdsList.addAll(request.mechanicIds());
+
+        for (Integer mechanicId : mechanicIdsList) {
+            boolean isLeader = mechanicId.equals(leaderId);
+            workOrderHasMechanicService.create(new CreateWorkOrderHasMechanicRequest(saved.getId(), mechanicId, isLeader));
+        }
+
+
+        // Apartado de imagenes
+        if (signature != null && !signature.isEmpty()) {
+            String sigFilename = imageService.saveSignature(signature, workOrder.getId());
+            String sigPath = imageService.buildPublicUrl(sigFilename);
+            saved.setSignaturePath(sigPath);
+            workOrderRepository.save(saved);
+        }
+        if (carPictures != null && !carPictures.isEmpty()) {
+            for (MultipartFile file : carPictures) {
+                if (file == null || file.isEmpty()) continue;
+                imageService.saveCarImage(saved.getId(), file, file.getOriginalFilename());
+            }
+        }
         if (request.dashboardLightsActive() != null) {
             for (var dlReq : request.dashboardLightsActive()) {
                 imageRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
@@ -131,12 +163,6 @@ public class WorkOrderService {
             }
         }
 
-        Integer leaderId = request.leaderMechanicId();
-
-        for (Integer mechanicId : request.mechanicIds()) {
-            boolean isLeader = mechanicId.equals(leaderId);
-            workOrderHasMechanicService.create(new CreateWorkOrderHasMechanicRequest(saved.getId(), mechanicId, isLeader));
-        }
 
         return new CreateWorkOrderResponse(
                 saved.getId(),

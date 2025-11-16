@@ -10,6 +10,6 @@ class CreateMechanicResponseTest {
         CreateMechanicResponse dto = new CreateMechanicResponse(1, "MECH2025");
 
         assertEquals(1, dto.id());
-        assertEquals("MECH2025", dto.registrationNumber());
+        assertEquals("MECH2025", dto.rut());
     }
 }

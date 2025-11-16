@@ -1,5 +1,6 @@
 package com.mechanical_workshop_usm.work_service_module;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

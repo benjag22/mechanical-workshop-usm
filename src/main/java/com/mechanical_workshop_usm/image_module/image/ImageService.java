@@ -56,37 +56,6 @@ public class ImageService {
             .toList();
     }
 
-
-
-    public String saveSignatureFile(MultipartFile signature) throws IOException {
-        validateFile(signature);
-
-        String ext = extractExtensionWithDot(signature.getOriginalFilename());
-        String filename = UUID.randomUUID().toString() + ext;
-
-        // directorio relativo donde queremos guardar las firmas
-        String relativeDir = "images/work-orders/signature";
-        Path targetDir = resolveFullPath(relativeDir);
-
-        // crea directorios si faltan
-        Files.createDirectories(targetDir);
-
-        Path target = targetDir.resolve(filename);
-
-        try (InputStream in = signature.getInputStream()) {
-            Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
-        }
-
-        return filename;
-    }
-
-    private static String extractExtensionWithDot(String filename) {
-        if (filename == null || filename.isBlank()) return "";
-        int idx = filename.lastIndexOf('.');
-        return (idx >= 0) ? filename.substring(idx) : "";
-    }
-
-
     public String saveSignature(MultipartFile signature, int workOrderId) {
         validateFile(signature);
 
@@ -94,7 +63,7 @@ public class ImageService {
         String sanitized = sanitizeFilename(signature.getOriginalFilename());
 
         String relativePath = String.format(
-                "images/work-orders/%d/signature/%s_%s",
+                "images/work-order/%d/signature/%s_%s",
                 workOrderId,
                 timestamp,
                 sanitized
