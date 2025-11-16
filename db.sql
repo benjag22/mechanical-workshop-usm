@@ -1,7 +1,7 @@
 USE usm_mechanical_workshop;
 
 drop table if exists work_order_has_mechanics;
-drop table if exists car_picture;
+drop table if exists car_images;
 drop table if exists image;
 drop table if exists dashboard_light;
 drop table if exists work_order_realized_service;
@@ -463,7 +463,7 @@ VALUES ('ABS', 'icons/abs.svg'),
        ('Luces bajas', 'icons/low-beam-warning-light.svg'),
        ('Combustible bajo', 'icons/low-fuel-warning-light.svg'),
        ('Aceite (presión de aceite)', 'icons/oil-light.svg'),
-       ('Dirección asistida', '/icons/power-steering-warning-light.svg'),
+       ('Dirección asistida', 'icons/power-steering-warning-light.svg'),
        ('Cinturón de seguridad', 'icons/seat-belt-warning.svg'),
        ('Presión neumáticos (TPMS)', 'icons/TPMS_warning-light.svg'),
-       ('Maletero abierto', 'icons/TPMS_warning-light.svg');
+       ('Maletero abierto', 'icons/trunk-open-warning-light.svg');
