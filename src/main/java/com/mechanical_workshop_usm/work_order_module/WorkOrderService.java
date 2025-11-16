@@ -125,7 +125,7 @@ public class WorkOrderService {
         if (request.dashboardLightsActive() != null) {
             for (var dlReq : request.dashboardLightsActive()) {
                 imageRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
-                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, Boolean.TRUE.equals(dlReq.is_functional()));
+                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, Boolean.TRUE.equals(dlReq.isFunctional()));
                     workOrderHasDashboardLightRepository.save(assoc);
                 });
             }

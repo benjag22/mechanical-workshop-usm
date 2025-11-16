@@ -16,12 +16,12 @@ public class MechanicInfoService {
 
     public CreateMechanicResponse createMechanic(CreateMechanicRequest createMechanicRequest) {
         mechanicInfoValidator.validateOnCreate(createMechanicRequest);
-        MechanicInfo mechanicInfo = new MechanicInfo(
-                createMechanicRequest.firstName(),
-                createMechanicRequest.lastName(),
-                createMechanicRequest.registrationNumber()
-        );
+        MechanicInfo mechanicInfo = MechanicInfo.builder()
+            .rut(createMechanicRequest.rut())
+            .name(createMechanicRequest.name())
+            .build();
+
         MechanicInfo saved = mechanicInfoRepository.save(mechanicInfo);
-        return new CreateMechanicResponse(saved.getId(), saved.getRegistrationNumber());
+        return new CreateMechanicResponse(saved.getId(), saved.getRut());
     }
 }

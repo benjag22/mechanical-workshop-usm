@@ -11,5 +11,5 @@ public record CreateWorkOrderHasDashboardLightRequest(
         Boolean present,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Si el dashboard light opera correctamente (default false)")
-        Boolean is_functional
+        Boolean isFunctional
 ) {}

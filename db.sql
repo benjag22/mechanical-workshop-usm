@@ -36,9 +36,8 @@ create table client_info
 create table  mechanic_info
 (
     id                  int auto_increment primary key,
-    first_name          varchar(64) not null check ( '' != first_name),
-    last_name           varchar(64),
-    registration_number varchar(16)
+    name          varchar(64) not null check ( '' != name),
+    rut varchar(11) unique not null
 );
 
 create table car_brand
@@ -443,8 +442,8 @@ INSERT INTO client_info (first_name, last_name, email_address, address, cellphon
 VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
 SET @client_id = LAST_INSERT_ID();
 
-INSERT INTO mechanic_info (first_name, last_name, registration_number)
-VALUES ('Matias', 'Fernandez', '12211223');
+INSERT INTO mechanic_info (name, rut)
+VALUES ('Matias Fernandez', '21333888-2');
 SET @client_id = LAST_INSERT_ID();
 
 INSERT INTO image (alt, path)
