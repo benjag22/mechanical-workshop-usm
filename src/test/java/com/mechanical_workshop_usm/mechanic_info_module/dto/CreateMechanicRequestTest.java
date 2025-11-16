@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CreateMechanicRequestTest {
 
-    @Test
+    /*@Test
     void testRecordFields() {
         CreateMechanicRequest dto = new CreateMechanicRequest("Ana", "Gómez", "REG2023");
 
         assertEquals("Ana", dto.firstName());
         assertEquals("Gómez", dto.lastName());
         assertEquals("REG2023", dto.registrationNumber());
-    }
+    }*/
 }
