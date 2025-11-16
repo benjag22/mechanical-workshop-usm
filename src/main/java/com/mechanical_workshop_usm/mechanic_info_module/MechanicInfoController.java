@@ -2,25 +2,27 @@ package com.mechanical_workshop_usm.mechanic_info_module;
 
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicResponse;
+import com.mechanical_workshop_usm.mechanic_info_module.dto.Mechanic;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/mechanic")
 public class MechanicInfoController {
     private final MechanicInfoService mechanicInfoService;
-    private final MechanicInfoRepository mechanicInfoRepository;
 
-    public MechanicInfoController(MechanicInfoService mechanicInfoService, MechanicInfoRepository mechanicInfoRepository) {
+    public MechanicInfoController(MechanicInfoService mechanicInfoService) {
         this.mechanicInfoService = mechanicInfoService;
-        this.mechanicInfoRepository = mechanicInfoRepository;
     }
 
     @GetMapping
-    public List<MechanicInfo> getAllMechanics() {
-        return mechanicInfoRepository.findAll();
+    public ResponseEntity<List<Mechanic>> getAllMechanics() {
+        List<Mechanic> response = mechanicInfoService.getAllMechanics();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
