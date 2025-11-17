@@ -26,9 +26,9 @@ public record CreateWorkOrderRequest(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "New mechanics to be created")
         List<CreateMechanicRequest> newMechanics,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID of the mechanic who will be the leader")
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "ID of the mechanic who will be the leader")
         Integer leaderMechanicId,
 
-        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "New mechanics to be created")
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "New mechanics to be created")
         CreateMechanicRequest newLeaderMechanic
 ) {}
