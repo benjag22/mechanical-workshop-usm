@@ -1,7 +1,7 @@
 package com.mechanical_workshop_usm.work_service_module;
 
 import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceRequest;
-import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceResponse;
+import com.mechanical_workshop_usm.work_service_module.dto.GetWorkServiceResponse;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
@@ -15,7 +15,7 @@ public class WorkServiceManager {
     public WorkServiceManager(WorkServiceRepository repository) {
         this.repository = repository;
     }
-    public CreateWorkServiceResponse create(CreateWorkServiceRequest request) {
+    public GetWorkServiceResponse create(CreateWorkServiceRequest request) {
 
         if (repository.existsByServiceName(request.serviceName())) {
             throw new IllegalArgumentException("Service with name '" + request.serviceName() + "' already exists");
@@ -28,7 +28,7 @@ public class WorkServiceManager {
 
         WorkService saved = repository.save(service);
 
-        return new CreateWorkServiceResponse(
+        return new GetWorkServiceResponse(
                 saved.getId(),
                 saved.getServiceName(),
                 saved.getEstimatedTime().toString()
@@ -36,10 +36,10 @@ public class WorkServiceManager {
     }
 
 
-    public List<CreateWorkServiceResponse> getAll() {
+    public List<GetWorkServiceResponse> getAll() {
         return repository.findAll()
                 .stream()
-                .map(service -> new CreateWorkServiceResponse(
+                .map(service -> new GetWorkServiceResponse(
                         service.getId(),
                         service.getServiceName(),
                         service.getEstimatedTime().toString()
