@@ -7,13 +7,12 @@ import java.util.List;
 @Schema(description = "Formato estándar de error de la API")
 public record ApiResponse(
 
-        @Schema(description = "Código HTTP", example = "400")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED,description = "Código HTTP", example = "400")
         int code,
 
-        @Schema(description = "Mensaje principal del error", example = "Validation failed")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Mensaje principal del error", example = "Validation failed")
         String message,
 
-        @Schema(description = "Lista de errores por campo")
-        @JsonProperty("errors")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Lista de errores por campo")
         List<FieldErrorResponse> errors
 ) {}
