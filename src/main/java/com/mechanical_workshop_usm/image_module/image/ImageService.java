@@ -7,6 +7,8 @@ import com.mechanical_workshop_usm.image_module.image.dto.CreateImageRequest;
 import com.mechanical_workshop_usm.work_order_module.WorkOrder;
 import com.mechanical_workshop_usm.work_order_module.WorkOrderRepository;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -17,11 +19,9 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ImageService {
@@ -57,10 +57,12 @@ public class ImageService {
     }
 
     public String saveSignature(MultipartFile signature, int workOrderId) {
-        validateFile(signature);
+        final String extension = validateFileAndGetExtension(signature);
 
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
-        String sanitized = sanitizeFilename(signature.getOriginalFilename());
+        String sanitized = sanitizeFilename(
+                signature.getOriginalFilename() != null ? signature.getOriginalFilename() : "file" + extension
+        );
 
         String relativePath = String.format(
                 "images/work-order/%d/signature/%s_%s",
@@ -83,12 +85,15 @@ public class ImageService {
     }
 
     public CarImage saveCarImage(int workOrderId, MultipartFile file, String alt) {
-        validateFile(file);
+        final String extension = validateFileAndGetExtension(file);
 
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
             .orElseThrow(() -> new RuntimeException("Work order not found"));
 
-        final String relativePath = generateCarImagePath(workOrderId, file.getOriginalFilename());
+        final String relativePath = generateCarImagePath(
+                workOrderId,
+                file.getOriginalFilename() != null ? file.getOriginalFilename() : "file" + extension
+        );
         final Path fullPath = resolveFullPath(relativePath);
 
         try {
@@ -99,15 +104,16 @@ public class ImageService {
             throw new RuntimeException("Could not save car image file", e);
         }
 
-        Image imageModel = Image.builder()
+        final Image imageModel = Image.builder()
             .path(relativePath)
             .alt(alt)
             .build();
-        imageModel = imageRepository.save(imageModel);
 
-        CarImage carImageModel = CarImage.builder()
+        final Image savedImage = imageRepository.save(imageModel);
+
+        final CarImage carImageModel = CarImage.builder()
             .workOrder(workOrder)
-            .image(imageModel)
+            .image(savedImage)
             .build();
 
         return carImageRepository.save(carImageModel);
@@ -184,13 +190,14 @@ public class ImageService {
         }
     }
 
-    private void validateFile(MultipartFile file) {
+    private String validateFileAndGetExtension(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("File cannot be empty");
         }
 
+        final String mimeType;
         try (final InputStream inputStream = file.getInputStream()) {
-            final String mimeType = TIKA.detect(inputStream);
+            mimeType = TIKA.detect(inputStream);
 
             if (mimeType == null || !SUPPORTED_IMAGE_TYPES.contains(mimeType)) {
                 throw new RuntimeException("File must be an image");
@@ -202,6 +209,12 @@ public class ImageService {
 
         if (file.getSize() > MAX_FILE_SIZE) {
             throw new RuntimeException("File size cannot exceed " + MAX_FILE_SIZE_STR);
+        }
+
+        try {
+            return MimeTypes.getDefaultMimeTypes().forName(mimeType).getExtension();
+        } catch (MimeTypeException e) {
+            return ".png";
         }
     }
 
