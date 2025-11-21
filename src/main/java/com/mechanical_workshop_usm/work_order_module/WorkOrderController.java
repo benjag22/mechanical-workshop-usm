@@ -54,6 +54,7 @@ public class WorkOrderController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = CreateWorkOrderRequest.class))
             )
             @RequestPart("payload")
+            @Schema(implementation = CreateWorkOrderRequest.class, description = "Configuration update")
             String payload,
 
             @Parameter(
