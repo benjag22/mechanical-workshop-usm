@@ -159,7 +159,7 @@ create table work_order
 (
     id             int auto_increment primary key,
     record_id      int  not null,
-    estimated_date date not null,
+    completed boolean not null default false,
     estimated_time time not null,
     signature_path varchar(512) default null,
     foreign key (record_id) references record (id)
@@ -207,6 +207,7 @@ create table car_images
     foreign key (work_order_id) references work_order (id),
     foreign key (image_id) references image (id)
 );
+
 
 create table work_order_has_mechanics
 (

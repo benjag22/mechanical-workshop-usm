@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mechanical_workshop_usm.api.exceptions.ExceptionMapper;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
+import com.mechanical_workshop_usm.work_order_module.dto.TrimmedWorkOrder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -89,8 +90,9 @@ public class WorkOrderController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all work orders", description = "Returns a list of all work orders.")
-    public ResponseEntity<List<CreateWorkOrderResponse>> getAll() {
-        return ResponseEntity.ok(service.getAll());
+    public ResponseEntity<List<TrimmedWorkOrder>> getAllWorkOrders() {
+        List<TrimmedWorkOrder> response = service.getTrimmedWorkOrders();
+        return ResponseEntity.ok(response);
     }
 
     private CreateWorkOrderRequest parseCreateWorkOrderRequest(String json) {

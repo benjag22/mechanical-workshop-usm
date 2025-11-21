@@ -2,7 +2,6 @@ package com.mechanical_workshop_usm.work_order_module;
 
 import com.mechanical_workshop_usm.image_module.image.ImageRepository;
 import com.mechanical_workshop_usm.image_module.image.ImageService;
-import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfo;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoService;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicResponse;
@@ -13,6 +12,8 @@ import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMe
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.dto.CreateWorkOrderHasMechanicRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
+import com.mechanical_workshop_usm.work_order_module.dto.TrimmedWorkOrder;
+import com.mechanical_workshop_usm.work_order_module.projections.TrimmedWorkOrderInfoProjection;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedService;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedServiceRepository;
 import com.mechanical_workshop_usm.work_service_module.WorkService;
@@ -77,6 +78,23 @@ public class WorkOrderService {
         this.mechanicInfoService =  mechanicInfoService;
     }
 
+    public List<TrimmedWorkOrder> getTrimmedWorkOrders(){
+        List<TrimmedWorkOrderInfoProjection> projections = workOrderRepository.findTrimmedWorkOrders();
+
+        return projections.stream()
+            .map(projection -> new TrimmedWorkOrder(
+                projection.getWorkOrderId(),
+                projection.isCompleted(),
+                projection.getEstimatedTime(),
+                projection.getSignaturePath(),
+                projection.getMechanicLeaderFullName(),
+                projection.getClientFirstName(),
+                projection.getClientLastName(),
+                projection.getClientCellphoneNumber(),
+                projection.getCarLicensePlate()
+            ))
+            .toList();
+    }
     @Transactional
     public CreateWorkOrderResponse createFull(CreateWorkOrderRequest request, List<MultipartFile> carPictures, MultipartFile signature) {
         workOrderValidator.validateOnCreate(request, carPictures == null ? 0 : carPictures.size(), signature != null && !signature.isEmpty());

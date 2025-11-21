@@ -31,8 +31,9 @@ public class WorkOrder {
     @JoinColumn(name = "record_id", nullable = false)
     private Record record;
 
-    @Column(name = "estimated_date", nullable = false)
-    private LocalDate estimatedDate;
+
+    @Column(name = "completed", nullable = false)
+    private boolean completed;
 
     @Column(name = "estimated_time", nullable = false)
     private LocalTime estimatedTime;
@@ -40,9 +41,8 @@ public class WorkOrder {
     @Column(name = "signature_path", length = 512)
     private String signaturePath;
 
-    public WorkOrder(Record record, LocalDate estimatedDate, LocalTime estimatedTime, String signaturePath) {
+    public WorkOrder(Record record, LocalTime estimatedTime, String signaturePath) {
         this.record = record;
-        this.estimatedDate = estimatedDate;
         this.estimatedTime = estimatedTime;
         this.signaturePath = signaturePath;
     }
