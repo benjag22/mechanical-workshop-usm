@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.work_order_module.dto;
 
 import com.mechanical_workshop_usm.car_module.car.dto.GetCar;
 import com.mechanical_workshop_usm.client_info_module.dtos.Client;
-import com.mechanical_workshop_usm.image_module.image.dto.CreateImageRequest;
+import com.mechanical_workshop_usm.image_module.image.dto.GetImage;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.GetMechanicInfo;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.dto.WorkOrderHasDashboardLightResponse;
 import com.mechanical_workshop_usm.work_service_module.dto.GetService;
@@ -19,8 +19,8 @@ public record GetWorkOrderFull(
         List<GetService> services,
 
         String signatureUrl,
-        List<CreateImageRequest> carImages,
-        List<DashboardLightInfo> dashboardLights,
+        List<GetImage> carImages,
+        List<WorkOrderHasDashboardLightResponse> dashboardLights,
 
         List<GetMechanicInfo> mechanics,
 
@@ -28,12 +28,6 @@ public record GetWorkOrderFull(
 
         GetCar vehicle
 ) {
-    public record DashboardLightInfo(
-            Integer id,
-            Integer num,
-            String name
-    ) {}
-
     public record GetMechanicWorkOrder(
             @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
             int id,

@@ -3,7 +3,7 @@ package com.mechanical_workshop_usm.image_module.image;
 import com.mechanical_workshop_usm.config.ImageConfig;
 import com.mechanical_workshop_usm.image_module.car_image.CarImage;
 import com.mechanical_workshop_usm.image_module.car_image.CarImageRepository;
-import com.mechanical_workshop_usm.image_module.image.dto.CreateImageRequest;
+import com.mechanical_workshop_usm.image_module.image.dto.GetImage;
 import com.mechanical_workshop_usm.work_order_module.WorkOrder;
 import com.mechanical_workshop_usm.work_order_module.WorkOrderRepository;
 import org.apache.tika.Tika;
@@ -49,10 +49,10 @@ public class ImageService {
         this.workOrderRepository = workOrderRepository;
     }
 
-    public List<CreateImageRequest> findAllDashboardLights() {
+    public List<GetImage> findAllDashboardLights() {
         return imageRepository.findAll().stream()
             .filter(img -> img.getPath().startsWith(ImageCategory.ICONS.dir + "/"))
-            .map(img -> new CreateImageRequest(img.getId(), buildPublicUrl(img.getPath()), img.getAlt()))
+            .map(img -> new GetImage(buildPublicUrl(img.getPath()), img.getAlt()))
             .toList();
     }
 
@@ -119,13 +119,13 @@ public class ImageService {
         return carImageRepository.save(carImageModel);
     }
 
-    public List<CreateImageRequest> getCarImagesByWorkOrderId(int workOrderId) {
+    public List<GetImage> getCarImagesByWorkOrderId(int workOrderId) {
         List<CarImage> carImages = carImageRepository.findByWorkOrder_Id(workOrderId);
 
         return carImages.stream()
             .map(carImage -> {
                 Image img = carImage.getImage();
-                return new CreateImageRequest(img.getId(), buildPublicUrl(img.getPath()), img.getAlt());
+                return new GetImage(buildPublicUrl(img.getPath()), img.getAlt());
             })
             .toList();
     }

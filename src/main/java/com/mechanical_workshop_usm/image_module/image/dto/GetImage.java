@@ -2,9 +2,7 @@ package com.mechanical_workshop_usm.image_module.image.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record CreateImageRequest(
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    int id,
+public record GetImage(
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String url,

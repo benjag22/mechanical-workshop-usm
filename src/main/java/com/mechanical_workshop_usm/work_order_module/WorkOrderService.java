@@ -1,8 +1,10 @@
 package com.mechanical_workshop_usm.work_order_module;
 
+import com.mechanical_workshop_usm.car_module.car.dto.GetCar;
+import com.mechanical_workshop_usm.client_info_module.dtos.Client;
 import com.mechanical_workshop_usm.image_module.image.ImageRepository;
 import com.mechanical_workshop_usm.image_module.image.ImageService;
-import com.mechanical_workshop_usm.image_module.image.dto.CreateImageRequest;
+import com.mechanical_workshop_usm.image_module.image.dto.GetImage;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfo;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoRepository;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoService;
@@ -55,22 +57,22 @@ public class WorkOrderService {
 
 
     private final ImageRepository imageRepository;
-    private  final ImageService imageService;
+    private final ImageService imageService;
     private final MechanicInfoRepository mechanicInfoRepository;
 
     public WorkOrderService(
-            WorkOrderRepository workOrderRepository,
-            RecordRepository recordRepository,
-            WorkServiceRepository workServiceRepository,
-            WorkOrderRealizedServiceRepository realizedServiceRepository,
-            WorkOrderHasDashboardLightRepository workOrderHasDashboardLightRepository,
-            ImageRepository imageRepository,
-            WorkOrderHasMechanicService workOrderHasMechanicService,
-            EntityFinder entityFinder,
-            WorkOrderValidator workOrderValidator,
-            ImageService imageService,
-            MechanicInfoService mechanicInfoService,
-            MechanicInfoRepository mechanicInfoRepository) {
+        WorkOrderRepository workOrderRepository,
+        RecordRepository recordRepository,
+        WorkServiceRepository workServiceRepository,
+        WorkOrderRealizedServiceRepository realizedServiceRepository,
+        WorkOrderHasDashboardLightRepository workOrderHasDashboardLightRepository,
+        ImageRepository imageRepository,
+        WorkOrderHasMechanicService workOrderHasMechanicService,
+        EntityFinder entityFinder,
+        WorkOrderValidator workOrderValidator,
+        ImageService imageService,
+        MechanicInfoService mechanicInfoService,
+        MechanicInfoRepository mechanicInfoRepository) {
         this.workOrderRepository = workOrderRepository;
         this.recordRepository = recordRepository;
         this.workServiceRepository = workServiceRepository;
@@ -81,11 +83,11 @@ public class WorkOrderService {
         this.workOrderValidator = workOrderValidator;
         this.imageRepository = imageRepository;
         this.imageService = imageService;
-        this.mechanicInfoService =  mechanicInfoService;
+        this.mechanicInfoService = mechanicInfoService;
         this.mechanicInfoRepository = mechanicInfoRepository;
     }
 
-    public List<TrimmedWorkOrder> getTrimmedWorkOrders(){
+    public List<TrimmedWorkOrder> getTrimmedWorkOrders() {
         List<TrimmedWorkOrderInfoProjection> projections = workOrderRepository.findTrimmedWorkOrders();
 
         return projections.stream()
@@ -102,11 +104,15 @@ public class WorkOrderService {
             ))
             .toList();
     }
-    @Transactional
-    public CreateWorkOrderResponse createFull(CreateWorkOrderRequest request, List<MultipartFile> carPictures, MultipartFile signature) {
-        workOrderValidator.validateOnCreate(request, carPictures == null ? 0 : carPictures.size(), signature != null && !signature.isEmpty());
 
-        Record record = entityFinder.findByIdOrThrow(recordRepository, request.recordId(), "recordId", "Record id not found");
+    @Transactional
+    public CreateWorkOrderResponse createFull(CreateWorkOrderRequest request, List<MultipartFile> carPictures,
+                                              MultipartFile signature) {
+        workOrderValidator.validateOnCreate(request, carPictures == null ? 0 : carPictures.size(),
+            signature != null && !signature.isEmpty());
+
+        Record record = entityFinder.findByIdOrThrow(recordRepository, request.recordId(), "recordId", "Record id not" +
+            " found");
 
         WorkOrder workOrder = new WorkOrder(record, LocalDateTime.now(), LocalDateTime.now(), null);
         WorkOrder saved = workOrderRepository.save(workOrder);
@@ -116,8 +122,8 @@ public class WorkOrderService {
         if (request.newServices() != null) {
             for (CreateWorkServiceRequest sReq : request.newServices()) {
                 WorkService ws = new WorkService(
-                        sReq.serviceName(),
-                        LocalTime.parse(sReq.estimatedTime())
+                    sReq.serviceName(),
+                    LocalTime.parse(sReq.estimatedTime())
                 );
                 WorkService savedWs = workServiceRepository.save(ws);
 
@@ -140,20 +146,21 @@ public class WorkOrderService {
 
         if (request.newLeaderMechanic() != null) {
             CreateMechanicResponse mechanic = mechanicInfoService.createMechanic(new CreateMechanicRequest(
-                    request.newLeaderMechanic().name(),
-                    request.newLeaderMechanic().rut()
+                request.newLeaderMechanic().name(),
+                request.newLeaderMechanic().rut()
             ));
             leaderId = mechanic.id();
             mechanicIdsList.add(leaderId);
-        }
-        else {
+        } else {
             leaderId = request.leaderMechanicId();
             mechanicIdsList.add(leaderId);
         }
 
-        if (request.newMechanics() != null &&  !request.newMechanics().isEmpty()) {
+        if (request.newMechanics() != null && !request.newMechanics().isEmpty()) {
             for (CreateMechanicRequest newMechanic : request.newMechanics()) {
-                CreateMechanicResponse mechanic = mechanicInfoService.createMechanic(new CreateMechanicRequest(newMechanic.name(), newMechanic.rut()));
+                CreateMechanicResponse mechanic =
+                    mechanicInfoService.createMechanic(new CreateMechanicRequest(newMechanic.name(),
+                        newMechanic.rut()));
                 mechanicIdsList.add(mechanic.id());
             }
         }
@@ -162,7 +169,8 @@ public class WorkOrderService {
 
         for (Integer mechanicId : mechanicIdsList) {
             boolean isLeader = mechanicId.equals(leaderId);
-            workOrderHasMechanicService.create(new CreateWorkOrderHasMechanicRequest(saved.getId(), mechanicId, isLeader));
+            workOrderHasMechanicService.create(new CreateWorkOrderHasMechanicRequest(saved.getId(), mechanicId,
+                isLeader));
         }
 
 
@@ -182,7 +190,8 @@ public class WorkOrderService {
         if (request.dashboardLightsActive() != null) {
             for (var dlReq : request.dashboardLightsActive()) {
                 imageRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
-                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, Boolean.TRUE.equals(dlReq.isFunctional()));
+                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl,
+                        Boolean.TRUE.equals(dlReq.isFunctional()));
                     workOrderHasDashboardLightRepository.save(assoc);
                 });
             }
@@ -190,11 +199,11 @@ public class WorkOrderService {
 
 
         return new CreateWorkOrderResponse(
-                saved.getId(),
-                record.getId(),
-                saved.getCreatedAt().toString(),
-                saved.getEstimatedDelivery().toString(),
-                saved.getSignaturePath()
+            saved.getId(),
+            record.getId(),
+            saved.getCreatedAt().toString(),
+            saved.getEstimatedDelivery().toString(),
+            saved.getSignaturePath()
         );
     }
 
@@ -202,80 +211,84 @@ public class WorkOrderService {
     @Transactional(readOnly = true)
     public GetWorkOrderFull getFullById(Integer id) {
         WorkOrder wo = entityFinder.findByIdOrThrow(
-                workOrderRepository, id, "workOrderId", "WorkOrder not found"
+            workOrderRepository, id, "workOrderId", "WorkOrder not found"
         );
 
         String createdAt = wo.getCreatedAt().toString();
         String estimatedDelivery = wo.getEstimatedDelivery().toString();
 
         List<GetService> services = realizedServiceRepository.findByWorkOrder_Id(id).stream()
-                        .map(rs -> {
-                            WorkService ws = rs.getWorkService();
-                            return new GetService(
-                                    ws.getId(),
-                                    ws.getServiceName(),
-                                    ws.getEstimatedTime().toString()
-                            );
-                        }).toList();
+            .map(rs -> {
+                WorkService ws = rs.getWorkService();
+                return new GetService(
+                    ws.getId(),
+                    ws.getServiceName(),
+                    ws.getEstimatedTime().toString()
+                );
+            }).toList();
 
         String signature = wo.getSignaturePath();
 
-        List<CreateImageRequest> carImages = imageService.getCarImagesByWorkOrderId(wo.getId());
+        List<GetImage> carImages = imageService.getCarImagesByWorkOrderId(wo.getId());
 
 
-
-        List<GetWorkOrderFull.GetMechanicWorkOrder> mechanics = workOrderHasMechanicService.getByWorkOrderId(id).stream()
-                        .map(m -> {
-                            MechanicInfo mech = mechanicInfoService.getMechanicById(m.mechanicInfoId());
-                            return new GetWorkOrderFull.GetMechanicWorkOrder(
-                                    mech.getId(),
-                                    mech.getName(),
-                                    mech.getRut(),
-                                    m.isLeader()
-                            );
-                        }).toList();
+        List<GetWorkOrderFull.GetMechanicWorkOrder> mechanics =
+            workOrderHasMechanicService.getByWorkOrderId(id).stream()
+            .map(m -> {
+                MechanicInfo mech = mechanicInfoService.getMechanicById(m.mechanicInfoId());
+                return new GetWorkOrderFull.GetMechanicWorkOrder(
+                    mech.getId(),
+                    mech.getName(),
+                    mech.getRut(),
+                    m.isLeader()
+                );
+            }).toList();
 
         List<WorkOrderHasDashboardLightResponse> dashboardLights =
-                workOrderHasDashboardLightRepository.findByWorkOrder_Id(id).stream()
-                        .map(dl -> new WorkOrderHasDashboardLightResponse(
-                                dl.getId(),
-                                dl.getWorkOrder(),
-                                dl.getDashboardLight(),
-                                dl.is_functional()
-                        )).toList();
+            workOrderHasDashboardLightRepository.findByWorkOrder_Id(id).stream()
+            .map(dl -> new WorkOrderHasDashboardLightResponse(
+                dl.getId(),
+                dl.getDashboardLight().getPath(),
+                dl.isFunctional()
+            )).toList();
 
 
         Record record = wo.getRecord();
 
 
-        GetWorkOrderFull.CustomerInfo customer =
-                new GetWorkOrderFull.CustomerInfo(
-                        record.getCustomer().getName(),
-                        record.getCustomer().getEmail(),
-                        record.getCustomer().getAddress(),
-                        record.getCustomer().getPhone()
-                );
+        Client customer = new Client(
+            record.getClientInfo().getId(),
+            record.getClientInfo().getFirstName(),
+            record.getClientInfo().getRut(),
+            record.getClientInfo().getLastName(),
+            record.getClientInfo().getEmailAddress(),
+            record.getClientInfo().getAddress(),
+            record.getClientInfo().getCellphoneNumber()
+        );
 
-        GetWorkOrderFull.VehicleInfo vehicle =
-                new GetWorkOrderFull.VehicleInfo(
-                        record.getCar().getPlate(),
-                        record.getCar().getBrand(),
-                        record.getCar().getModel(),
-                        record.getCar().getType(),
-                        record.getCar().getMileage()
-                );
+        GetCar vehicle = new GetCar(
+            record.getCar().getId(),
+            record.getCar().getVIN(),
+            record.getCar().getLicensePlate(),
+            record.getCar().getCarModel().getId(),
+            record.getCar().getCarModel().getModelName(),
+            record.getCar().getCarModel().getModelType(),
+            record.getCar().getCarModel().getModelYear(),
+            record.getCar().getCarModel().getBrand().getId(),
+            record.getCar().getCarModel().getBrand().getBrandName()
+            );
 
         return new GetWorkOrderFull(
-                wo.getId(),
-                wo.getEstimatedDate() == null ? null : wo.getEstimatedDate().toString(),
-                wo.getEstimatedTime() == null ? null : wo.getEstimatedTime().toString(),
-                services,
-                wo.getSignaturePath(),
-                carImages,
-                dashboardLights,
-                mechanics,
-                customer,
-                vehicle
+            wo.getId(),
+            wo.getEstimatedDelivery() == null ? null : wo.getEstimatedDelivery().toString(),
+            wo.getEstimatedDelivery() == null ? null : wo.getEstimatedDelivery().toString(),
+            services,
+            wo.getSignaturePath(),
+            carImages,
+            dashboardLights,
+            mechanics,
+            customer,
+            vehicle
         );
     }
 }

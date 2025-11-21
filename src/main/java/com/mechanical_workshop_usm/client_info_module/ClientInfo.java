@@ -1,6 +1,8 @@
 package com.mechanical_workshop_usm.client_info_module;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,9 +33,14 @@ public class ClientInfo {
     @Column(name = "cellphone_number", nullable = false)
     private String cellphoneNumber;
 
+    @Size(max = 11)
+    @NotNull
+    @Column(name = "rut", nullable = false, length = 11)
+    private String rut;
+
     public ClientInfo() {}
 
-    public ClientInfo(String firstName, String lastName, String emailAddress, String address, String cellphoneNumber) {
+    public ClientInfo(String firstName,String rut, String lastName, String emailAddress, String address, String cellphoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailAddress = emailAddress;

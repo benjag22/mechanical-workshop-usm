@@ -1,4 +1,6 @@
-USE usm_mechanical_workshop;
+create database if not exists usm_mechanical_workshop;
+
+use usm_mechanical_workshop;
 
 drop table if exists work_order_has_mechanics;
 drop table if exists car_images;
@@ -26,6 +28,7 @@ drop table if exists client_info;
 create table client_info
 (
     id               int auto_increment primary key,
+    rut varchar(11) unique not null,
     first_name       varchar(64)  not null check (first_name != ''),
     last_name        varchar(64),
     email_address    varchar(255) not null check ( '' != email_address),
@@ -440,8 +443,8 @@ INSERT INTO car (model_id, license_plate, VIN)
 VALUES (@model_id, 'ABC123', '1HGCM82633A004352');
 SET @car_id = LAST_INSERT_ID();
 
-INSERT INTO client_info (first_name, last_name, email_address, address, cellphone_number)
-VALUES ('Juan', 'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
+INSERT INTO client_info (first_name, rut, last_name, email_address, address, cellphone_number)
+VALUES ('Juan','21222333-5' ,'Pérez', 'juan.perez@example.com', 'Av. Siempre Viva 123', '09912345678');
 SET @client_id = LAST_INSERT_ID();
 
 INSERT INTO mechanic_info (name, rut)

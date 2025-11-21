@@ -8,7 +8,7 @@ services:
     restart: unless-stopped
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db.sql:/docker-entrypoint-initdb.d/db.sql:ro
+      - ./db.sql:/docker-entrypoint-init db.d/db.sql:ro
 
   nginx:
     image: nginx:1.29.2

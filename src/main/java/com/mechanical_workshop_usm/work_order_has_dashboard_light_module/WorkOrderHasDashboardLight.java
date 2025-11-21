@@ -33,12 +33,12 @@ public class WorkOrderHasDashboardLight {
     private Image dashboardLight;
 
     @Column(name = "is_functional", nullable = false)
-    private boolean is_functional = false;
+    private boolean isFunctional = false;
 
 
-    public WorkOrderHasDashboardLight(WorkOrder workOrder, Image dashboardLight, boolean is_functional) {
+    public WorkOrderHasDashboardLight(WorkOrder workOrder, Image dashboardLight, boolean isFunctional) {
         this.workOrder = workOrder;
         this.dashboardLight = dashboardLight;
-        this.is_functional = is_functional;
+        this.isFunctional = isFunctional;
     }
 }
