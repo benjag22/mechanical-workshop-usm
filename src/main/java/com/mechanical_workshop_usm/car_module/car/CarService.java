@@ -66,7 +66,7 @@ public class CarService {
         carRepository.findAll().forEach(car -> response.add(car.getLicensePlate()));
         return response;
     }
-    public GetCarFullResponse getCarById(int carId) {
+    public GetCar getCarById(int carId) {
         Car car = carRepository.findById(carId)
                 .orElseThrow(() -> new MultiFieldException(
                         "Car not found",
@@ -76,7 +76,7 @@ public class CarService {
         CarModel carModel = car.getCarModel();
         CarBrand brand = carModel.getBrand();
 
-        return new GetCarFullResponse(
+        return new GetCar(
                 car.getId(),
                 car.getVIN(),
                 car.getLicensePlate(),
@@ -88,7 +88,7 @@ public class CarService {
                 brand.getBrandName()
         );
     }
-    public GetCarFullResponse getCarByPatent(String patent) {
+    public GetCar getCarByPatent(String patent) {
         Car car = carRepository.findByLicensePlate(patent)
             .orElseThrow(() -> new MultiFieldException(
                 "Car not found",
@@ -98,7 +98,7 @@ public class CarService {
         CarModel carModel = car.getCarModel();
         CarBrand brand = carModel.getBrand();
 
-        return new GetCarFullResponse(
+        return new GetCar(
             car.getId(),
             car.getVIN(),
             car.getLicensePlate(),

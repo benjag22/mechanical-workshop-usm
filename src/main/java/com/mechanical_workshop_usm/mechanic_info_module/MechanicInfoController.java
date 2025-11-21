@@ -2,12 +2,10 @@ package com.mechanical_workshop_usm.mechanic_info_module;
 
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicResponse;
-import com.mechanical_workshop_usm.mechanic_info_module.dto.Mechanic;
-import org.springframework.http.HttpStatus;
+import com.mechanical_workshop_usm.mechanic_info_module.dto.GetMechanicInfo;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -20,8 +18,8 @@ public class MechanicInfoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Mechanic>> getAllMechanics() {
-        List<Mechanic> response = mechanicInfoService.getAllMechanics();
+    public ResponseEntity<List<GetMechanicInfo>> getAllMechanics() {
+        List<GetMechanicInfo> response = mechanicInfoService.getAllMechanics();
         return ResponseEntity.ok(response);
     }
 

@@ -10,11 +10,11 @@ public record CreateWorkOrderResponse(
         @Schema(description = "Associated record ID")
         Integer recordId,
 
-        @Schema(description = "Estimated date in yyyy-MM-dd format")
-        String estimatedDate,
+        @Schema(description = "Created date in yyyy-MM-dd format")
+        String cratedAt,
 
-        @Schema(description = "Estimated time in HH:mm[:ss] format")
-        String estimatedTime,
+        @Schema(description = "Estimated delivery date in yyyy-MM-dd format")
+        String estimatedDelivery,
 
         @Schema(description = "Path to the signature file")
         String signaturePath

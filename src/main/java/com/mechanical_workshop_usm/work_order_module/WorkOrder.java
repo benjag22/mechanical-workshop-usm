@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Builder
@@ -35,15 +36,23 @@ public class WorkOrder {
     @Column(name = "completed", nullable = false)
     private boolean completed;
 
-    @Column(name = "estimated_time", nullable = false)
-    private LocalTime estimatedTime;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "estimated_delivery", nullable = false)
+    private LocalDateTime estimatedDelivery;
 
     @Column(name = "signature_path", length = 512)
     private String signaturePath;
 
-    public WorkOrder(Record record, LocalTime estimatedTime, String signaturePath) {
+    public WorkOrder(Record record,
+                     LocalDateTime createdAt,
+                     LocalDateTime estimatedDelivery,
+                     String signaturePath
+    ) {
         this.record = record;
-        this.estimatedTime = estimatedTime;
+        this.createdAt = createdAt;
+        this.estimatedDelivery = estimatedDelivery;
         this.signaturePath = signaturePath;
     }
 }

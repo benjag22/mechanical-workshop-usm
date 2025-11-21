@@ -160,7 +160,8 @@ create table work_order
     id             int auto_increment primary key,
     record_id      int  not null,
     completed boolean not null default false,
-    estimated_time time not null,
+    created_at datetime not null,
+    estimated_delivery datetime not null,
     signature_path varchar(512) default null,
     foreign key (record_id) references record (id)
 );

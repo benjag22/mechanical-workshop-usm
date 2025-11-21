@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.car_module.car;
 
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarRequest;
 import com.mechanical_workshop_usm.car_module.car.dto.CreateCarResponse;
-import com.mechanical_workshop_usm.car_module.car.dto.GetCarFullResponse;
+import com.mechanical_workshop_usm.car_module.car.dto.GetCar;
 import com.mechanical_workshop_usm.car_module.car.dto.GetCarResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,13 +37,13 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GetCarFullResponse> getCarFullById(@PathVariable int id) {
-        GetCarFullResponse response = carService.getCarById(id);
+    public ResponseEntity<GetCar> getCarFullById(@PathVariable int id) {
+        GetCar response = carService.getCarById(id);
         return ResponseEntity.ok(response);
     }
     @GetMapping("/by-patent/{patent}")
-    public ResponseEntity<GetCarFullResponse> getCarFullByPatent(@PathVariable String patent) {
-        GetCarFullResponse response = carService.getCarByPatent(patent);
+    public ResponseEntity<GetCar> getCarFullByPatent(@PathVariable String patent) {
+        GetCar response = carService.getCarByPatent(patent);
         return ResponseEntity.ok(response);
     }
 }

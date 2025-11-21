@@ -1,7 +1,7 @@
 package com.mechanical_workshop_usm.work_service_module;
 
 import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceRequest;
-import com.mechanical_workshop_usm.work_service_module.dto.GetWorkServiceResponse;
+import com.mechanical_workshop_usm.work_service_module.dto.GetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,11 +30,11 @@ public class WorkServiceController {
             description = "Creates a new service specifying its name and estimated duration.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Service created successfully",
-                            content = @Content(schema = @Schema(implementation = GetWorkServiceResponse.class))),
+                            content = @Content(schema = @Schema(implementation = GetService.class))),
                     @ApiResponse(responseCode = "400", description = "Validation error")
             }
     )
-    public ResponseEntity<GetWorkServiceResponse> create(
+    public ResponseEntity<GetService> create(
             @RequestBody CreateWorkServiceRequest request
     ) {
         return ResponseEntity.ok(service.create(request));
@@ -48,7 +48,7 @@ public class WorkServiceController {
                     @ApiResponse(responseCode = "200", description = "List returned successfully"),
             }
     )
-    public ResponseEntity<List<GetWorkServiceResponse>> getAllWorkServices() {
+    public ResponseEntity<List<GetService>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 }

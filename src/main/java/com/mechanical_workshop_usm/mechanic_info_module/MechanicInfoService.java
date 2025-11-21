@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.mechanic_info_module;
 
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicResponse;
-import com.mechanical_workshop_usm.mechanic_info_module.dto.Mechanic;
+import com.mechanical_workshop_usm.mechanic_info_module.dto.GetMechanicInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +16,9 @@ public class MechanicInfoService {
         this.mechanicInfoRepository = mechanicInfoRepository;
         this.mechanicInfoValidator = mechanicInfoValidator;
     }
-    public List<Mechanic> getAllMechanics() {
+    public List<GetMechanicInfo> getAllMechanics() {
         return mechanicInfoRepository.findAll().stream()
-            .map(m -> new Mechanic(m.getId(), m.getName(), m.getRut()))
+            .map(m -> new GetMechanicInfo(m.getId(), m.getName(), m.getRut()))
             .toList();
     }
     public CreateMechanicResponse createMechanic(CreateMechanicRequest createMechanicRequest) {
@@ -66,5 +66,8 @@ public class MechanicInfoService {
         }
 
         return expectedDv != dvChar;
+    }
+    public MechanicInfo getMechanicById(int id) {
+        return mechanicInfoRepository.getByIdOrThrow(id);
     }
 }

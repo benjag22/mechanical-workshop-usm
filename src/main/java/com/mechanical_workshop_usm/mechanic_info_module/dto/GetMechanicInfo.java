@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.mechanic_info_module.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record Mechanic(
+public record GetMechanicInfo(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     int id,
 
@@ -11,5 +11,5 @@ public record Mechanic(
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String rut
-) {
+    ) {
 }

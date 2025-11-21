@@ -16,14 +16,13 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Integer> {
 
     List<WorkOrder> findByRecord_Id(Integer recordId);
 
-    List<WorkOrder> findByEstimatedDateBetween(LocalDate start, LocalDate end);
 
     boolean existsByRecord_Id(Integer recordId);
 
     @Query("select w from WorkOrder w join fetch w.record r where w.id = :id")
     Optional<WorkOrder> findByIdWithRecord(@Param("id") Integer id);
 
-    @Query("select w from WorkOrder w where w.record.id = :recordId order by w.estimatedDate desc, w.estimatedTime desc")
+    @Query("select w from WorkOrder w where w.record.id = :recordId order by w.createdAt desc")
     List<WorkOrder> findLatestForRecord(@Param("recordId") Integer recordId);
 
     @NativeQuery(

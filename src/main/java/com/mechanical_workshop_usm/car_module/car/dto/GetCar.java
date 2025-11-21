@@ -1,7 +1,7 @@
 package com.mechanical_workshop_usm.car_module.car.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record GetCarFullResponse(
+public record GetCar(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     int id,
 
