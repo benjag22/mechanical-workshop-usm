@@ -1,5 +1,3 @@
-create database if not exists usm_mechanical_workshop;
-
 use usm_mechanical_workshop;
 
 drop table if exists work_order_has_mechanics;

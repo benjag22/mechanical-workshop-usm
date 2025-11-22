@@ -18,11 +18,11 @@ public record GetWorkOrderFull(
 
         List<GetService> services,
 
+        List<GetMechanicWorkOrder> mechanics,
+
         String signatureUrl,
         List<GetImage> carImages,
-        List<WorkOrderHasDashboardLightResponse> dashboardLights,
-
-        List<GetMechanicInfo> mechanics,
+        List<GetWorkOrderHasDashboardLight> dashboardLights,
 
         Client customer,
 
@@ -41,7 +41,21 @@ public record GetWorkOrderFull(
             @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
             Boolean isLeader
 
-    ) {
-    }
+    ) {}
+
+    public record GetWorkOrderHasDashboardLight(
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+            int imageId,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+            String url,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+            String alt,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+            Boolean isFunctional
+
+    ) {}
 
 }

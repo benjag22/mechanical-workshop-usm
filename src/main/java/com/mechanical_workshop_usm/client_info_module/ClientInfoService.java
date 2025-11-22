@@ -27,7 +27,8 @@ public class ClientInfoService {
                 createClientRequest.lastName(),
                 createClientRequest.emailAddress(),
                 createClientRequest.address(),
-                createClientRequest.cellphoneNumber()
+                createClientRequest.cellphoneNumber(),
+                createClientRequest.rut()
         );
 
         ClientInfo savedClientInfo = clientInfoRepository.save(clientInfo);

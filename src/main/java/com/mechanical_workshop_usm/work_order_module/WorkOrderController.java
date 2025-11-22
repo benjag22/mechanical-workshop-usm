@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mechanical_workshop_usm.api.exceptions.ExceptionMapper;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
+import com.mechanical_workshop_usm.work_order_module.dto.GetWorkOrderFull;
 import com.mechanical_workshop_usm.work_order_module.dto.TrimmedWorkOrder;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Set;
@@ -107,6 +109,26 @@ public class WorkOrderController {
             );
         } catch (JsonProcessingException e) {
             throw exceptionMapper.fromJsonProcessingException(e);
+        }
+    }
+
+    @Operation(
+            summary = "Get full work order by ID",
+            description = "Obtiene todos los datos detallados de la orden de trabajo por su ID."
+    )
+    @GetMapping(
+            path = "/{id}/full",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<GetWorkOrderFull> getWorkOrderFullById(
+            @Parameter(description = "ID de la orden de trabajo", required = true)
+            @PathVariable Integer id
+    ) {
+        try {
+            GetWorkOrderFull workOrderFull = service.getFullById(id);
+            return ResponseEntity.ok(workOrderFull);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }
