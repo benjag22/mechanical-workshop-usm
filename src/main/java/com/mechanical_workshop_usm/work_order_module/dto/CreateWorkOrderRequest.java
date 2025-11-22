@@ -9,7 +9,7 @@ import java.util.List;
 
 public record CreateWorkOrderRequest(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Associated record ID")
-        Integer recordId,
+        int recordId,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Existing service IDs")
         List<Integer> serviceIds,

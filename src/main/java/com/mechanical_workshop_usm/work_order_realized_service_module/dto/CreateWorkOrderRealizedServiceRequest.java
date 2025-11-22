@@ -4,10 +4,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateWorkOrderRealizedServiceRequest(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID del work order asociado")
-        Integer workOrderId,
+        int workOrderId,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID del work service")
-        Integer workServiceId,
+        int workServiceId,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Si el servicio está finalizado")
         boolean finalized

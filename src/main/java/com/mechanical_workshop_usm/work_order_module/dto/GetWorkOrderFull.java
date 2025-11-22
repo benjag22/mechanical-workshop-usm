@@ -12,7 +12,7 @@ import java.util.List;
 
 
 public record GetWorkOrderFull(
-        Integer id,
+        int id,
         String createdAt,
         String estimatedDelivery,
 

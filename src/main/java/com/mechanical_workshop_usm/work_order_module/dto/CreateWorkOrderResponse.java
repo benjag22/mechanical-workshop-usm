@@ -5,10 +5,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "WorkOrder Response")
 public record CreateWorkOrderResponse(
         @Schema(description = "ID of the created work order")
-        Integer id,
+        int id,
 
         @Schema(description = "Associated record ID")
-        Integer recordId,
+        int recordId,
 
         @Schema(description = "Created date in yyyy-MM-dd format")
         String cratedAt,

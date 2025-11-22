@@ -5,7 +5,7 @@ import com.mechanical_workshop_usm.image_module.image.dto.GetImage;
 
 
 public record WorkOrderHasDashboardLightResponse(
-        Integer id,
+        int id,
 
         GetImage image,
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 public record CreateCheckInRequest(
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-        Integer clientId,
+        int  clientId,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         CreateClientRequest client,

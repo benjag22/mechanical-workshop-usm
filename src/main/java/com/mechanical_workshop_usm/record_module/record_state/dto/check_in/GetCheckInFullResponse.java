@@ -7,13 +7,13 @@ import java.util.List;
 
 public record GetCheckInFullResponse(
         @Schema(description = "Record id")
-        Integer recordId,
+        int recordId,
 
         @Schema(description = "Check-in id")
-        Integer checkInId,
+        int checkInId,
 
         @Schema(description = "Client id")
-        Integer clientId,
+        int clientId,
 
         @Schema(description = "Client full name")
         String clientName,
@@ -31,7 +31,7 @@ public record GetCheckInFullResponse(
         String modelType,
 
         @Schema(description = "Car model year")
-        Integer modelYear,
+        int modelYear,
 
         @Schema(description = "Car license plate")
         String licensePlate,
@@ -52,7 +52,7 @@ public record GetCheckInFullResponse(
         String entryTime,
 
         @Schema(description = "Mileage")
-        Integer mileage,
+        int mileage,
 
         @Schema(description = "Gas level")
         String gasLevel,

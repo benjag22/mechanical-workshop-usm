@@ -19,14 +19,8 @@ public class CheckInValidator {
             throw new MultiFieldException("Invalid check-in fields", errors);
         }
 
-        boolean hasClientId = request.clientId() != null;
-        boolean hasClientObject = request.client() != null;
-        if (hasClientId == hasClientObject) {
-            if (!hasClientId) {
-                errors.add(new FieldErrorResponse("client", "Either clientId or client must be provided"));
-            } else {
-                errors.add(new FieldErrorResponse("client", "Provide only one of clientId or client, not both"));
-            }
+        if (request.clientId() <= 0) {
+            errors.add(new FieldErrorResponse("clientId", "clientId must be provided and greater than zero"));
         }
 
         boolean hasCarId = request.carId() != null;

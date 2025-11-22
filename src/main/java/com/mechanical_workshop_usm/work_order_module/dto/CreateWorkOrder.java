@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 public record CreateWorkOrder(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Associated record ID")
-        Integer recordId,
+        int recordId,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Estimated date in yyyy-MM-dd format")
         String estimatedDate,
