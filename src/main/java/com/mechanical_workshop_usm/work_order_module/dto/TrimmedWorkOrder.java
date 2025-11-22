@@ -12,7 +12,10 @@ public record TrimmedWorkOrder(
     boolean isCompleted,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    LocalDateTime estimatedTime,
+    LocalDateTime createdAt,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    LocalDateTime deliveryTime,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String signatureUrl,

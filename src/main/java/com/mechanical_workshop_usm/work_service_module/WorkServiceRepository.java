@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface WorkServiceRepository extends JpaRepository<WorkService, Integer> {
-    Optional<WorkService> findByServiceName(String serviceName);
     boolean existsByServiceName(String serviceName);
 }

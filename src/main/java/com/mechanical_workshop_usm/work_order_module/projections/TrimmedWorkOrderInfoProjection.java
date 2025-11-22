@@ -6,7 +6,8 @@ public interface TrimmedWorkOrderInfoProjection {
 
     int getWorkOrderId();
     boolean isCompleted();
-    LocalDateTime getEstimatedTime();
+    LocalDateTime getCreatedAt();
+    LocalDateTime getEstimatedDeliveryTime();
     String getSignaturePath();
     String getMechanicLeaderFullName();
     String getClientFirstName();
