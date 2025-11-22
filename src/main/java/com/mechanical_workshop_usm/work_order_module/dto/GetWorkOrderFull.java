@@ -12,20 +12,30 @@ import java.util.List;
 
 
 public record GetWorkOrderFull(
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int id,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String createdAt,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String estimatedDelivery,
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<GetService> services,
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<GetMechanicWorkOrder> mechanics,
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String signatureUrl,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<GetImage> carImages,
+        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         List<GetWorkOrderHasDashboardLight> dashboardLights,
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         Client customer,
 
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         GetCar vehicle
 ) {
     public record GetMechanicWorkOrder(
