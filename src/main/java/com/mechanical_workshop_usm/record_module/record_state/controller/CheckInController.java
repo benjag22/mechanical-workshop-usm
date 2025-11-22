@@ -32,9 +32,14 @@ public class CheckInController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GetCheckInBasicResponse>> getAllCheckInFull() {
+    public ResponseEntity<List<GetCheckInBasicResponse>> getAllCheckInBasic() {
         List<GetCheckInBasicResponse> results = checkInQueryService.getAllCheckInsFull();
         return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<List<GetCheckInBasicResponse>> getPendingCheckInBasic() {
+        return ResponseEntity.ok(checkInService.getPendingCheckIns());
     }
 
     @GetMapping("/{id}/full")

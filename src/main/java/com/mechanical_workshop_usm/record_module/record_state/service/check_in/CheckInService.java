@@ -19,10 +19,12 @@ import com.mechanical_workshop_usm.client_info_module.ClientInfo;
 import com.mechanical_workshop_usm.client_info_module.ClientInfoRepository;
 import com.mechanical_workshop_usm.client_info_module.dtos.CreateClientResponse;
 import com.mechanical_workshop_usm.client_info_module.ClientInfoService;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.MechanicalCondition;
 import com.mechanical_workshop_usm.record_module.record.Record;
 import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.CreateCheckInRequest;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.CreateCheckInResponse;
+import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCheckInBasicResponse;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_in.GetCheckInFullResponse;
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.MechanicalConditionInfo;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckIn;
@@ -423,4 +425,36 @@ public class CheckInService {
         }
         return Optional.empty();
     }
+
+    @Transactional(readOnly = true)
+    public List<GetCheckInBasicResponse> getPendingCheckIns() {
+        List<CheckIn> pending = checkInRepository.findCheckInsNotLinkedToWorkOrder();
+        List<GetCheckInBasicResponse> results = new ArrayList<>();
+        for (CheckIn ci : pending) {
+            List<MechanicalCondition> conditions = getMechanicalConditionInfos(ci)
+                    .stream()
+                    .map(info -> new MechanicalCondition(
+                            info.partName(),
+                            info.partState()
+                    ))
+                    .toList();
+            GetCheckInBasicResponse basic = new GetCheckInBasicResponse(
+                    ci.getId(),
+                    (ci.getRecord().getClientInfo().getFirstName() + " " + ci.getRecord().getClientInfo().getLastName()).trim(),
+                    ci.getRecord().getClientInfo().getEmailAddress(),
+                    ci.getRecord().getCar().getCarModel().getBrand().getBrandName(),
+                    ci.getRecord().getCar().getCarModel().getModelName(),
+                    ci.getRecord().getCar().getCarModel().getModelType(),
+                    ci.getRecord().getCar().getCarModel().getModelYear(),
+                    ci.getRecord().getCar().getLicensePlate(),
+                    ci.getRecord().getReason(),
+                    ci.getObservations(),
+                    conditions,
+                    ci.getEntryTime() != null ? ci.getEntryTime().toString() : null
+            );
+            results.add(basic);
+        }
+        return results;
+    }
+
 }

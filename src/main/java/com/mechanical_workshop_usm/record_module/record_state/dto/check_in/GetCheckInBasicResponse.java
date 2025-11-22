@@ -7,7 +7,7 @@ import java.util.List;
 
 public record GetCheckInBasicResponse(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    Integer checkInId,
+    int checkInId,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String clientName,

@@ -32,7 +32,6 @@ public class WorkOrder {
     @JoinColumn(name = "record_id", nullable = false)
     private Record record;
 
-
     @Column(name = "completed", nullable = false)
     private boolean completed;
 

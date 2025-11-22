@@ -4,6 +4,7 @@ import com.mechanical_workshop_usm.record_module.record_state.persistence.entity
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +26,13 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Integer> {
             "tools.tool"
     })
     List<CheckIn> findAll();
+
+    @Query("""
+  SELECT ci FROM CheckIn ci
+  WHERE NOT EXISTS (
+    SELECT wo FROM WorkOrder wo
+    WHERE wo.record.id = ci.record.id
+  )
+""")
+    List<CheckIn> findCheckInsNotLinkedToWorkOrder();
 }
