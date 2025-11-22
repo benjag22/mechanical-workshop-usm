@@ -1,5 +1,6 @@
 package com.mechanical_workshop_usm.client_info_module;
 
+import com.mechanical_workshop_usm.client_info_module.dtos.Client;
 import com.mechanical_workshop_usm.client_info_module.dtos.CreateClientRequest;
 import com.mechanical_workshop_usm.client_info_module.dtos.CreateClientResponse;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,9 @@ public class ClientInfoController {
     }
 
     @GetMapping
-    public List<ClientInfo> getAllClients() {
-        return clientInfoRepository.findAll();
+    public ResponseEntity<List<Client>> getAllClients() {
+        List<Client> response = clientInfoService.getAllClients();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
