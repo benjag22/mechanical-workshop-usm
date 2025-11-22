@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mechanical_workshop_usm.api.exceptions.ExceptionMapper;
-import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
-import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
-import com.mechanical_workshop_usm.work_order_module.dto.GetWorkOrderFull;
-import com.mechanical_workshop_usm.work_order_module.dto.TrimmedWorkOrder;
+import com.mechanical_workshop_usm.work_order_module.dto.*;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedServiceService;
 import com.mechanical_workshop_usm.work_order_realized_service_module.dto.CreateWorkOrderRealizedServiceResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -144,6 +141,8 @@ public class WorkOrderController {
         boolean result = service.isLeaderAuthorized(id, rut);
         return ResponseEntity.ok(result);
     }
+
+
     @PatchMapping(
             path = "/{workOrderId}/realized-services/toggle",
             produces = MediaType.APPLICATION_JSON_VALUE
@@ -154,5 +153,12 @@ public class WorkOrderController {
     ) {
         List<CreateWorkOrderRealizedServiceResponse> response = realizedServiceService.toggleFinalizedForServices(workOrderId, workServiceIds);
         return ResponseEntity.ok(response);
+    }
+
+
+    @PatchMapping("/{workOrderId}/complete")
+    public ResponseEntity<BasicWorkOrderInfo> markWorkOrderAsCompleted(@PathVariable Integer workOrderId) {
+        BasicWorkOrderInfo result = service.markWorkOrderAsCompleted(workOrderId);
+        return ResponseEntity.ok(result);
     }
 }

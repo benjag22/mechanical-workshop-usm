@@ -18,10 +18,7 @@ import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrd
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMechanic;
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMechanicService;
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.dto.CreateWorkOrderHasMechanicRequest;
-import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
-import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
-import com.mechanical_workshop_usm.work_order_module.dto.GetWorkOrderFull;
-import com.mechanical_workshop_usm.work_order_module.dto.TrimmedWorkOrder;
+import com.mechanical_workshop_usm.work_order_module.dto.*;
 import com.mechanical_workshop_usm.work_order_module.projections.TrimmedWorkOrderInfoProjection;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedService;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedServiceRepository;
@@ -31,7 +28,7 @@ import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceRequ
 import com.mechanical_workshop_usm.record_module.record.Record;
 import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 
-import com.mechanical_workshop_usm.work_service_module.dto.GetService;
+import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -61,7 +58,6 @@ public class WorkOrderService {
 
     private final ImageRepository imageRepository;
     private final ImageService imageService;
-    private final MechanicInfoRepository mechanicInfoRepository;
 
     public WorkOrderService(
         WorkOrderRepository workOrderRepository,
@@ -87,7 +83,6 @@ public class WorkOrderService {
         this.imageRepository = imageRepository;
         this.imageService = imageService;
         this.mechanicInfoService = mechanicInfoService;
-        this.mechanicInfoRepository = mechanicInfoRepository;
     }
 
     public List<TrimmedWorkOrder> getTrimmedWorkOrders() {
@@ -263,9 +258,6 @@ public class WorkOrderService {
             workOrderRepository, id, "workOrderId", "WorkOrder not found"
         );
 
-        String createdAt = wo.getCreatedAt().toString();
-        String estimatedDelivery = wo.getEstimatedDelivery().toString();
-
         List<GetWorkOrderFull.GetServiceState> services = realizedServiceRepository.findByWorkOrder_Id(id).stream()
                 .map(rs -> {
                     WorkService ws = rs.getWorkService();
@@ -288,8 +280,6 @@ public class WorkOrderService {
                                     m.isLeader()
                             );
                         }).toList();
-
-        String signature = wo.getSignaturePath();
 
         List<GetImage> carImages = imageService.getCarImagesByWorkOrderId(wo.getId());
 
@@ -342,9 +332,30 @@ public class WorkOrderService {
             vehicle
         );
     }
+
     public boolean isLeaderAuthorized(Integer id, String rut) {
         return Optional.ofNullable(workOrderHasMechanicService.getByIdAndMechanicRut(id, rut))
             .map(WorkOrderHasMechanic::isLeader)
             .orElse(false);
+    }
+
+    @Transactional
+    public BasicWorkOrderInfo markWorkOrderAsCompleted(Integer workOrderId) {
+        final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        WorkOrder workOrder = workOrderRepository.findById(workOrderId)
+            .orElseThrow(() -> new IllegalArgumentException("WorkOrder not found: " + workOrderId));
+        if (workOrder.isCompleted()) {
+            List<FieldErrorResponse> errors = List.of(
+                new FieldErrorResponse("workOrderId", "The WorkOrder has already been previously approved")
+            );
+            throw new MultiFieldException("Cannot complete the WorkOrder", errors);
+        }
+        workOrder.setCompleted(true);
+        return new BasicWorkOrderInfo(
+            workOrder.getId(),
+            workOrder.getRecord().getId(),
+            workOrder.getCreatedAt().format(DATETIME_FORMATTER),
+            LocalDateTime.now().format(DATETIME_FORMATTER)
+        );
     }
 }

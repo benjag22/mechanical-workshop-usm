@@ -96,13 +96,10 @@ create table entry_state
     foreign key (record_state_id) references record_state (id)
 );
 
-create table out_state
-(
-    id                int auto_increment primary key,
-    record_state_id   int     not null,
-    vehicle_diagnosis varchar(255),
-    rating            tinyint not null,
-    foreign key (record_state_id) references record_state (id)
+CREATE TABLE out_state (
+    record_state_id INT PRIMARY KEY,
+    vehicle_diagnosis VARCHAR(255),
+    FOREIGN KEY (record_state_id) REFERENCES record_state(id)
 );
 
 create table tool(
