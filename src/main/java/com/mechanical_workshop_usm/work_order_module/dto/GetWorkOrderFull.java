@@ -20,7 +20,7 @@ public record GetWorkOrderFull(
         String estimatedDelivery,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-        List<GetService> services,
+        List<GetServiceState> services,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<GetMechanicWorkOrder> mechanics,
@@ -38,6 +38,7 @@ public record GetWorkOrderFull(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         GetCar vehicle
 ) {
+
     public record GetMechanicWorkOrder(
             @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
             int id,
@@ -68,4 +69,17 @@ public record GetWorkOrderFull(
 
     ) {}
 
+    public record GetServiceState(
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Service ID")
+            int id,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Service name")
+            String name,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Estimated time in HH:mm[:ss] format")
+            String estimatedTime,
+
+            @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "If the service is completed")
+            boolean finalized
+    ) {}
 }

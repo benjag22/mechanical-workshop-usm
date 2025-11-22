@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 public class WorkOrderRealizedServiceService {
@@ -97,4 +100,32 @@ public class WorkOrderRealizedServiceService {
                 w.isFinalized()
         );
     }
+
+    @Transactional
+    public CreateWorkOrderRealizedServiceResponse toggleFinalized(Integer workOrderId, Integer workServiceId) {
+        WorkOrderRealizedService entity = repository
+                .findByWorkOrder_IdAndWorkService_Id(workOrderId, workServiceId)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No relationship was found in workOrderId=" + workOrderId + " workServiceId=" + workServiceId
+                ));
+        entity.setFinalized(!entity.isFinalized());
+        WorkOrderRealizedService saved = repository.save(entity);
+        return toDto(saved);
+    }
+
+    @Transactional
+    public List<CreateWorkOrderRealizedServiceResponse> toggleFinalizedForServices(Integer workOrderId, List<Integer> workServiceIds) {
+        List<CreateWorkOrderRealizedServiceResponse> responses = new ArrayList<>();
+        for (Integer workServiceId : workServiceIds) {
+            Optional<WorkOrderRealizedService> optEntity = repository.findByWorkOrder_IdAndWorkService_Id(workOrderId, workServiceId);
+            if (optEntity.isPresent()) {
+                WorkOrderRealizedService entity = optEntity.get();
+                entity.setFinalized(!entity.isFinalized());
+                WorkOrderRealizedService saved = repository.save(entity);
+                responses.add(toDto(saved));
+            }
+        }
+        return responses;
+    }
+
 }

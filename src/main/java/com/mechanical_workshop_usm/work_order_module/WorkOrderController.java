@@ -8,6 +8,8 @@ import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.CreateWorkOrderResponse;
 import com.mechanical_workshop_usm.work_order_module.dto.GetWorkOrderFull;
 import com.mechanical_workshop_usm.work_order_module.dto.TrimmedWorkOrder;
+import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedServiceService;
+import com.mechanical_workshop_usm.work_order_realized_service_module.dto.CreateWorkOrderRealizedServiceResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,12 +36,14 @@ public class WorkOrderController {
     private final ObjectMapper objectMapper;
     private final Validator validator;
     private final ExceptionMapper exceptionMapper;
+    private final WorkOrderRealizedServiceService realizedServiceService;
 
-    public WorkOrderController(WorkOrderService service, ObjectMapper objectMapper, Validator validator, ExceptionMapper exceptionMapper) {
+    public WorkOrderController(WorkOrderService service, ObjectMapper objectMapper, Validator validator, ExceptionMapper exceptionMapper, WorkOrderRealizedServiceService realizedServiceService) {
         this.service = service;
         this.objectMapper = objectMapper;
         this.validator = validator;
         this.exceptionMapper = exceptionMapper;
+        this.realizedServiceService = realizedServiceService;
     }
 
     @PostMapping(
@@ -139,5 +143,16 @@ public class WorkOrderController {
     ) {
         boolean result = service.isLeaderAuthorized(id, rut);
         return ResponseEntity.ok(result);
+    }
+    @PatchMapping(
+            path = "/{workOrderId}/realized-services/toggle",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<List<CreateWorkOrderRealizedServiceResponse>> toggleRealizedServicesFinalized(
+            @PathVariable Integer workOrderId,
+            @RequestBody List<Integer> workServiceIds
+    ) {
+        List<CreateWorkOrderRealizedServiceResponse> response = realizedServiceService.toggleFinalizedForServices(workOrderId, workServiceIds);
+        return ResponseEntity.ok(response);
     }
 }
