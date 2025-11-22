@@ -40,8 +40,9 @@ public class ClientInfo {
 
     public ClientInfo() {}
 
-    public ClientInfo(String firstName,String rut, String lastName, String emailAddress, String address, String cellphoneNumber) {
+    public ClientInfo(String firstName, String rut, String lastName, String emailAddress, String address, String cellphoneNumber) {
         this.firstName = firstName;
+        this.rut = rut;
         this.lastName = lastName;
         this.emailAddress = emailAddress;
         this.address = address;

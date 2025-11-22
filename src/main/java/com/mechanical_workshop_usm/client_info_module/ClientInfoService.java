@@ -24,11 +24,11 @@ public class ClientInfoService {
 
         ClientInfo clientInfo = new ClientInfo(
                 createClientRequest.firstName(),
+                createClientRequest.rut(),
                 createClientRequest.lastName(),
                 createClientRequest.emailAddress(),
                 createClientRequest.address(),
-                createClientRequest.cellphoneNumber(),
-                createClientRequest.rut()
+                createClientRequest.cellphoneNumber()
         );
 
         ClientInfo savedClientInfo = clientInfoRepository.save(clientInfo);
