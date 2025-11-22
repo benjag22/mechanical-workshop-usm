@@ -5,11 +5,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record CreateWorkOrderHasDashboardLightRequest(
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID del dashboard light")
-        Integer dashboardLightId,
+        int dashboardLightId,
 
-        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Si el dashboard light está presente (default false)")
-        Boolean present,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Si el dashboard light está presente (default false)")
+        boolean present,
 
-        @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED, description = "Si el dashboard light opera correctamente (default false)")
-        Boolean isFunctional
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Si el dashboard light opera correctamente (default false)")
+        boolean isFunctional
 ) {}

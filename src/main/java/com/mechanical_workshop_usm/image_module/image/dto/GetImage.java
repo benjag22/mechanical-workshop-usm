@@ -5,6 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record GetImage(
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    int id,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String url,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)

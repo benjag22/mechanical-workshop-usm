@@ -48,7 +48,7 @@ public class WorkServiceController {
                     @ApiResponse(responseCode = "200", description = "List returned successfully"),
             }
     )
-    public ResponseEntity<List<GetService>> getAll() {
+    public ResponseEntity<List<GetService>> getAllWorkServices() {
         return ResponseEntity.ok(service.getAll());
     }
 }

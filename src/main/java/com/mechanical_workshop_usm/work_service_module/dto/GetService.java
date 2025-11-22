@@ -4,12 +4,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 
 public record GetService(
-        @Schema(description = "ID del servicio")
-        Integer id,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "ID del servicio")
+        int id,
 
-        @Schema(description = "Nombre del servicio")
-        String serviceName,
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Nombre del servicio")
+        String name,
 
-        @Schema(description = "Tiempo estimado en formato HH:mm[:ss]")
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Tiempo estimado en formato HH:mm[:ss]")
         String estimatedTime
 ) {}

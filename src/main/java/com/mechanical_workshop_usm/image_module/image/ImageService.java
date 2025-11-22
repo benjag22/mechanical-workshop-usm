@@ -52,7 +52,7 @@ public class ImageService {
     public List<GetImage> findAllDashboardLights() {
         return imageRepository.findAll().stream()
             .filter(img -> img.getPath().startsWith(ImageCategory.ICONS.dir + "/"))
-            .map(img -> new GetImage(buildPublicUrl(img.getPath()), img.getAlt()))
+            .map(img -> new GetImage(img.getId(),buildPublicUrl(img.getPath()), img.getAlt()))
             .toList();
     }
 
@@ -125,7 +125,7 @@ public class ImageService {
         return carImages.stream()
             .map(carImage -> {
                 Image img = carImage.getImage();
-                return new GetImage(buildPublicUrl(img.getPath()), img.getAlt());
+                return new GetImage(carImage.getId(), buildPublicUrl(img.getPath()), img.getAlt());
             })
             .toList();
     }
