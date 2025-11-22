@@ -13,4 +13,6 @@ public interface WorkOrderHasMechanicRepository extends JpaRepository<WorkOrderH
     List<WorkOrderHasMechanic> findByMechanicInfo_Id(Integer mechanicInfoId);
 
     boolean existsByWorkOrder_IdAndMechanicInfo_Id(Integer workOrderId, Integer mechanicInfoId);
+
+    WorkOrderHasMechanic findByWorkOrder_IdAndMechanicInfo_Rut(Integer workOrderId, String mechanicInfoRut);
 }

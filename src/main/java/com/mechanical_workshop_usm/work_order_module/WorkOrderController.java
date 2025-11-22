@@ -131,4 +131,13 @@ public class WorkOrderController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
+
+    @GetMapping("/{id}/authorized/{rut}")
+    public ResponseEntity<Boolean> isAuthorized(
+        @PathVariable Integer id,
+        @PathVariable String rut
+    ) {
+        boolean result = service.isLeaderAuthorized(id, rut);
+        return ResponseEntity.ok(result);
+    }
 }

@@ -69,7 +69,7 @@ public class WorkOrderHasMechanicService {
     }
 
     @Transactional
-    public void deleteById(Integer id) {
-        repository.deleteById(id);
+    public WorkOrderHasMechanic getByIdAndMechanicRut(Integer workOrderId, String mechanicRut) {
+        return repository.findByWorkOrder_IdAndMechanicInfo_Rut(workOrderId, mechanicRut);
     }
 }
