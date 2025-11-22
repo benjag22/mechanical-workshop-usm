@@ -237,11 +237,12 @@ public class WorkOrderService {
         }
         if (request.dashboardLightsActive() != null) {
             for (var dlReq : request.dashboardLightsActive()) {
-                imageRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
-                    WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl,
-                        dlReq.isFunctional());
-                    workOrderHasDashboardLightRepository.save(assoc);
-                });
+                if (dlReq.present()) {
+                    imageRepository.findById(dlReq.dashboardLightId()).ifPresent(dl -> {
+                        WorkOrderHasDashboardLight assoc = new WorkOrderHasDashboardLight(saved, dl, dlReq.isFunctional());
+                        workOrderHasDashboardLightRepository.save(assoc);
+                    });
+                }
             }
         }
 
@@ -328,7 +329,7 @@ public class WorkOrderService {
             );
 
         return new GetWorkOrderFull(
-            
+
             wo.getId(),
             wo.getCreatedAt() == null ? null : wo.getCreatedAt().toString(),
             wo.getEstimatedDelivery() == null ? null : wo.getEstimatedDelivery().toString(),

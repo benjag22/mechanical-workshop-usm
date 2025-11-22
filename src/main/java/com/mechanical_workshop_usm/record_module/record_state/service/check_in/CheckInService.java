@@ -155,7 +155,7 @@ public class CheckInService {
         recordStateValidator.validateOnCreate(request.recordState());
 
         ClientInfo clientInfo;
-        if (request.clientId() <= 0) {
+        if (request.clientId() >= 0) {
             clientInfo = entityFinder.findByIdOrThrow(clientInfoRepository, request.clientId(), "client_id", "Client not found");
         }
         else {
