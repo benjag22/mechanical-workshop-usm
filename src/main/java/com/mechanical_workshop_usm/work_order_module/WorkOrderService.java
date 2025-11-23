@@ -360,7 +360,7 @@ public class WorkOrderService {
     }
 
     @Transactional
-    public BasicWorkOrderInfo markWorkOrderAsCompleted(Integer workOrderId) {
+    public BasicWorkOrderInfo markWorkOrderAsCompleted(int workOrderId) {
         final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
             .orElseThrow(() -> new IllegalArgumentException("WorkOrder not found: " + workOrderId));

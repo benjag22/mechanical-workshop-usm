@@ -143,12 +143,9 @@ public class WorkOrderController {
     }
 
 
-    @PatchMapping(
-            path = "/{workOrderId}/realized-services/toggle",
-            produces = MediaType.APPLICATION_JSON_VALUE
-    )
+    @PatchMapping("/{workOrderId}/realized-services/toggle")
     public ResponseEntity<List<CreateWorkOrderRealizedServiceResponse>> toggleRealizedServicesFinalized(
-            @PathVariable Integer workOrderId,
+            @PathVariable int workOrderId,
             @RequestBody List<Integer> workServiceIds
     ) {
         List<CreateWorkOrderRealizedServiceResponse> response = realizedServiceService.toggleFinalizedForServices(workOrderId, workServiceIds);
@@ -157,7 +154,7 @@ public class WorkOrderController {
 
 
     @PatchMapping("/{workOrderId}/complete")
-    public ResponseEntity<BasicWorkOrderInfo> markWorkOrderAsCompleted(@PathVariable Integer workOrderId) {
+    public ResponseEntity<BasicWorkOrderInfo> markWorkOrderAsCompleted(@PathVariable int workOrderId) {
         BasicWorkOrderInfo result = service.markWorkOrderAsCompleted(workOrderId);
         return ResponseEntity.ok(result);
     }

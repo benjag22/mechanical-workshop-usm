@@ -114,7 +114,7 @@ public class WorkOrderRealizedServiceService {
     }
 
     @Transactional
-    public List<CreateWorkOrderRealizedServiceResponse> toggleFinalizedForServices(Integer workOrderId, List<Integer> workServiceIds) {
+    public List<CreateWorkOrderRealizedServiceResponse> toggleFinalizedForServices(int workOrderId, List<Integer> workServiceIds) {
         List<CreateWorkOrderRealizedServiceResponse> responses = new ArrayList<>();
         for (Integer workServiceId : workServiceIds) {
             Optional<WorkOrderRealizedService> optEntity = repository.findByWorkOrder_IdAndWorkService_Id(workOrderId, workServiceId);
