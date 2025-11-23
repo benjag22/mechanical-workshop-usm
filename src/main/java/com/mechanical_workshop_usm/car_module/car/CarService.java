@@ -1,12 +1,17 @@
 package com.mechanical_workshop_usm.car_module.car;
-
+import java.util.stream.Collectors;
+import com.mechanical_workshop_usm.record_module.record.Record;
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
 import com.mechanical_workshop_usm.car_module.car.dto.*;
 import com.mechanical_workshop_usm.car_module.car_brand.CarBrand;
 import com.mechanical_workshop_usm.car_module.car_model.CarModel;
 import com.mechanical_workshop_usm.car_module.car_model.CarModelRepository;
+import com.mechanical_workshop_usm.record_module.record.RecordRepository;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckOutRepository;
+import com.mechanical_workshop_usm.work_order_module.WorkOrderRepository;
 import org.springframework.stereotype.Service;
+import com.mechanical_workshop_usm.car_module.car.dto.GetCarResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +22,20 @@ public class CarService {
     private final CarRepository carRepository;
     private final CarValidator carValidator;
     private final CarModelRepository carModelRepository;
+    private final RecordRepository recordRepository;
+    private final CheckOutRepository checkOutRepository;
+    private final WorkOrderRepository workOrderRepository;
 
-    public CarService(CarRepository carRepository, CarValidator carValidator, CarModelRepository carModelRepository) {
+    public CarService(
+        CarRepository carRepository, CarValidator carValidator, CarModelRepository carModelRepository,
+        RecordRepository recordRepository, CheckOutRepository checkOutRepository,
+        WorkOrderRepository workOrderRepository) {
         this.carRepository = carRepository;
         this.carValidator = carValidator;
         this.carModelRepository = carModelRepository;
+        this.recordRepository = recordRepository;
+        this.checkOutRepository = checkOutRepository;
+        this.workOrderRepository = workOrderRepository;
     }
 
     public void validate(CreateCarCheckInRequest createCarCheckInRequest) {
@@ -109,5 +123,44 @@ public class CarService {
             brand.getId(),
             brand.getBrandName()
         );
+    }
+    public List<GetCarState> getCarStates() {
+        List<Car> cars = carRepository.findAll();
+
+        return cars.stream().map(car -> {
+            List<Record> records = recordRepository.findAll().stream()
+                .filter(r -> r.getCar().getId() == car.getId())
+                .toList();
+
+            boolean isAvailable = true;
+            boolean atCheckIn = false;
+            boolean atWorkOrder = false;
+
+            for (Record record : records) {
+                int recordId = record.getId();
+                boolean hasCheckOut = checkOutRepository.existsByRecord_Id(recordId);
+                boolean hasWorkOrder = workOrderRepository.existsByRecord_Id(recordId);
+
+                if (!hasCheckOut) {
+                    isAvailable = false;
+                    if (hasWorkOrder) {
+                        atWorkOrder = true;
+                    } else {
+                        atCheckIn = true;
+                    }
+                }
+            }
+
+            return new GetCarState(
+                car.getId(),
+                car.getVIN(),
+                car.getLicensePlate(),
+                car.getCarModel().getId(),
+                car.getCarModel().getModelName(),
+                isAvailable ? true : null,
+                atCheckIn ? true : null,
+                atWorkOrder ? true : null
+            );
+        }).toList();
     }
 }
