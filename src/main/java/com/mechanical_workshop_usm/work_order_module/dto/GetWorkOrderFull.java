@@ -14,8 +14,13 @@ import java.util.List;
 public record GetWorkOrderFull(
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         int id,
+
+        @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+        boolean completed,
+
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String createdAt,
+
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String estimatedDelivery,
 
@@ -27,8 +32,10 @@ public record GetWorkOrderFull(
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         String signatureUrl,
+
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
         List<GetImage> carImages,
+
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         List<GetWorkOrderHasDashboardLight> dashboardLights,
 

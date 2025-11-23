@@ -17,7 +17,7 @@ public class CheckOutController {
     }
 
     @PostMapping
-    public ResponseEntity<CheckOutResponse> create(@RequestBody CreateCheckOutRequest request) {
+    public ResponseEntity<CheckOutResponse> createCheckOut(@RequestBody CreateCheckOutRequest request) {
         return ResponseEntity.ok(service.create(request));
     }
 

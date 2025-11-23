@@ -341,6 +341,7 @@ public class WorkOrderService {
         return new GetWorkOrderFull(
 
             wo.getId(),
+            wo.isCompleted(),
             wo.getCreatedAt() == null ? null : wo.getCreatedAt().toString(),
             wo.getEstimatedDelivery() == null ? null : wo.getEstimatedDelivery().toString(),
             services,
