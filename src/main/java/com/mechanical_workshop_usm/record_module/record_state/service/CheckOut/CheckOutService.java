@@ -34,13 +34,13 @@ public class CheckOutService {
 
     @Transactional
     public CheckOutResponse create(CreateCheckOutRequest request) {
-        checkOutValidator.validateOnCreate(request);
         WorkOrder workOrder = entityFinder.findByIdOrThrow(
             workOrderRepository,
             request.workOrderId(),
             "workOrderId",
             "workOrderId not found"
         );
+        checkOutValidator.validateOnCreate(request,  workOrder.getRecord().getId());
 
 
         CheckOut checkOut = new CheckOut(request.vehicleDiagnosis(), LocalDateTime.now(), request.mileage(), workOrder.getRecord());

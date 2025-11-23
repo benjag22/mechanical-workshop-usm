@@ -28,6 +28,7 @@ import com.mechanical_workshop_usm.work_service_module.dto.CreateWorkServiceRequ
 import com.mechanical_workshop_usm.record_module.record.Record;
 import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 
+import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static com.mechanical_workshop_usm.work_service_module.WorkServiceManager.parseDuration;
 
 @Service
 public class WorkOrderService {
@@ -151,7 +154,7 @@ public class WorkOrderService {
                 "Record id not" + " found"
         );
 
-        WorkOrder workOrder = new WorkOrder(record, LocalDateTime.now(), LocalDateTime.now(), null);
+        WorkOrder workOrder = new WorkOrder(record, LocalDateTime.now(), LocalDateTime.now(), null, LocalDateTime.now());
         WorkOrder saved = workOrderRepository.save(workOrder);
 
         List<FieldErrorResponse> errors = validateImageFormats(carPictures, signature);
@@ -159,27 +162,44 @@ public class WorkOrderService {
             throw new MultiFieldException("Image format validation failed", errors);
         }
 
-        AtomicReference<List<Integer>> allServiceIds = new AtomicReference<>(new ArrayList<>());
+        List<Integer> allServiceIds = new ArrayList<>(); // puedes eliminar AtomicReference aquí
+        final long[] totalEstimatedMinutes = {0}; // wrapper mutable para la lambda
+
         if (request.newServices() != null) {
             for (CreateWorkServiceRequest sReq : request.newServices()) {
+                Duration duration = parseDuration(sReq.estimatedTime());
                 WorkService ws = new WorkService(
                     sReq.serviceName(),
-                    LocalTime.parse(sReq.estimatedTime())
+                    duration
                 );
                 WorkService savedWs = workServiceRepository.save(ws);
 
                 realizedServiceRepository.save(new WorkOrderRealizedService(saved, savedWs, false));
-                allServiceIds.get().add(savedWs.getId());
+                allServiceIds.add(savedWs.getId());
+
+                totalEstimatedMinutes[0] += duration.toMinutes();
             }
         }
         if (request.serviceIds() != null) {
             for (Integer sid : request.serviceIds()) {
                 workServiceRepository.findById(sid).ifPresent(ws -> {
                     realizedServiceRepository.save(new WorkOrderRealizedService(saved, ws, false));
-                    allServiceIds.get().add(sid);
+                    allServiceIds.add(sid);
+
+                    totalEstimatedMinutes[0] += ws.getEstimatedTime().toMinutes();
                 });
             }
         }
+
+        int workDayMinutes = 8 * 60;
+        int fullDays = (int)(totalEstimatedMinutes[0] / workDayMinutes);
+        int restMinutes = (int)(totalEstimatedMinutes[0] % workDayMinutes);
+
+        LocalDateTime estimatedDelivery = saved.getCreatedAt()
+            .plusDays(fullDays)
+            .plusMinutes(restMinutes);
+
+        saved.setEstimatedDelivery(estimatedDelivery);
 
         // Apartado de mecanicos
         List<Integer> mechanicIdsList = new ArrayList<>();
@@ -264,7 +284,7 @@ public class WorkOrderService {
                     return new GetWorkOrderFull.GetServiceState(
                             ws.getId(),
                             ws.getServiceName(),
-                            ws.getEstimatedTime().toString(),
+                            minutesToHourMinuteString(ws.getEstimatedTimeMinutes()),
                             rs.isFinalized()
                     );
                 }).toList();
@@ -357,5 +377,11 @@ public class WorkOrderService {
             workOrder.getCreatedAt().format(DATETIME_FORMATTER),
             LocalDateTime.now().format(DATETIME_FORMATTER)
         );
+    }
+
+    public static String minutesToHourMinuteString(long minutes) {
+        long hours = minutes / 60;
+        long mins = minutes % 60;
+        return String.format("%02d:%02d", hours, mins);
     }
 }

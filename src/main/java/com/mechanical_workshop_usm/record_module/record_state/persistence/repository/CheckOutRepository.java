@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CheckOutRepository extends JpaRepository<CheckOut, Integer> {
+    boolean existsByRecord_Id(int recordId);
 }

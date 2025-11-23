@@ -160,15 +160,16 @@ create table work_order
     completed boolean not null default false,
     created_at datetime not null,
     estimated_delivery datetime not null,
+    completed_at datetime not null,
     signature_path varchar(512) default null,
     foreign key (record_id) references record (id)
 );
 
 create table work_service
 (
-    id             int auto_increment primary key,
-    service_name   varchar(32) unique not null check (service_name != ''),
-    estimated_time time               not null
+    id                   int auto_increment primary key,
+    service_name         varchar(32) unique not null check (service_name != ''),
+    estimated_time_minutes bigint    not null
 );
 
 create table work_order_realized_service

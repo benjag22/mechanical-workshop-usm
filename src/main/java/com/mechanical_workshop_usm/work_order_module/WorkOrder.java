@@ -44,14 +44,19 @@ public class WorkOrder {
     @Column(name = "signature_path", length = 512)
     private String signaturePath;
 
+    @Column(name = "completed_at", length = 512)
+    private LocalDateTime completedAt;
+
     public WorkOrder(Record record,
                      LocalDateTime createdAt,
                      LocalDateTime estimatedDelivery,
-                     String signaturePath
+                     String signaturePath,
+                     LocalDateTime completedAt
     ) {
         this.record = record;
         this.createdAt = createdAt;
         this.estimatedDelivery = estimatedDelivery;
         this.signaturePath = signaturePath;
+        this.completedAt = completedAt;
     }
 }

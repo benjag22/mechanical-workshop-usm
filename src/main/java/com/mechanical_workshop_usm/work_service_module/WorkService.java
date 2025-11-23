@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalTime;
+import java.time.Duration;
 
 @Getter
 @Setter
@@ -21,11 +21,16 @@ public class WorkService {
     @Column(name = "service_name", length = 32, nullable = false)
     private String serviceName;
 
-    @Column(name = "estimated_time", nullable = false)
-    private LocalTime estimatedTime;
+    @Column(name = "estimated_time_minutes", nullable = false)
+    private Long estimatedTimeMinutes;
 
-    public WorkService(String serviceName, LocalTime estimatedTime) {
+    @Transient
+    public Duration getEstimatedTime() {
+        return Duration.ofMinutes(estimatedTimeMinutes);
+    }
+
+    public WorkService(String serviceName, Duration estimatedTime) {
         this.serviceName = serviceName;
-        this.estimatedTime = estimatedTime;
+        this.estimatedTimeMinutes = estimatedTime.toMinutes();
     }
 }

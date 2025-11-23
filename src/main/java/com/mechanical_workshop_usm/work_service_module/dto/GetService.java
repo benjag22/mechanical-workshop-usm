@@ -11,5 +11,5 @@ public record GetService(
         String name,
 
         @Schema(requiredMode = Schema.RequiredMode.REQUIRED, description = "Tiempo estimado en formato HH:mm[:ss]")
-        String estimatedTime
+        String estimatedHoursMinutes
 ) {}
