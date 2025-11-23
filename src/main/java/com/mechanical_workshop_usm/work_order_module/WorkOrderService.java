@@ -12,6 +12,9 @@ import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoRepository;
 import com.mechanical_workshop_usm.mechanic_info_module.MechanicInfoService;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicRequest;
 import com.mechanical_workshop_usm.mechanic_info_module.dto.CreateMechanicResponse;
+import com.mechanical_workshop_usm.record_module.record_state.dto.check_out.CheckOutResponse;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.CheckOut;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckOutRepository;
 import com.mechanical_workshop_usm.util.EntityFinder;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrderHasDashboardLight;
 import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrderHasDashboardLightRepository;
@@ -19,7 +22,6 @@ import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMe
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMechanicService;
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.dto.CreateWorkOrderHasMechanicRequest;
 import com.mechanical_workshop_usm.work_order_module.dto.*;
-import com.mechanical_workshop_usm.work_order_module.projections.TrimmedWorkOrderInfoProjection;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedService;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedServiceRepository;
 import com.mechanical_workshop_usm.work_service_module.WorkService;
@@ -61,6 +63,7 @@ public class WorkOrderService {
 
     private final ImageRepository imageRepository;
     private final ImageService imageService;
+    private final CheckOutRepository checkOutRepository;
 
     public WorkOrderService(
         WorkOrderRepository workOrderRepository,
@@ -74,7 +77,7 @@ public class WorkOrderService {
         WorkOrderValidator workOrderValidator,
         ImageService imageService,
         MechanicInfoService mechanicInfoService,
-        MechanicInfoRepository mechanicInfoRepository) {
+        MechanicInfoRepository mechanicInfoRepository, CheckOutRepository checkOutRepository) {
         this.workOrderRepository = workOrderRepository;
         this.recordRepository = recordRepository;
         this.workServiceRepository = workServiceRepository;
@@ -86,25 +89,7 @@ public class WorkOrderService {
         this.imageRepository = imageRepository;
         this.imageService = imageService;
         this.mechanicInfoService = mechanicInfoService;
-    }
-
-    public List<TrimmedWorkOrder> getTrimmedWorkOrders() {
-        List<TrimmedWorkOrderInfoProjection> projections = workOrderRepository.findTrimmedWorkOrders();
-
-        return projections.stream()
-            .map(projection -> new TrimmedWorkOrder(
-                projection.getWorkOrderId(),
-                projection.isCompleted(),
-                projection.getCreatedAt(),
-                projection.getEstimatedDeliveryTime(),
-                projection.getSignaturePath(),
-                projection.getMechanicLeaderFullName(),
-                projection.getClientFirstName(),
-                projection.getClientLastName(),
-                projection.getClientCellphoneNumber(),
-                projection.getCarLicensePlate()
-            ))
-            .toList();
+        this.checkOutRepository = checkOutRepository;
     }
 
     private static final List<String> ALLOWED_IMAGE_EXTENSIONS = List.of("jpg", "jpeg", "png");
@@ -273,48 +258,99 @@ public class WorkOrderService {
 
 
     @Transactional(readOnly = true)
+    public List<GetWorkOrder> getAllWorkOrdersSimple() {
+        List<WorkOrder> orders = workOrderRepository.findAll();
+
+        return orders.stream().map(wo -> {
+            Record record = wo.getRecord();
+
+            String mechanicLeaderFullName = null;
+            var leaders = workOrderHasMechanicService.getByWorkOrderId(wo.getId()).stream()
+                .filter(m -> m.isLeader())
+                .toList();
+            if (!leaders.isEmpty()) {
+                var leader = leaders.get(0);
+                MechanicInfo info = mechanicInfoService.getMechanicById(leader.mechanicInfoId());
+                mechanicLeaderFullName = info.getName();
+            }
+
+            boolean hasCheckOut = false;
+            if (record != null) {
+                hasCheckOut = checkOutRepository.existsByRecord_Id(record.getId());
+            }
+
+            return new GetWorkOrder(
+                wo.getId(),
+                wo.isCompleted(),
+                hasCheckOut,
+                wo.getCreatedAt() != null ? wo.getCreatedAt().toString() : null,
+                wo.getEstimatedDelivery() != null ? wo.getEstimatedDelivery().toString() : null,
+                wo.getSignaturePath(),
+                mechanicLeaderFullName,
+                record != null && record.getClientInfo() != null ? record.getClientInfo().getFirstName() : null,
+                record != null && record.getClientInfo() != null ? record.getClientInfo().getLastName() : null,
+                record != null && record.getClientInfo() != null ? record.getClientInfo().getCellphoneNumber() : null,
+                record != null && record.getCar() != null ? record.getCar().getLicensePlate() : null
+            );
+        }).toList();
+    }
+
+
+
+    @Transactional(readOnly = true)
     public GetWorkOrderFull getFullById(Integer id) {
         WorkOrder wo = entityFinder.findByIdOrThrow(
             workOrderRepository, id, "workOrderId", "WorkOrder not found"
         );
 
         List<GetWorkOrderFull.GetServiceState> services = realizedServiceRepository.findByWorkOrder_Id(id).stream()
-                .map(rs -> {
-                    WorkService ws = rs.getWorkService();
-                    return new GetWorkOrderFull.GetServiceState(
-                            ws.getId(),
-                            ws.getServiceName(),
-                            minutesToHourMinuteString(ws.getEstimatedTimeMinutes()),
-                            rs.isFinalized()
-                    );
-                }).toList();
+            .map(rs -> {
+                WorkService ws = rs.getWorkService();
+                return new GetWorkOrderFull.GetServiceState(
+                    ws.getId(),
+                    ws.getServiceName(),
+                    minutesToHourMinuteString(ws.getEstimatedTimeMinutes()),
+                    rs.isFinalized()
+                );
+            }).toList();
 
         List<GetWorkOrderFull.GetMechanicWorkOrder> mechanics =
-                workOrderHasMechanicService.getByWorkOrderId(id).stream()
-                        .map(m -> {
-                            MechanicInfo mech = mechanicInfoService.getMechanicById(m.mechanicInfoId());
-                            return new GetWorkOrderFull.GetMechanicWorkOrder(
-                                    mech.getId(),
-                                    mech.getName(),
-                                    mech.getRut(),
-                                    m.isLeader()
-                            );
-                        }).toList();
+            workOrderHasMechanicService.getByWorkOrderId(id).stream()
+                .map(m -> {
+                    MechanicInfo mech = mechanicInfoService.getMechanicById(m.mechanicInfoId());
+                    return new GetWorkOrderFull.GetMechanicWorkOrder(
+                        mech.getId(),
+                        mech.getName(),
+                        mech.getRut(),
+                        m.isLeader()
+                    );
+                }).toList();
 
         List<GetImage> carImages = imageService.getCarImagesByWorkOrderId(wo.getId());
 
         List<GetWorkOrderFull.GetWorkOrderHasDashboardLight> dashboardLights =
             workOrderHasDashboardLightRepository.findByWorkOrder_Id(id).stream()
-            .map(dl -> new GetWorkOrderFull.GetWorkOrderHasDashboardLight(
+                .map(dl -> new GetWorkOrderFull.GetWorkOrderHasDashboardLight(
                     dl.getDashboardLight().getId(),
                     imageService.buildPublicUrl(dl.getDashboardLight().getPath()),
                     dl.getDashboardLight().getAlt(),
                     dl.isFunctional()
-            )).toList();
-
+                )).toList();
 
         Record record = wo.getRecord();
 
+        CheckOutResponse checkOutResponse = null;
+        if (record != null) {
+            CheckOut checkOut = (CheckOut) checkOutRepository.findByRecord_Id(record.getId()).orElse(null);
+            if (checkOut != null) {
+                checkOutResponse = new CheckOutResponse(
+                    checkOut.getId(),
+                    checkOut.getEntryTime(),
+                    checkOut.getMileage(),
+                    checkOut.getVehicleDiagnosis()
+                );
+            }
+        }
 
         Client customer = new Client(
             record.getClientInfo().getId(),
@@ -336,10 +372,9 @@ public class WorkOrderService {
             record.getCar().getCarModel().getModelYear(),
             record.getCar().getCarModel().getBrand().getId(),
             record.getCar().getCarModel().getBrand().getBrandName()
-            );
+        );
 
         return new GetWorkOrderFull(
-
             wo.getId(),
             wo.isCompleted(),
             wo.getCreatedAt() == null ? null : wo.getCreatedAt().toString(),
@@ -350,7 +385,8 @@ public class WorkOrderService {
             carImages,
             dashboardLights,
             customer,
-            vehicle
+            vehicle,
+            checkOutResponse
         );
     }
 

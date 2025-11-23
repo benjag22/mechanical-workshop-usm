@@ -1,15 +1,15 @@
-package com.mechanical_workshop_usm.record_module.record_state.service.CheckOut;
+package com.mechanical_workshop_usm.record_module.record_state.service.check_out;
 
 import com.mechanical_workshop_usm.api.dto.FieldErrorResponse;
 import com.mechanical_workshop_usm.api.exceptions.MultiFieldException;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_out.CreateCheckOutRequest;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckOutRepository;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Component
+@Service
 public class CheckOutValidator {
 
     private final CheckOutRepository repository;
@@ -34,6 +34,6 @@ public class CheckOutValidator {
         }
 
         if (!errors.isEmpty())
-            throw new MultiFieldException("CheckOut inválido", errors);
+            throw new MultiFieldException("check_out inválido", errors);
     }
 }

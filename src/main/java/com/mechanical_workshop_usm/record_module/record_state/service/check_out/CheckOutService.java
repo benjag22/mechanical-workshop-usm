@@ -1,7 +1,6 @@
-package com.mechanical_workshop_usm.record_module.record_state.service.CheckOut;
+package com.mechanical_workshop_usm.record_module.record_state.service.check_out;
 
 
-import com.mechanical_workshop_usm.record_module.record.Record;
 import com.mechanical_workshop_usm.record_module.record.RecordRepository;
 import com.mechanical_workshop_usm.record_module.record.RecordValidator;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_out.CreateCheckOutRequest;
@@ -49,7 +48,6 @@ public class CheckOutService {
 
         return new CheckOutResponse(
             saved.getId(),
-            workOrder.getId(),
             saved.getEntryTime(),
             saved.getMileage(),
             saved.getVehicleDiagnosis()
@@ -58,10 +56,9 @@ public class CheckOutService {
 
     @Transactional(readOnly = true)
     public CheckOutResponse getById(int id) {
-        CheckOut c = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("CheckOut not found"));
+        CheckOut c = repository.findById(id).orElseThrow(() -> new IllegalArgumentException("check_out not found"));
         return new CheckOutResponse(
             c.getId(),
-            c.getRecord().getId(),
             c.getEntryTime(),
             c.getMileage(),
             c.getVehicleDiagnosis()

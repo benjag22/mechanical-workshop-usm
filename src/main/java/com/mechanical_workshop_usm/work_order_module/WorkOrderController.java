@@ -93,8 +93,8 @@ public class WorkOrderController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Get all work orders", description = "Returns a list of all work orders.")
-    public ResponseEntity<List<TrimmedWorkOrder>> getAllWorkOrders() {
-        List<TrimmedWorkOrder> response = service.getTrimmedWorkOrders();
+    public ResponseEntity<List<GetWorkOrder>> getAllWorkOrders() {
+        List<GetWorkOrder> response = service.getAllWorkOrdersSimple();
         return ResponseEntity.ok(response);
     }
 

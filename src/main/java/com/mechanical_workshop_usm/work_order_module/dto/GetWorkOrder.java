@@ -2,9 +2,7 @@ package com.mechanical_workshop_usm.work_order_module.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.time.LocalDateTime;
-
-public record TrimmedWorkOrder(
+public record GetWorkOrder(
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     int id,
 
@@ -12,15 +10,16 @@ public record TrimmedWorkOrder(
     boolean isCompleted,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    LocalDateTime createdAt,
+    boolean hasCheckOut,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    LocalDateTime deliveryTime,
+    String createdAt,
+
+    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
+    String deliveryTime,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String signatureUrl,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String mechanicLeaderFullName,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
@@ -34,5 +33,5 @@ public record TrimmedWorkOrder(
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     String carLicensePlate
-) {
-}
+
+) {}

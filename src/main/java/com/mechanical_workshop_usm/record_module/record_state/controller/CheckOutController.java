@@ -3,7 +3,7 @@ package com.mechanical_workshop_usm.record_module.record_state.controller;
 
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_out.CreateCheckOutRequest;
 import com.mechanical_workshop_usm.record_module.record_state.dto.check_out.CheckOutResponse;
-import com.mechanical_workshop_usm.record_module.record_state.service.CheckOut.CheckOutService;
+import com.mechanical_workshop_usm.record_module.record_state.service.check_out.CheckOutService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

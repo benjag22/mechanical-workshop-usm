@@ -9,9 +9,6 @@ public record CheckOutResponse(
     int id,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
-    int workOrderId,
-
-    @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
     LocalDateTime entryTime,
 
     @Schema(requiredMode = Schema.RequiredMode.REQUIRED)
