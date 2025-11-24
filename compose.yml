@@ -1,25 +1,40 @@
-version: "3.8"
 services:
-  mysql:
+  db:
     env_file: .env
     image: mysql:9.4.0
-    ports:
-      - "33062:3306"
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     volumes:
-      - mysql_data:/var/lib/mysql
+      - db:/var/lib/mysql
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql:ro
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    env_file: .env
+    ports:
+      - ${APP_PORT:-8080}:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ${IMAGES_BASE_PATH:-./images}:/app/images
 
   nginx:
     image: nginx:1.29.2
     ports:
-      - "8082:80"
-      - "444:443"
+      - ${NGINX_PORT:-8082}:80
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./images:/var/www/images
-    restart: unless-stopped
+      - ${IMAGES_BASE_PATH:-./images}:/var/www/images:ro
 
 volumes:
-  mysql_data:
+  db:
