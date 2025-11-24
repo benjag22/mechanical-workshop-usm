@@ -116,7 +116,7 @@ public class CheckInService {
     @Transactional
     public CreateCheckInResponse createCheckIn(CreateCheckInRequest request) {
         checkInValidator.validateOnCreate(request);
-        if (request.clientId() <= 0) {
+        if (request.clientId() == null || request.clientId() <= 0) {
             clientInfoService.validateOnCreate(request.client());
         }
         if (request.carId() == null) {
@@ -157,7 +157,7 @@ public class CheckInService {
         recordStateValidator.validateOnCreate(request.recordState());
 
         ClientInfo clientInfo;
-        if (request.clientId() > 0) {
+        if (request.clientId() != null && request.clientId() > 0) {
             clientInfo = entityFinder.findByIdOrThrow(clientInfoRepository, request.clientId(), "client_id", "Client not found");
         }
         else {

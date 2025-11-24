@@ -9,10 +9,11 @@ import com.mechanical_workshop_usm.tool_module.dto.CreateToolRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
+import java.util.Optional;
 
 public record CreateCheckInRequest(
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-        int  clientId,
+        Integer clientId,
 
         @Schema(requiredMode = Schema.RequiredMode.NOT_REQUIRED)
         CreateClientRequest client,
