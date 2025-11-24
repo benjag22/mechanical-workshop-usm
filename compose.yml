@@ -2,7 +2,7 @@ services:
   db:
     env_file: .env
     image: mysql:9.4.0
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}" ]
       interval: 10s
