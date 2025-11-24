@@ -32,6 +32,7 @@ import com.mechanical_workshop_usm.record_module.record_state.persistence.entity
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.GasLevel;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.entity.RecordState;
 import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckInRepository;
+import com.mechanical_workshop_usm.record_module.record_state.persistence.repository.CheckOutRepository;
 import com.mechanical_workshop_usm.record_module.record_state.service.RecordStateValidator;
 import com.mechanical_workshop_usm.tool_module.Tool;
 import com.mechanical_workshop_usm.tool_module.ToolRepository;
@@ -58,6 +59,7 @@ import java.util.Optional;
 @Service
 public class CheckInService {
     private final CheckInRepository checkInRepository;
+    private final CheckOutRepository checkOutRepository;
     private final RecordRepository recordRepository;
     private final CarRepository carRepository;
     private final ClientInfoRepository clientInfoRepository;
@@ -75,22 +77,24 @@ public class CheckInService {
     private final ElectricalSystemConditionRepository electricalSystemConditionRepository;
 
     public CheckInService(
-            CheckInRepository checkInRepository,
-            RecordRepository recordRepository,
-            CarRepository carRepository,
-            ClientInfoRepository clientInfoRepository,
-            CheckInValidator checkInValidator,
-            EntityFinder entityFinder,
-            ClientInfoService clientInfoService,
-            CarBrandService carBrandService,
-            CarModelService carModelService,
-            CarService carService,
-            RecordStateValidator recordStateValidator,
-            ToolRepository toolRepository,
-            ToolService toolService,
-            ExteriorConditionRepository exteriorConditionRepository,
-            InteriorConditionRepository interiorConditionRepository,
-            ElectricalSystemConditionRepository electricalSystemConditionRepository) {
+        CheckOutRepository checkOutRepository,
+        CheckInRepository checkInRepository,
+        RecordRepository recordRepository,
+        CarRepository carRepository,
+        ClientInfoRepository clientInfoRepository,
+        CheckInValidator checkInValidator,
+        EntityFinder entityFinder,
+        ClientInfoService clientInfoService,
+        CarBrandService carBrandService,
+        CarModelService carModelService,
+        CarService carService,
+        RecordStateValidator recordStateValidator,
+        ToolRepository toolRepository,
+        ToolService toolService,
+        ExteriorConditionRepository exteriorConditionRepository,
+        InteriorConditionRepository interiorConditionRepository,
+        ElectricalSystemConditionRepository electricalSystemConditionRepository) {
+        this.checkOutRepository = checkOutRepository;
         this.checkInRepository = checkInRepository;
         this.recordRepository = recordRepository;
         this.carRepository = carRepository;
@@ -128,15 +132,13 @@ public class CheckInService {
             Optional<Record> lastRecordOpt = recordRepository.findFirstByCar_IdOrderByIdDesc(request.carId());
             if (lastRecordOpt.isPresent()) {
                 Record lastRecord = lastRecordOpt.get();
-                boolean hasCheckIn = false;
-                boolean hasCheckOut = false;
-                for (RecordState rs : lastRecord.getRecordStates()) {
-                    if (rs instanceof CheckIn) hasCheckIn = true;
-                    if (rs instanceof CheckOut) hasCheckOut = true;
-                }
+
+                boolean hasCheckIn = checkInRepository.findByRecord_Id(lastRecord.getId()).isPresent();
+                boolean hasCheckOut = checkOutRepository.findByRecord_Id(lastRecord.getId()).isPresent();
+
                 if (hasCheckIn && !hasCheckOut) {
                     List<FieldErrorResponse> errors = List.of(
-                            new FieldErrorResponse("car_id", "Car has an unfinished check-in (missing check-out)")
+                        new FieldErrorResponse("car_id", "The car has a pending check-in or work order; a check-out must be issued first to continue.")
                     );
                     throw new MultiFieldException("Cannot create new check-in", errors);
                 }
@@ -155,7 +157,7 @@ public class CheckInService {
         recordStateValidator.validateOnCreate(request.recordState());
 
         ClientInfo clientInfo;
-        if (request.clientId() >= 0) {
+        if (request.clientId() > 0) {
             clientInfo = entityFinder.findByIdOrThrow(clientInfoRepository, request.clientId(), "client_id", "Client not found");
         }
         else {
@@ -256,18 +258,16 @@ public class CheckInService {
                         List.of(new FieldErrorResponse("gas_level", "Invalid gas level"))
                 ));
 
-        CheckIn checkIn = new CheckIn(
-                gasLevelEnum,
-                request.valuables(),
-                request.observations(),
-                entryTime,
-                request.recordState().mileage(),
-                savedRecord
-        );
+        CheckIn checkIn = new CheckIn();
+        checkIn.setRecord(savedRecord);
+        checkIn.setEntryTime(entryTime);
+        checkIn.setMileage(request.recordState().mileage());
+        checkIn.setGasLevel(gasLevelEnum);
+        checkIn.setValuables(request.valuables());
+        checkIn.setObservations(request.observations());
 
 
         List<Integer> combinedMechanicalIds = new ArrayList<>();
-
         if (request.exteriorConditionsIds() != null) {
             for (Integer condId : request.exteriorConditionsIds()) {
                 ExteriorCondition ec = entityFinder.findByIdOrThrow(exteriorConditionRepository, condId, "exterior_condition_id", "Exterior condition not found");
@@ -278,7 +278,6 @@ public class CheckInService {
                 combinedMechanicalIds.add(condId);
             }
         }
-
         if (request.interiorConditionsIds() != null) {
             for (Integer condId : request.interiorConditionsIds()) {
                 InteriorCondition ic = entityFinder.findByIdOrThrow(interiorConditionRepository, condId, "interior_condition_id", "Interior condition not found");
@@ -289,7 +288,6 @@ public class CheckInService {
                 combinedMechanicalIds.add(condId);
             }
         }
-
         if (request.electricalConditionsIds() != null) {
             for (Integer condId : request.electricalConditionsIds()) {
                 ElectricalSystemCondition el = entityFinder.findByIdOrThrow(electricalSystemConditionRepository, condId, "electrical_condition_id", "Electrical condition not found");
@@ -314,15 +312,15 @@ public class CheckInService {
         CheckIn saved = checkInRepository.save(checkIn);
 
         return new CreateCheckInResponse(
-                saved.getId(),
-                saved.getEntryTime().toString(),
-                saved.getMileage(),
-                saved.getGasLevel().toString(),
-                saved.getValuables(),
-                clientInfo.getId(),
-                car.getId(),
-                combinedMechanicalIds,
-                combinedToolIds
+            saved.getId(),
+            saved.getEntryTime().toString(),
+            saved.getMileage(),
+            saved.getGasLevel().toString(),
+            saved.getValuables(),
+            clientInfo.getId(),
+            car.getId(),
+            combinedMechanicalIds,
+            combinedToolIds
         );
     }
 
@@ -456,5 +454,4 @@ public class CheckInService {
         }
         return results;
     }
-
 }

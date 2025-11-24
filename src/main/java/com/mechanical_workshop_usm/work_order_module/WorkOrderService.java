@@ -401,13 +401,30 @@ public class WorkOrderService {
         final DateTimeFormatter DATETIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
         WorkOrder workOrder = workOrderRepository.findById(workOrderId)
             .orElseThrow(() -> new IllegalArgumentException("WorkOrder not found: " + workOrderId));
+
         if (workOrder.isCompleted()) {
             List<FieldErrorResponse> errors = List.of(
                 new FieldErrorResponse("workOrderId", "The WorkOrder has already been previously approved")
             );
             throw new MultiFieldException("Cannot complete the WorkOrder", errors);
         }
+
+        List<WorkOrderRealizedService> realizedServices =
+            realizedServiceRepository.findByWorkOrder_Id(workOrderId);
+
+        boolean allFinalized = realizedServices.stream()
+            .allMatch(WorkOrderRealizedService::isFinalized);
+
+        if (!allFinalized) {
+            List<FieldErrorResponse> errors = List.of(
+                new FieldErrorResponse("workOrderId", "Cannot complete the WorkOrder - not all services are finalized")
+            );
+            throw new MultiFieldException("Cannot complete the WorkOrder", errors);
+        }
+
         workOrder.setCompleted(true);
+        workOrderRepository.save(workOrder);
+
         return new BasicWorkOrderInfo(
             workOrder.getId(),
             workOrder.getRecord().getId(),

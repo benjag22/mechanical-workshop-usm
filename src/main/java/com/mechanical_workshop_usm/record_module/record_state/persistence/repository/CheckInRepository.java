@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface CheckInRepository extends JpaRepository<CheckIn, Integer> {
@@ -35,4 +36,6 @@ public interface CheckInRepository extends JpaRepository<CheckIn, Integer> {
   )
 """)
     List<CheckIn> findCheckInsNotLinkedToWorkOrder();
+
+    Optional<Object> findByRecord_Id(int id);
 }

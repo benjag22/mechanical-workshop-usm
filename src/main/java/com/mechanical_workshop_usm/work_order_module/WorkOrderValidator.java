@@ -63,40 +63,11 @@ public class WorkOrderValidator {
         if (hasNewServices) {
             int idx = 0;
             for (var ns : request.newServices()) {
-
                 String time = ns.estimatedTime();
                 if (time == null || time.isBlank()) {
                     errors.add(new FieldErrorResponse("newServices[" + idx + "].estimatedTime",
-                            "Estimated time is required"));
-                } else {
-
-                    if (!time.matches("^\\d{2}:\\d{2}$")) {
-                        errors.add(new FieldErrorResponse("newServices[" + idx + "].estimatedTime",
-                                "Invalid time format, expected HH:mm (e.g. 05:40)"));
-                    } else {
-                        String[] parts = time.split(":");
-
-                        try {
-                            int hours = Integer.parseInt(parts[0]);
-                            int minutes = Integer.parseInt(parts[1]);
-
-                            if (hours < 0) {
-                                errors.add(new FieldErrorResponse("newServices[" + idx + "].estimatedTime",
-                                        "Hours must be >= 0"));
-                            }
-
-                            if (minutes < 0 || minutes > 59) {
-                                errors.add(new FieldErrorResponse("newServices[" + idx + "].estimatedTime",
-                                        "Minutes must be between 00 and 59"));
-                            }
-
-                        } catch (NumberFormatException ex) {
-                            errors.add(new FieldErrorResponse("newServices[" + idx + "].estimatedTime",
-                                    "Hours and minutes must be numeric"));
-                        }
-                    }
+                        "Estimated time is required"));
                 }
-
                 idx++;
             }
         }

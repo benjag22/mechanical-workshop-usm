@@ -86,21 +86,26 @@ create table record_state
     foreign key (record_id) references record (id)
 );
 
-create table entry_state
-(
-    id              int auto_increment primary key,
-    record_state_id int not null,
-    valuables       varchar(255),
-    observations    varchar(255),
-    gas_level       enum ('FULL','THREE_QUARTERS','HALF','ONE_QUARTER','LOW'),
-    foreign key (record_state_id) references record_state (id)
+create table entry_state (
+                             id int auto_increment primary key,
+                             record_id int not null,
+                             entry_time datetime(3) NOT NULL,
+                             mileage int not null,
+                             gas_level enum ('FULL','THREE_QUARTERS','HALF','ONE_QUARTER','LOW'),
+                             valuables varchar(255),
+                             observations varchar(255),
+                             foreign key (record_id) references record (id)
 );
 
-CREATE TABLE out_state (
-    record_state_id INT PRIMARY KEY,
-    vehicle_diagnosis VARCHAR(255),
-    FOREIGN KEY (record_state_id) REFERENCES record_state(id)
+create table out_state (
+                           id int auto_increment primary key,
+                           record_id int not null,
+                           entry_time datetime(3) NOT NULL,
+                           mileage int not null,
+                           vehicle_diagnosis varchar(255),
+                           foreign key (record_id) references record (id)
 );
+
 
 create table tool(
     id        int auto_increment primary key,

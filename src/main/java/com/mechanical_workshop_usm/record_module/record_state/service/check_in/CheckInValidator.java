@@ -67,7 +67,7 @@ public class CheckInValidator {
                 (request.exteriorConditionsIds() == null || request.exteriorConditionsIds().isEmpty())&&
                 (request.electricalConditionsIds() == null || request.electricalConditionsIds().isEmpty())
         ) {
-            errors.add(new FieldErrorResponse("mechanicalConditionsIds", "Error qlo marikon"));
+            errors.add(new FieldErrorResponse("mechanicalConditionsIds", "Enter at least one mechanical condition"));
         }
 
 

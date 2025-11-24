@@ -39,10 +39,13 @@ public class CheckOutService {
             "workOrderId",
             "workOrderId not found"
         );
-        checkOutValidator.validateOnCreate(request,  workOrder.getRecord().getId());
+        checkOutValidator.validateOnCreate(request, workOrder.getRecord().getId());
 
-
-        CheckOut checkOut = new CheckOut(request.vehicleDiagnosis(), LocalDateTime.now(), request.mileage(), workOrder.getRecord());
+        CheckOut checkOut = new CheckOut();
+        checkOut.setRecord(workOrder.getRecord());
+        checkOut.setEntryTime(LocalDateTime.now());
+        checkOut.setMileage(request.mileage());
+        checkOut.setVehicleDiagnosis(request.vehicleDiagnosis());
 
         CheckOut saved = repository.save(checkOut);
 
@@ -64,6 +67,4 @@ public class CheckOutService {
             c.getVehicleDiagnosis()
         );
     }
-
-
 }

@@ -1,10 +1,7 @@
 package com.mechanical_workshop_usm.record_module.record_state.persistence.entity;
 
 import com.mechanical_workshop_usm.record_module.record.Record;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.PrimaryKeyJoinColumn;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -15,15 +12,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Entity
 @Table(name = "out_state")
-@PrimaryKeyJoinColumn(name = "record_state_id")
-public class CheckOut extends RecordState {
+public class CheckOut {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "record_id", nullable = false)
+    private Record record;
+
+    @Column(name = "entry_time", nullable = false)
+    private LocalDateTime entryTime;
+
+    @Column(name = "mileage", nullable = false)
+    private Integer mileage;
 
     @Column(name = "vehicle_diagnosis")
     private String vehicleDiagnosis;
-
-    public CheckOut(String vehicleDiagnosis, LocalDateTime entryTime, int mileage, Record record) {
-        super(entryTime, mileage, record);
-        this.vehicleDiagnosis = vehicleDiagnosis;
-    }
-
 }

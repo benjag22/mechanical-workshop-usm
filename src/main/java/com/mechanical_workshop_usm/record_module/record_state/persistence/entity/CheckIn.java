@@ -5,15 +5,36 @@ import com.mechanical_workshop_usm.check_in_has_tools_module.CheckInHaveTool;
 import com.mechanical_workshop_usm.record_module.record.Record;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "entry_state")
-@PrimaryKeyJoinColumn(name = "record_state_id")
-public class CheckIn extends RecordState {
+public class CheckIn {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "record_id", nullable = false)
+    private Record record;
+
+    @Column(name = "entry_time", nullable = false)
+    private LocalDateTime entryTime;
+
+    @Column(name = "mileage", nullable = false)
+    private Integer mileage;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "gas_level", nullable = false)
@@ -30,15 +51,4 @@ public class CheckIn extends RecordState {
 
     @OneToMany(mappedBy = "checkIn", cascade = CascadeType.ALL)
     private final Set<CheckInHaveTool> tools = new LinkedHashSet<>();
-
-    public CheckIn() {
-        super();
-    }
-
-    public CheckIn(GasLevel gasLevel, String valuables, String observations, LocalDateTime entryTime, int mileage, Record record) {
-        super(entryTime, mileage, record);
-        this.gasLevel = gasLevel;
-        this.valuables = valuables;
-        this.observations = observations;
-    }
 }
