@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.mechanical_condition_module;
 
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionRequest;
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionResponse;
-import com.mechanical_workshop_usm.mechanical_condition_module.dto.SingleMechanicalCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.GroupedMechanicalCondition;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.InteriorCondition;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.ExteriorCondition;
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.entity.ElectricalSystemCondition;
@@ -11,8 +11,8 @@ import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repos
 import com.mechanical_workshop_usm.mechanical_condition_module.persistence.repository.InteriorConditionRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MechanicalConditionService {
@@ -32,55 +32,85 @@ public class MechanicalConditionService {
         this.exteriorConditionRepository = exteriorConditionRepository;
         this.validator = validator;
     }
-    public List<SingleMechanicalCondition> getAllConditionsByType(MechanicalConditionType type) {
+    public List<GroupedMechanicalCondition> getAllConditionsByType(MechanicalConditionType type) {
+        List<GroupedMechanicalCondition.SingleMechanicalCondition> flat;
+
         switch (type) {
             case ELECTRICAL_SYSTEM -> {
-                List<SingleMechanicalCondition> response = new ArrayList<>();
-                List<ElectricalSystemCondition> electricalSystemConditions = electricalSystemConditionRepository.findAll();
-                for(ElectricalSystemCondition electricalSystemCondition : electricalSystemConditions) {
-                    response.add(
-                        new SingleMechanicalCondition(
-                            electricalSystemCondition.getId(),
-                            electricalSystemCondition.getPartName(),
-                            electricalSystemCondition.getPartConditionState()
-                        )
-                    );
-                }
-                return response;
-
+                flat = electricalSystemConditionRepository.findAll().stream()
+                    .map(e -> new GroupedMechanicalCondition.SingleMechanicalCondition(
+                        e.getId(),
+                        e.getPartConditionState()
+                    ))
+                    .toList();
             }
             case INTERIOR -> {
-                List<SingleMechanicalCondition> response = new ArrayList<>();
-                List<InteriorCondition> interiorConditions = interiorConditionRepository.findAll();
-                for(InteriorCondition interiorCondition : interiorConditions) {
-                    response.add(
-                        new SingleMechanicalCondition(
-                            interiorCondition.getId(),
-                            interiorCondition.getPartName(),
-                            interiorCondition.getPartConditionState()
-                        )
-                    );
-                }
-                return response;
+                flat = interiorConditionRepository.findAll().stream()
+                    .map(i -> new GroupedMechanicalCondition.SingleMechanicalCondition(
+                        i.getId(),
+                        i.getPartConditionState()
+                    ))
+                    .toList();
             }
-
             case EXTERIOR -> {
-                List<SingleMechanicalCondition> response = new ArrayList<>();
-                List<ExteriorCondition> exteriorConditions = exteriorConditionRepository.findAll();
-                for(ExteriorCondition exteriorCondition : exteriorConditions) {
-                    response.add(
-                        new SingleMechanicalCondition(
-                            exteriorCondition.getId(),
-                            exteriorCondition.getPartName(),
-                            exteriorCondition.getPartConditionState()
-                        )
-                    );
-                }
-                return response;
+                flat = exteriorConditionRepository.findAll().stream()
+                    .map(ex -> new GroupedMechanicalCondition.SingleMechanicalCondition(
+                        ex.getId(),
+                        ex.getPartConditionState()
+                    ))
+                    .toList();
             }
-
             default -> throw new IllegalArgumentException("Unknown MechanicalConditionType: " + type);
         }
+
+        return switch (type) {
+            case ELECTRICAL_SYSTEM -> electricalSystemConditionRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                    ElectricalSystemCondition::getPartName,
+                    Collectors.mapping(
+                        e -> new GroupedMechanicalCondition.SingleMechanicalCondition(
+                            e.getId(),
+                            e.getPartConditionState()
+                        ),
+                        Collectors.toList()
+                    )
+                ))
+                .entrySet().stream()
+                .map(entry -> new GroupedMechanicalCondition(entry.getKey(), entry.getValue()))
+                .toList();
+
+            case INTERIOR -> interiorConditionRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                    InteriorCondition::getPartName,
+                    Collectors.mapping(
+                        i -> new GroupedMechanicalCondition.SingleMechanicalCondition(
+                            i.getId(),
+                            i.getPartConditionState()
+                        ),
+                        Collectors.toList()
+                    )
+                ))
+                .entrySet().stream()
+                .map(entry -> new GroupedMechanicalCondition(entry.getKey(), entry.getValue()))
+                .toList();
+
+            case EXTERIOR -> exteriorConditionRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                    ExteriorCondition::getPartName,
+                    Collectors.mapping(
+                        ex -> new GroupedMechanicalCondition.SingleMechanicalCondition(
+                            ex.getId(),
+                            ex.getPartConditionState()
+                        ),
+                        Collectors.toList()
+                    )
+                ))
+                .entrySet().stream()
+                .map(entry -> new GroupedMechanicalCondition(entry.getKey(), entry.getValue()))
+                .toList();
+
+            default -> throw new IllegalArgumentException("Unknown MechanicalConditionType: " + type);
+        };
     }
 
     public CreateMechanicalConditionResponse createMechanicalCondition(CreateMechanicalConditionRequest request) {

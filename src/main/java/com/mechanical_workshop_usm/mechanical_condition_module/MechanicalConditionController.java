@@ -2,7 +2,7 @@ package com.mechanical_workshop_usm.mechanical_condition_module;
 
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionRequest;
 import com.mechanical_workshop_usm.mechanical_condition_module.dto.CreateMechanicalConditionResponse;
-import com.mechanical_workshop_usm.mechanical_condition_module.dto.SingleMechanicalCondition;
+import com.mechanical_workshop_usm.mechanical_condition_module.dto.GroupedMechanicalCondition;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,20 +18,23 @@ public class MechanicalConditionController {
     }
 
     @GetMapping("/exterior")
-    public ResponseEntity<List<SingleMechanicalCondition>> getExteriorConditions(){
-        List<SingleMechanicalCondition> conditions = service.getAllConditionsByType(MechanicalConditionType.EXTERIOR);
+    public ResponseEntity<List<GroupedMechanicalCondition>> getExteriorConditions() {
+        List<GroupedMechanicalCondition> conditions =
+            service.getAllConditionsByType(MechanicalConditionType.EXTERIOR);
         return ResponseEntity.ok(conditions);
     }
 
     @GetMapping("/interior")
-    public ResponseEntity<List<SingleMechanicalCondition>> getInteriorConditions(){
-        List<SingleMechanicalCondition> conditions = service.getAllConditionsByType(MechanicalConditionType.INTERIOR);
+    public ResponseEntity<List<GroupedMechanicalCondition>> getInteriorConditions() {
+        List<GroupedMechanicalCondition> conditions =
+            service.getAllConditionsByType(MechanicalConditionType.INTERIOR);
         return ResponseEntity.ok(conditions);
     }
 
     @GetMapping("/electrical")
-    public ResponseEntity<List<SingleMechanicalCondition>> getElectricalConditions(){
-        List<SingleMechanicalCondition> conditions = service.getAllConditionsByType(MechanicalConditionType.ELECTRICAL_SYSTEM);
+    public ResponseEntity<List<GroupedMechanicalCondition>> getElectricalConditions() {
+        List<GroupedMechanicalCondition> conditions =
+            service.getAllConditionsByType(MechanicalConditionType.ELECTRICAL_SYSTEM);
         return ResponseEntity.ok(conditions);
     }
 

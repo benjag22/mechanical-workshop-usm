@@ -21,6 +21,7 @@ import com.mechanical_workshop_usm.work_order_has_dashboard_light_module.WorkOrd
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMechanic;
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.WorkOrderHasMechanicService;
 import com.mechanical_workshop_usm.work_order_has_mechanic_module.dto.CreateWorkOrderHasMechanicRequest;
+import com.mechanical_workshop_usm.work_order_has_mechanic_module.dto.GetWorkOrderHasMechanicResponse;
 import com.mechanical_workshop_usm.work_order_module.dto.*;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedService;
 import com.mechanical_workshop_usm.work_order_realized_service_module.WorkOrderRealizedServiceRepository;
@@ -258,18 +259,31 @@ public class WorkOrderService {
 
 
     @Transactional(readOnly = true)
-    public List<GetWorkOrder> getAllWorkOrdersSimple() {
+    public List<GetWorkOrder> getAllWorkOrdersSimple(String licensePlate) {
         List<WorkOrder> orders = workOrderRepository.findAll();
+
+        if (licensePlate != null && !licensePlate.isBlank()) {
+            String normalized = licensePlate.trim().toUpperCase();
+            orders = orders.stream()
+                .filter(wo -> {
+                    Record record = wo.getRecord();
+                    if (record == null || record.getCar() == null || record.getCar().getLicensePlate() == null) {
+                        return false;
+                    }
+                    return record.getCar().getLicensePlate().toUpperCase().contains(normalized);
+                })
+                .toList();
+        }
 
         return orders.stream().map(wo -> {
             Record record = wo.getRecord();
 
             String mechanicLeaderFullName = null;
             var leaders = workOrderHasMechanicService.getByWorkOrderId(wo.getId()).stream()
-                .filter(m -> m.isLeader())
+                .filter(GetWorkOrderHasMechanicResponse::isLeader)
                 .toList();
             if (!leaders.isEmpty()) {
-                var leader = leaders.get(0);
+                var leader = leaders.getFirst();
                 MechanicInfo info = mechanicInfoService.getMechanicById(leader.mechanicInfoId());
                 mechanicLeaderFullName = info.getName();
             }

@@ -92,9 +92,18 @@ public class WorkOrderController {
 
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "Get all work orders", description = "Returns a list of all work orders.")
-    public ResponseEntity<List<GetWorkOrder>> getAllWorkOrders() {
-        List<GetWorkOrder> response = service.getAllWorkOrdersSimple();
+    @Operation(
+        summary = "Get all work orders"
+    )
+    public ResponseEntity<List<GetWorkOrder>> getAllWorkOrders(
+        @Parameter(
+            description = "Optional license plate filter. " +
+                "If omitted or empty, all work orders are returned."
+        )
+        @RequestParam(name = "licensePlate", required = false)
+        String licensePlate
+    ) {
+        List<GetWorkOrder> response = service.getAllWorkOrdersSimple(licensePlate);
         return ResponseEntity.ok(response);
     }
 
